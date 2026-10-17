@@ -1,7 +1,385 @@
 export const metadatos = {
   numero: 2,
   titulo: "Nuestro primer notebook",
-  sincronizado_con: "pendiente",
+  sincronizado_con: "ef7d6ca",
 };
 
-*Capítulo en preparación.*
+<NotebooksDelCapitulo id="cap02_primer_notebook" capitulo="02" />
+
+Todo análisis de una armadura empieza por su geometría. Antes de hablar de
+rigideces, cada barra debe quedar descrita por su longitud y por su
+orientación en el plano. En este capítulo damos el primer paso de nuestra
+calculadora: obtenemos la geometría de *una* barra, escribiendo nuestras
+primeras líneas de Python en un notebook de Google Colab.
+
+No necesitamos instalar nada. Basta con una cuenta de Google y un navegador.
+
+<Objetivos>
+
+- Crear un notebook propio en Google Drive y ejecutarlo con Colab.
+- Usar variables, operaciones aritméticas y el módulo `math`.
+- Mostrar resultados con `print` y f-strings, con unidades y una cantidad
+  adecuada de decimales.
+- Calcular la longitud, los cosenos directores y el ángulo de una barra, y
+  verificar el resultado.
+
+</Objetivos>
+
+## 2.1 La geometría de una barra
+
+Consideremos una barra que va de un nodo inicial $i$, de coordenadas
+$(x_i, y_i)$, a un nodo final $j$, de coordenadas $(x_j, y_j)$ (figura 2.1).
+Las proyecciones de la barra sobre los ejes son
+
+$$
+\Delta x = x_j - x_i, \qquad \Delta y = y_j - y_i, \tag{2.1}
+$$
+
+y con ellas obtenemos su longitud y sus *cosenos directores* (*direction
+cosines*):
+
+<EcuacionClave>
+
+$$
+L = \sqrt{\Delta x^2 + \Delta y^2}, \qquad
+c = \cos\theta = \frac{\Delta x}{L}, \qquad
+s = \sin\theta = \frac{\Delta y}{L}.
+$$
+
+</EcuacionClave>
+
+El ángulo $\theta$ se mide desde el eje $x$ global, en sentido antihorario,
+hasta la dirección que va del nodo $i$ al nodo $j$. Por eso el orden de los
+nodos importa: si intercambiamos $i$ y $j$, cambian los signos de $c$ y $s$, y
+el ángulo aumenta en 180°.
+
+<Figura nombre="geometria_barra" numero="2.1">
+Geometría de una barra: proyecciones, longitud y ángulo.
+</Figura>
+
+Estas tres cantidades parecen modestas, pero las usaremos en todo el libro: la
+longitud interviene en la rigidez de la barra, y los cosenos directores en la
+matriz de transformación del capítulo 5.
+
+## 2.2 Nuestro primer notebook
+
+Un *notebook* es un documento que mezcla celdas de texto y celdas de código
+que se pueden ejecutar. Usaremos *Google Colab* (*Google Colaboratory*), un
+servicio gratuito que ejecuta notebooks de Python en los servidores de Google.
+Tiene dos ventajas decisivas para nosotros: no requiere instalar nada, y ya
+incluye las bibliotecas que usa este libro.
+
+### Crear el notebook en Google Drive
+
+Para que nuestro trabajo quede guardado y organizado, creamos el notebook
+dentro de nuestro propio Google Drive:
+
+1. Abrir [drive.google.com](https://drive.google.com) con nuestra cuenta de
+   Google.
+2. Crear una carpeta para el curso, por ejemplo *Calculadora de armaduras*.
+3. Dentro de la carpeta, elegir *Nuevo* → *Más* → *Google Colaboratory*. Si la
+   opción no aparece, elegir *Conectar más aplicaciones*, buscar
+   *Colaboratory* e instalarla.
+4. Cambiar el nombre del notebook (arriba a la izquierda), por ejemplo,
+   *Capitulo 02*.
+
+<Estrategia>
+
+Recomendamos escribir el código *a mano* en el propio notebook, en lugar de
+copiarlo y pegarlo. Escribir obliga a leer cada línea, y los pequeños errores
+que cometamos en el camino enseñan más que el código perfecto. Si algo no
+funciona, el punto de control al final de cada capítulo permite recuperar el
+estado correcto y seguir.
+
+</Estrategia>
+
+### Celdas de código
+
+Un notebook nuevo trae una celda de código vacía. Escribimos en ella la
+siguiente línea y la ejecutamos con el botón de reproducción, a la izquierda
+de la celda, o con las teclas *Mayús + Enter*:
+
+<Fragmento nombre="c02_primera_celda" />
+<Salida nombre="c02_primera_celda" />
+
+La primera ejecución tarda unos segundos, porque Colab prepara una máquina
+para nosotros. Debajo de la celda aparece lo que el programa imprime.
+
+Una celda también puede contener una operación. Si la última línea de una
+celda es una expresión, el notebook muestra su valor:
+
+<Fragmento nombre="c02_operaciones" />
+<Salida nombre="c02_operaciones" />
+
+Python respeta la precedencia habitual: la multiplicación se evalúa antes que
+la suma. Para agregar celdas usamos los botones *+ Código* y *+ Texto*; las
+celdas de texto sirven para anotar qué estamos calculando.
+
+<Cuidado>
+
+El notebook recuerda lo que se ejecutó, no lo que está escrito. Si cambiamos
+una celda y no la volvemos a ejecutar, el resto del notebook sigue usando los
+valores anteriores. Ante un resultado extraño, la opción *Entorno de
+ejecución* → *Ejecutar todas* vuelve a ejecutar el notebook en orden, de
+arriba hacia abajo.
+
+</Cuidado>
+
+## 2.3 Variables y operaciones
+
+Una *variable* es un nombre que guarda un valor. Guardemos las coordenadas de
+los nodos de la barra 3 del ejemplo A, que va del nodo 1, en $(0, 0)$, al
+nodo 3, en $(3, 4)$:
+
+<Fragmento nombre="c02_variables" />
+
+El signo `=` no expresa una igualdad matemática: es una *asignación*
+(*assignment*). Se lee «guardar el valor `0.0` con el nombre `x_i`». Las
+líneas que empiezan con `#` son comentarios: Python las ignora, pero a
+nosotros nos recuerdan qué representa cada valor.
+
+<Python>
+
+Los nombres de variables pueden contener letras, números y guiones bajos,
+pero no pueden empezar con un número. En este libro los escribimos en
+minúsculas, sin tildes ni eñes, y separando las palabras con guiones bajos:
+`x_i`, `longitud`, `matriz_global`. Python distingue mayúsculas de
+minúsculas: `L` y `l` son variables distintas.
+
+</Python>
+
+Con las variables definidas, calculamos las proyecciones de la ecuación (2.1).
+Al escribir dos expresiones separadas por una coma, el notebook muestra ambas:
+
+<Fragmento nombre="c02_diferencias" />
+<Salida nombre="c02_diferencias" />
+
+Las operaciones aritméticas se escriben con `+`, `-`, `*` y `/`, y la potencia
+con `**`. La suma de los cuadrados de las proyecciones es:
+
+<Fragmento nombre="c02_potencia" />
+<Salida nombre="c02_potencia" />
+
+Los números muy grandes o muy pequeños se escriben en *notación científica*
+(*scientific notation*): `2.0e8` significa $2.0\times10^{8}$. Así escribiremos
+el módulo de elasticidad del acero en kN/m²:
+
+<Fragmento nombre="c02_notacion_cientifica" />
+<Salida nombre="c02_notacion_cientifica" />
+
+El producto $EA = 400\,000$ kN es la *rigidez axial* de la sección; la
+retomaremos en el capítulo 5.
+
+## 2.4 El módulo `math`
+
+Python trae incorporadas solo las operaciones básicas. Las funciones
+matemáticas, como la raíz cuadrada o las funciones trigonométricas, están en el
+*módulo* (*module*) `math`, que debemos importar una vez por notebook:
+
+<Fragmento nombre="c02_import_math" />
+
+A partir de ese momento, escribimos las funciones del módulo con el prefijo
+`math` seguido de un punto. La longitud de la barra es:
+
+<Fragmento nombre="c02_longitud" />
+<Salida nombre="c02_longitud" />
+
+Y sus cosenos directores:
+
+<Fragmento nombre="c02_cosenos" />
+<Salida nombre="c02_cosenos" />
+
+Para el ángulo usamos `math.atan2(dy, dx)`, que devuelve el ángulo en
+radianes, y `math.degrees`, que lo convierte a grados:
+
+<Fragmento nombre="c02_angulo" />
+<Salida nombre="c02_angulo" />
+
+<Python>
+
+`math.atan2` recibe *dos* argumentos, primero $\Delta y$ y después $\Delta x$,
+y por eso conoce el signo de cada uno. Así determina el cuadrante correcto y
+devuelve ángulos entre −180° y 180°. En el apartado 2.6 veremos qué ocurre si
+usamos en su lugar `math.atan(dy / dx)`.
+
+</Python>
+
+## 2.5 Mostrar resultados con `print` y f-strings
+
+El ángulo anterior aparece con catorce decimales, una precisión que ninguna
+medición justifica. Para presentar resultados usamos `print` junto con
+*f-strings* (*formatted string literals*): textos precedidos por una `f` en
+los que cada expresión entre llaves se reemplaza por su valor. Después de los
+dos puntos indicamos el formato; por ejemplo, `:.3f` significa «número con
+tres decimales»:
+
+<Fragmento nombre="c02_fstring" />
+<Salida nombre="c02_fstring" />
+
+De ahora en adelante, todo resultado que presentemos llevará sus unidades y
+una cantidad razonable de decimales: milímetros para los desplazamientos, tres
+cifras significativas para las fuerzas.
+
+## 2.6 La geometría de una barra en Python
+
+Reunimos todo lo anterior para obtener la geometría completa de una barra. Los
+pasos son siempre los mismos:
+
+<Estrategia>
+
+1. Identificar el nodo inicial $i$ y el nodo final $j$ de la barra.
+2. Calcular las proyecciones $\Delta x$ y $\Delta y$.
+3. Calcular la longitud $L$ y los cosenos directores $c$ y $s$.
+4. Calcular el ángulo $\theta$ con `math.atan2`.
+5. Verificar: los signos de $c$ y $s$ deben coincidir con el dibujo, y debe
+   cumplirse $c^2 + s^2 = 1$.
+
+</Estrategia>
+
+<ProblemaResuelto numero="2.1" titulo="Barra 2 del ejemplo A">
+
+La barra 2 del ejemplo A va del nodo 2, en $(6, 0)$, al nodo 3, en $(3, 4)$,
+con coordenadas en metros. Determinar su longitud, sus cosenos directores y su
+ángulo.
+
+<Solucion />
+
+Las proyecciones son $\Delta x = 3 - 6 = -3$ m y $\Delta y = 4 - 0 = 4$ m. En
+Python:
+
+<Fragmento nombre="c02_problema_resuelto" />
+<Salida nombre="c02_problema_resuelto" />
+
+**Verificación.** La barra sube hacia la izquierda, de modo que $c$ debe ser
+negativo y $s$ positivo, como obtuvimos. Además,
+$c^2 + s^2 = 0.36 + 0.64 = 1$. El ángulo está en el segundo cuadrante, entre
+90° y 180°, lo que también coincide con el dibujo.
+
+</ProblemaResuelto>
+
+<Cuidado>
+
+Con `math.atan(dy / dx)` en lugar de `math.atan2(dy, dx)`, el resultado para
+la misma barra es:
+
+<Fragmento nombre="c02_atan_cuidado" />
+<Salida nombre="c02_atan_cuidado" />
+
+El cociente $\Delta y/\Delta x$ pierde los signos individuales, y `math.atan`
+solo devuelve ángulos entre −90° y 90°. Además, si la barra es vertical,
+$\Delta x = 0$ y la división produce un error. Por eso usamos siempre
+`math.atan2`.
+
+</Cuidado>
+
+## Repaso y resumen del capítulo
+
+- La geometría de una barra que va del nodo $i$ al nodo $j$ queda determinada
+  por $L = \sqrt{\Delta x^2 + \Delta y^2}$, $c = \Delta x / L$ y
+  $s = \Delta y / L$, con $\Delta x = x_j - x_i$ y $\Delta y = y_j - y_i$.
+- El orden de los nodos define el sentido de la barra: intercambiarlos cambia
+  los signos de $c$ y $s$.
+- Un notebook combina texto y código. Recuerda lo que se ejecutó, no lo que
+  está escrito: ante dudas, *Ejecutar todas*.
+- En Python, `=` asigna un valor a una variable; la potencia se escribe `**` y
+  la notación científica `2.0e8`.
+- El módulo `math` aporta `math.sqrt`, `math.atan2` y `math.degrees`, entre
+  otras funciones.
+- Los resultados se presentan con f-strings, con unidades y un número
+  razonable de decimales: `f"{L:.3f} m"`.
+
+## Ejercicios
+
+Los ejercicios con resultado numérico tienen una celda de verificación en el
+notebook del capítulo: al escribir allí el resultado y ejecutar la celda, se
+indica si es correcto.
+
+<Ejercicio numero="2.1">
+
+Calcular la longitud y los cosenos directores de la barra 1 del ejemplo A, que
+va del nodo 1, en $(0, 0)$, al nodo 2, en $(6, 0)$. ¿Por qué el resultado
+podía anticiparse sin calcular?
+
+<SolucionDelEjercicio>
+
+<Fragmento nombre="s02_ejercicio_1" />
+<Salida nombre="s02_ejercicio_1" />
+
+La barra es horizontal y apunta en el sentido positivo de $x$: su longitud es
+la diferencia de abscisas, $c = 1$ y $s = 0$.
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<Ejercicio numero="2.2">
+
+Una barra del cordón superior de una armadura de cubierta va de $(0, 0)$ a
+$(4.5, 1.5)$, en metros. Calcular su longitud, sus cosenos directores y su
+ángulo en grados.
+
+<SolucionDelEjercicio>
+
+<Fragmento nombre="s02_ejercicio_2" />
+<Salida nombre="s02_ejercicio_2" />
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<Ejercicio numero="2.3">
+
+La barra 3 del ejemplo A es de acero ($E = 200$ GPa), tiene un área de
+20 cm² y una longitud de 5 m. Calcular su rigidez axial $EA/L$ en kN/m. Cuidar
+la conversión de unidades.
+
+<SolucionDelEjercicio>
+
+Con $E = 200$ GPa $= 2.0\times10^{8}$ kN/m² y $A = 20$ cm² $= 0.0020$ m²:
+
+<Fragmento nombre="s02_ejercicio_3" />
+<Salida nombre="s02_ejercicio_3" />
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<Ejercicio numero="2.4">
+
+Una barra va de $(6, 0)$ a $(0, 3)$. Calcular su ángulo con
+`math.atan(dy / dx)` y con `math.atan2(dy, dx)`. Explicar cuál es el correcto
+y por qué, apoyándose en un dibujo de la barra.
+
+<SolucionDelEjercicio>
+
+<Fragmento nombre="s02_ejercicio_4" />
+<Salida nombre="s02_ejercicio_4" />
+
+La barra apunta hacia la izquierda y hacia arriba, de modo que su ángulo está
+en el segundo cuadrante: el correcto es el de `math.atan2`. El cociente
+$\Delta y / \Delta x = 3/(-6)$ es igual al de una barra que apunta hacia la
+derecha y hacia abajo, y `math.atan` no puede distinguir ambos casos.
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<Ejercicio numero="2.5">
+
+Una barra vertical va de $(2, 3)$ a $(2, -1)$. Calcular su longitud, sus
+cosenos directores y su ángulo. ¿Qué ocurre si se intenta calcular el ángulo
+con `math.atan(dy / dx)`?
+
+<SolucionDelEjercicio>
+
+<Fragmento nombre="s02_ejercicio_5" />
+<Salida nombre="s02_ejercicio_5" />
+
+Con `math.atan(dy / dx)` la división por $\Delta x = 0$ produce el error
+`ZeroDivisionError` y el programa se detiene.
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<PuntoDeControl capitulo="02" />
