@@ -51,3 +51,37 @@ export function PuntoDeControl({ capitulo }: { capitulo: string }) {
     </Caja>
   );
 }
+
+export function Estrategia({ children }: { children: ReactNode }) {
+  return <Caja titulo="Estrategia de resolución" tono="acento">{children}</Caja>;
+}
+
+// Problema resuelto: banda de título a color, enunciado y solución.
+export function ProblemaResuelto({
+  numero,
+  titulo,
+  children,
+}: {
+  numero: string;
+  titulo?: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className="problema-resuelto">
+      <p className="problema-resuelto-titulo">
+        Problema resuelto {numero}
+        {titulo ? ` · ${titulo}` : ""}
+      </p>
+      <div className="problema-resuelto-cuerpo">{children}</div>
+    </section>
+  );
+}
+
+export function Solucion() {
+  return <p className="solucion">Solución</p>;
+}
+
+// Ecuación clave: resaltada con fondo de color.
+export function EcuacionClave({ children }: { children: ReactNode }) {
+  return <div className="ecuacion-clave">{children}</div>;
+}

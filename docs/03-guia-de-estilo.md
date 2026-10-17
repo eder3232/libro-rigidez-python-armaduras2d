@@ -65,6 +65,8 @@
 - Los vectores y matrices contienen **solo números**. Lo simbólico (nombres de incógnitas) se muestra en la prosa o en las figuras, no dentro de los arreglos.
 - Los datos de entrada no se modifican: los resultados se guardan en estructuras nuevas.
 - Nada de `print` de depuración en el código del libro: cada salida que aparece está ahí porque el texto la comenta.
+- **Ancho máximo de 58 caracteres por línea** en el código que aparece en el libro, para que quepa en la página impresa sin cortes. `scripts/extraer_fragmentos.py` lo verifica y falla si una línea es más larga. Los diccionarios de datos largos se escriben en varias líneas.
+- Las salidas que muestra el libro se generan ejecutando el código (`scripts/generar_salidas.py`); nunca se copian a mano.
 
 ### Modelo de datos (propuesta, a confirmar en la revisión)
 
@@ -109,6 +111,15 @@ Separar apoyos y cargas de los nodos hace que cada diccionario tenga una sola re
 - Paleta única para todo el libro: tracción y compresión con colores distinguibles también para personas con daltonismo, más un color neutro para la geometría sin deformar.
 
 ## Diseño editorial (maqueta propia)
+
+**Referencia de diseño:** el libro favorito del autor, *Mecánica vectorial para ingenieros: Dinámica* de Beer y Johnston (McGraw-Hill, 10.ª edición, a todo color). De esa tradición tomamos:
+
+- **Problemas resueltos** destacados, con banda de título a color, enunciado, solución y verificación.
+- **Estrategias de resolución**: cómo abordar un tipo de problema, paso a paso.
+- **Ecuaciones clave** resaltadas con fondo de color.
+- **Repaso y resumen** al final de cada capítulo.
+- **Ejercicios numerados** por capítulo, con sus soluciones al final del libro.
+- Uso generoso pero ordenado del color y de las figuras.
 
 Lo que distingue a un libro de gama alta está en los detalles. La maqueta propia debe cuidar:
 

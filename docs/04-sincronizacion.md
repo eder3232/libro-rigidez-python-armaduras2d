@@ -12,6 +12,7 @@ El libro se publica en dos formatos escritos a mano (LaTeX y Next.js) más noteb
 |---|---|---|
 | Código Python | `codigo/capNN_*.py` | LaTeX (fragmentos), web (bloques ejecutables), notebooks (generados) |
 | Notebooks | generados desde `codigo/` | Colab, descarga desde la web |
+| Salidas del código | `recursos/salidas/` (generadas por `scripts/generar_salidas.py`) | LaTeX (`\salida`) y web (`<Salida>`) |
 | Números citados en el texto | `recursos/` (generados por scripts que ejecutan el código) | LaTeX (`.tex`) y web (`.json`) |
 | Tablas de resultados | `recursos/` (generadas) | LaTeX y web |
 | Figuras con datos | `recursos/` (generadas: PDF para LaTeX, SVG para la web) | LaTeX y web |
@@ -113,7 +114,7 @@ Un único comando (por definir en `scripts/`) ejecuta todas las verificaciones y
 
 | Capítulo | LaTeX | Código y tests | Web | Animaciones |
 |---|---|---|---|---|
-| (sin capítulos todavía) | | | | |
+| 2. Nuestro primer notebook | borrador | listo | pendiente (se adapta cuando el LaTeX esté estable) | — |
 
 Estados posibles: `pendiente` → `borrador` → `revisado` → `estable`.
 
@@ -132,8 +133,9 @@ Estados posibles: `pendiente` → `borrador` → `revisado` → `estable`.
 | Tarea | Comando (desde la raíz) |
 |---|---|
 | Tests y verificación del código | `uv run pytest` |
-| Generar los notebooks | `uv run python scripts/generar_notebooks.py` |
 | Extraer los fragmentos | `uv run python scripts/extraer_fragmentos.py` |
+| Generar las salidas | `uv run python scripts/generar_salidas.py` |
+| Generar los notebooks | `uv run python scripts/generar_notebooks.py` |
 | Compilar el libro | `cd libro && latexmk libro.tex` (PDF en `libro/build/`) |
 | Compilar la muestra tipográfica | `cd libro && latexmk muestra.tex` |
 | Web en desarrollo | `cd web && pnpm dev` |

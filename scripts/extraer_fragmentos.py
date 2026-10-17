@@ -18,6 +18,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from comun import CODIGO, PATRON_FIN, PATRON_INICIO, RECURSOS
 
+# Caracteres por línea que caben en un bloque de código de la página impresa
+ANCHO_MAXIMO = 58
+
 
 def leer_fragmentos(archivo):
     """Devuelve {nombre: código} de los fragmentos marcados en un archivo."""
@@ -39,6 +42,11 @@ def leer_fragmentos(archivo):
             fragmentos[abierto] = textwrap.dedent("\n".join(lineas)).strip("\n") + "\n"
             abierto = None
         elif abierto:
+            if len(linea) > ANCHO_MAXIMO:
+                raise ValueError(
+                    f"{archivo}:{numero}: la línea tiene {len(linea)} caracteres; "
+                    f"el máximo para que quepa en la página es {ANCHO_MAXIMO}"
+                )
             lineas.append(linea)
     if abierto:
         raise ValueError(f"{archivo}: '{abierto}' no se cerró")

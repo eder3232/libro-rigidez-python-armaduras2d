@@ -9,6 +9,7 @@
 % Idioma y tipografía
 % ---------------------------------------------------------------------------
 \RequirePackage[spanish, es-nodecimaldot, es-tabla, es-noshorthands]{babel}
+\addto\captionsspanish{\renewcommand{\appendixname}{Anexo}}
 \RequirePackage{amsmath, amssymb}
 \RequirePackage{unicode-math}
 \setmainfont{Libertinus Serif}
@@ -131,6 +132,18 @@
       {Ejecute scripts/extraer_fragmentos.py o revise el nombre.}}%
 }
 
+% Salida que produce un fragmento al ejecutarse (generada por scripts/generar_salidas.py)
+\newcommand{\rutasalidas}{../recursos/salidas}
+\newcommand{\salida}[1]{%
+  \IfFileExists{\rutasalidas/#1.txt}
+    {\par\vspace{-0.6\baselineskip}%
+     \VerbatimInput[fontsize=\small, frame=leftline, framerule=1.5pt,
+       rulecolor=\color{neutro}, xleftmargin=4pt, framesep=8pt,
+       formatcom=\color{texto-suave}, breaklines]{\rutasalidas/#1.txt}}
+    {\PackageError{armaduras}{No existe la salida '#1'}
+      {Ejecute scripts/generar_salidas.py o revise el nombre.}}%
+}
+
 % Código breve escrito en el texto (solo para ejemplos que no son de la calculadora)
 \newminted[codigo]{python}{}
 \newmintinline[py]{python}{bgcolor={}}
@@ -140,6 +153,8 @@
 
 % Término técnico: primera aparición, con su equivalente en inglés y entrada en el índice
 \newcommand{\termino}[2]{\emph{#1}\index{#1} (\emph{#2})}
+% Término técnico que se escribe igual en inglés: solo se destaca y se indexa
+\newcommand{\concepto}[1]{\emph{#1}\index{#1}}
 
 % Punto de control al final de cada capítulo
 \newcommand{\urlnotebooks}{https://github.com/USUARIO/libro-rigidez-python-armaduras2d/blob/main/notebooks}
@@ -153,10 +168,55 @@
 % Marca de contenido por escribir (desaparece de la versión final)
 \newcommand{\pendiente}[1]{{\color{acento}\sffamily\small[Pendiente: #1]}}
 
-% Ejercicios
+% Encabezado de la sección de ejercicios
+\newcommand{\ejercicios}{\section*{Ejercicios}\addcontentsline{toc}{section}{Ejercicios}}
+
+% ---------------------------------------------------------------------------
+% Elementos inspirados en los libros de mecánica a todo color
+% (referencia de diseño: Beer y Johnston, docs/03-guia-de-estilo.md)
+% ---------------------------------------------------------------------------
+
+% Problema resuelto: enunciado y solución, con banda de título a color
+\newcounter{problemaresuelto}[chapter]
+\renewcommand{\theproblemaresuelto}{\thechapter.\arabic{problemaresuelto}}
+\newenvironment{problemaresuelto}[1][]
+  {\refstepcounter{problemaresuelto}%
+   \begin{tcolorbox}[enhanced, breakable, sharp corners, boxrule=0pt,
+     colback=principal!4, colframe=principal, toprule=0pt,
+     left=10pt, right=10pt, top=8pt, bottom=8pt,
+     title={Problema resuelto \theproblemaresuelto\ifx\relax#1\relax\else\ \textperiodcentered\ #1\fi},
+     fonttitle=\sffamily\bfseries, coltitle=white, colbacktitle=principal,
+     boxed title style={sharp corners}]}
+  {\end{tcolorbox}}
+% Separador entre el enunciado y la solución, dentro de un problema resuelto
+\newcommand{\solucion}{\par\medskip
+  {\sffamily\bfseries\color{acento}Solución}\par\smallskip}
+
+% Ecuación clave: resaltada con fondo de color
+\newtcolorbox{ecuacionclave}{enhanced, sharp corners, boxrule=0pt,
+  frame hidden, colback=acento!10, left=6pt, right=6pt, top=0pt, bottom=2pt,
+  ams align*}
+
+% Estrategia de resolución: cómo abordar un tipo de problema
+\newtcolorbox{estrategia}{caja=acento, title={Estrategia de resolución}}
+
+% Repaso y resumen del capítulo
+\newcommand{\repasoyresumen}{%
+  \section*{Repaso y resumen del capítulo}
+  \addcontentsline{toc}{section}{Repaso y resumen del capítulo}}
+
+% Ejercicios. \begin{ejercicio}{clave} ... \end{ejercicio} numera el ejercicio y,
+% al final, indica la página de su solución, marcada con \soluciondel{clave}.
 \newcounter{ejercicio}[chapter]
 \renewcommand{\theejercicio}{\thechapter.\arabic{ejercicio}}
-\newenvironment{ejercicio}
-  {\refstepcounter{ejercicio}\par\medskip\noindent
+\newenvironment{ejercicio}[1]
+  {\def\claveejercicio{#1}%
+   \refstepcounter{ejercicio}\label{ej:#1}\par\medskip\noindent
    {\sffamily\bfseries\color{principal}Ejercicio \theejercicio}\quad}
-  {\par\medskip}
+  {\hfill{\sffamily\footnotesize\color{texto-suave}%
+     \hyperref[sol:\claveejercicio]{Solución: p.~\pageref*{sol:\claveejercicio}}}%
+   \par\medskip}
+
+% Encabezado de la solución de un ejercicio, en el anexo de soluciones
+\newcommand{\soluciondel}[1]{%
+  \subsection*{Ejercicio \ref{ej:#1}}\label{sol:#1}}

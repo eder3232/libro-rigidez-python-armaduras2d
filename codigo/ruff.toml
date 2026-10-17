@@ -1,0 +1,9 @@
+extend = "../pyproject.toml"
+
+[lint]
+# Código de notebook: expresiones sueltas que se muestran e imports por celda.
+ignore = ["B018", "I001", "E402"]
+
+[lint.per-file-ignores]
+# Las soluciones se ejecutan después del código de su capítulo.
+"soluciones/*" = ["F821"]

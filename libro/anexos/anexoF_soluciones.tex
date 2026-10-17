@@ -1,4 +1,39 @@
 % anexos/anexoF_soluciones.tex
 \chapter{Soluciones de los ejercicios}\label{cap:soluciones}
 
-\pendiente{ver docs/01-indice.md}
+Cada solución se presenta con el código que la resuelve y su resultado. El
+mismo código está en el notebook de soluciones de cada capítulo.
+
+% ---------------------------------------------------------------------------
+\section*{Capítulo \ref{cap:primer_notebook}}
+\addcontentsline{toc}{section}{Capítulo \ref{cap:primer_notebook}}
+
+\soluciondel{2.1}
+\fragmento{s02_ejercicio_1}
+\salida{s02_ejercicio_1}
+La barra es horizontal y apunta en el sentido positivo de $x$: su longitud es
+la diferencia de abscisas, $c = 1$ y $s = 0$.
+
+\soluciondel{2.2}
+\fragmento{s02_ejercicio_2}
+\salida{s02_ejercicio_2}
+
+\soluciondel{2.3}
+Con $E = \SI{200}{\giga\pascal} = \SI{2.0e8}{\kilo\newton\per\metre\squared}$ y
+$A = \SI{20}{\centi\metre\squared} = \SI{0.0020}{\metre\squared}$:
+\fragmento{s02_ejercicio_3}
+\salida{s02_ejercicio_3}
+
+\soluciondel{2.4}
+\fragmento{s02_ejercicio_4}
+\salida{s02_ejercicio_4}
+La barra apunta hacia la izquierda y hacia arriba, de modo que su ángulo está
+en el segundo cuadrante: el correcto es el de \py{math.atan2}. El cociente
+$\Delta y / \Delta x = 3/(-6)$ es igual al de una barra que apunta hacia la
+derecha y hacia abajo, y \py{math.atan} no puede distinguir ambos casos.
+
+\soluciondel{2.5}
+\fragmento{s02_ejercicio_5}
+\salida{s02_ejercicio_5}
+Con \py{math.atan(dy / dx)} la división por $\Delta x = 0$ produce el error
+\py{ZeroDivisionError} y el programa se detiene.

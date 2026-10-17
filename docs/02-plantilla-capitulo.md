@@ -20,6 +20,8 @@ El concepto de Python nuevo, **aislado**: explicado con ejemplos pequeños, pero
 
 Se aplica la herramienta al paso del método, sobre el ejemplo del capítulo. El código que forma parte de la calculadora se marca como **acumulable** (ver [sincronización](04-sincronizacion.md)): es lo que irá al punto de control.
 
+Incluye al menos un **problema resuelto** (enunciado, solución con código y su salida, y verificación) y, cuando el procedimiento lo amerite, una caja **Estrategia de resolución** con los pasos a seguir.
+
 ### 5. Verificación
 
 Todo resultado nuevo se comprueba con al menos uno de estos medios:
@@ -30,9 +32,9 @@ Todo resultado nuevo se comprueba con al menos uno de estos medios:
 
 La verificación se enseña como un hábito de ingeniero, no como un trámite.
 
-### 6. Resumen
+### 6. Repaso y resumen del capítulo
 
-Los puntos clave del capítulo en una lista breve: las ecuaciones, las funciones de la calculadora que se construyeron y los conceptos de Python que se aprendieron. Termina con las **referencias** del capítulo para profundizar.
+Los puntos clave del capítulo en una lista breve: las ecuaciones, las funciones de la calculadora que se construyeron y los conceptos de Python que se aprendieron. Cuando corresponda, termina con las **referencias** del capítulo para profundizar.
 
 ### 7. Ejercicios
 
@@ -64,6 +66,23 @@ Se usan con moderación; nunca dos cajas seguidas.
 | **Python** | Un detalle del lenguaje que conviene saber pero no es esencial. |
 | **Cuidado** | Un error frecuente y cómo evitarlo. |
 | **Para saber más** | Un tema que excede el libro, con una referencia. |
+| **Estrategia de resolución** | Los pasos para abordar un tipo de problema, o una recomendación de método de trabajo. |
+| **Problema resuelto** | Enunciado, solución (código y salida) y verificación. Numerado por capítulo. |
+| **Ecuación clave** | Las ecuaciones centrales del capítulo, resaltadas. Una o dos por capítulo. |
+
+| Elemento | LaTeX | Web (MDX) |
+|---|---|---|
+| Recuerda, Python, Cuidado, Para saber más | `\begin{recuerda}` … | `<Recuerda>` … |
+| Estrategia de resolución | `\begin{estrategia}` | `<Estrategia>` |
+| Problema resuelto | `\begin{problemaresuelto}[título]` + `\solucion` | `<ProblemaResuelto numero="2.1" titulo="…">` + `<Solucion />` |
+| Ecuación clave | `\begin{ecuacionclave}` (entorno `align*`) | `<EcuacionClave>` |
+| Objetivos | `\begin{objetivos}` | `<Objetivos>` |
+| Código | `\fragmento{nombre}` | `<Fragmento nombre="…" />` |
+| Salida del código | `\salida{nombre}` | `<Salida nombre="…" />` |
+| Ejercicio | `\begin{ejercicio}{2.1}`; su solución con `\soluciondel{2.1}` | por definir al adaptar el primer capítulo |
+| Repaso y resumen | `\repasoyresumen` | `## Repaso y resumen del capítulo` |
+| Punto de control | `\puntodecontrol{02}` | `<PuntoDeControl capitulo="02" />` |
+| Término técnico | `\termino{español}{inglés}`, o `\concepto{palabra}` si es igual en ambos idiomas | cursiva, con el inglés entre paréntesis |
 
 ## Criterios de "capítulo terminado"
 

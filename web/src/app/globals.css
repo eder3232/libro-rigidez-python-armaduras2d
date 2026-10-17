@@ -152,3 +152,41 @@ main {
   width: 2.2rem;
   color: var(--acento);
 }
+
+/* Salida de un fragmento */
+.prosa pre.salida {
+  background: none;
+  border-left: 2px solid var(--neutro);
+  color: var(--texto-suave);
+  padding: 0.2rem 1rem;
+  margin-top: -0.6rem;
+}
+
+/* Problema resuelto */
+.problema-resuelto {
+  margin: 2rem 0;
+  background: color-mix(in srgb, var(--principal) 4%, white);
+}
+.problema-resuelto-titulo {
+  background: var(--principal);
+  color: white;
+  font-family: var(--fuente-sans), sans-serif;
+  font-weight: 700;
+  padding: 0.4rem 1.1rem;
+  margin: 0 !important;
+}
+.problema-resuelto-cuerpo {
+  padding: 1rem 1.1rem 0.4rem;
+}
+.solucion {
+  font-family: var(--fuente-sans), sans-serif;
+  font-weight: 700;
+  color: var(--acento);
+}
+
+/* Ecuación clave */
+.ecuacion-clave {
+  background: color-mix(in srgb, var(--acento) 10%, white);
+  padding: 0.1rem 0.8rem;
+  margin: 1.4rem 0;
+}

@@ -7,6 +7,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from extraer_fragmentos import extraer
 from generar_notebooks import generar
+from generar_salidas import generar as generar_salidas
 
 CAP01 = """\
 # %% [markdown]
@@ -100,4 +101,31 @@ def test_fragmento_duplicado_es_un_error(codigo, tmp_path):
         "# [inicio: area]\nx = 1\n# [fin: area]\n", encoding="utf-8"
     )
     with pytest.raises(ValueError, match="duplicado"):
+        extraer(codigo, tmp_path / "fragmentos")
+
+
+def test_salidas_usan_el_estado_de_capitulos_anteriores(codigo, tmp_path):
+    (codigo / "cap02_dos.py").write_text(
+        '# %% tags=["exploracion"]\n# [inicio: doble]\narea * 2\n# [fin: doble]\n',
+        encoding="utf-8",
+    )
+    (codigo / "soluciones" / "cap02_dos.py").unlink()
+    destino = tmp_path / "salidas"
+    assert "doble" in generar_salidas(codigo, destino)
+    assert (destino / "doble.txt").read_text(encoding="utf-8") == "0.004\n"
+
+
+def test_salida_de_print_y_ultima_expresion(codigo, tmp_path):
+    destino = tmp_path / "salidas"
+    generar_salidas(codigo, destino)
+    # El fragmento "area" es una asignación: no produce salida.
+    assert not (destino / "area.txt").exists()
+
+
+def test_linea_demasiado_larga_en_un_fragmento_es_un_error(codigo, tmp_path):
+    larga = "x = " + "1 + " * 20 + "1"
+    (codigo / "cap03_tres.py").write_text(
+        f"# [inicio: larga]\n{larga}\n# [fin: larga]\n", encoding="utf-8"
+    )
+    with pytest.raises(ValueError, match="caracteres"):
         extraer(codigo, tmp_path / "fragmentos")

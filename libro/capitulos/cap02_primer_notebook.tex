@@ -1,4 +1,329 @@
 % capitulos/cap02_primer_notebook.tex
 \chapter{Nuestro primer notebook}\label{cap:primer_notebook}
 
-\pendiente{ver docs/01-indice.md}
+Todo análisis de una armadura empieza por su geometría. Antes de hablar de
+rigideces, cada barra debe quedar descrita por su longitud y por su
+orientación en el plano. En este capítulo damos el primer paso de nuestra
+calculadora: obtenemos la geometría de \emph{una} barra, escribiendo nuestras
+primeras líneas de Python en un notebook de Google Colab.
+
+No necesitamos instalar nada. Basta con una cuenta de Google y un navegador.
+
+\begin{objetivos}
+  \item Crear un notebook propio en Google Drive y ejecutarlo con Colab.
+  \item Usar variables, operaciones aritméticas y el módulo \py{math}.
+  \item Mostrar resultados con \py{print} y f-strings, con unidades y una
+    cantidad adecuada de decimales.
+  \item Calcular la longitud, los cosenos directores y el ángulo de una barra,
+    y verificar el resultado.
+\end{objetivos}
+
+% ---------------------------------------------------------------------------
+\section{La geometría de una barra}\label{sec:geometria_barra}
+
+Consideremos una barra que va de un nodo inicial $i$, de coordenadas
+$(x_i, y_i)$, a un nodo final $j$, de coordenadas $(x_j, y_j)$
+(\cref{fig:geometria_barra}). Las proyecciones de la barra sobre los ejes son
+\begin{equation}\label{eq:proyecciones}
+  \Delta x = x_j - x_i, \qquad \Delta y = y_j - y_i,
+\end{equation}
+y con ellas obtenemos su longitud y sus \termino{cosenos directores}{direction
+cosines}:
+
+\begin{ecuacionclave}
+  L = \sqrt{\Delta x^2 + \Delta y^2}, \qquad
+  c = \cos\theta = \frac{\Delta x}{L}, \qquad
+  s = \sin\theta = \frac{\Delta y}{L}.
+\end{ecuacionclave}
+
+El ángulo $\theta$ se mide desde el eje $x$ global, en sentido antihorario,
+hasta la dirección que va del nodo $i$ al nodo $j$. Por eso el orden de los
+nodos importa: si intercambiamos $i$ y $j$, cambian los signos de $c$ y $s$, y
+el ángulo aumenta en \ang{180}.
+
+\begin{figure}[ht]
+  \centering
+  \begin{tikzpicture}[scale=1.1]
+    \coordinate (i) at (0,0);
+    \coordinate (j) at (3,2.2);
+    \draw[eje] (-0.6,0) -- (4,0) node[right, font=\small] {$x$};
+    \draw[eje] (0,-0.5) -- (0,2.9) node[above, font=\small] {$y$};
+    \draw[barra] (i) -- (j);
+    \draw[densely dashed, color=neutro] (i) -- (3,0) -- (j);
+    \node[font=\small, below] at (1.5,0) {$\Delta x$};
+    \node[font=\small, right] at (3,1.1) {$\Delta y$};
+    \node[font=\small, above left] at (1.5,1.1) {$L$};
+    \draw[color=acento, line width=0.8pt, -{Stealth[length=4pt]}]
+      (0.9,0) arc[start angle=0, end angle=36.25, radius=0.9];
+    \node[font=\small, color=acento] at (1.15,0.35) {$\theta$};
+    \node[nodo] at (i) {};
+    \node[nodo] at (j) {};
+    \node[etiqueta nodo, below left=2pt] at (i) {$i$};
+    \node[etiqueta nodo, above right=2pt] at (j) {$j$};
+  \end{tikzpicture}
+  \caption{Geometría de una barra: proyecciones, longitud y ángulo.}
+  \label{fig:geometria_barra}
+\end{figure}
+
+Estas tres cantidades parecen modestas, pero las usaremos en todo el libro:
+la longitud interviene en la rigidez de la barra, y los cosenos directores en
+la matriz de transformación del \cref{cap:rigidez_barra}.
+
+% ---------------------------------------------------------------------------
+\section{Nuestro primer notebook}\label{sec:primer_notebook}
+
+Un \concepto{notebook} es un documento que mezcla celdas de texto y
+celdas de código que se pueden ejecutar. Usaremos \termino{Google Colab}{Google
+Colaboratory}, un servicio gratuito que ejecuta notebooks de Python en los
+servidores de Google. Tiene dos ventajas decisivas para nosotros: no requiere
+instalar nada, y ya incluye las bibliotecas que usa este libro.
+
+\subsection*{Crear el notebook en Google Drive}
+
+Para que nuestro trabajo quede guardado y organizado, creamos el notebook
+dentro de nuestro propio Google Drive:
+
+\begin{enumerate}
+  \item Abrir \url{https://drive.google.com} con nuestra cuenta de Google.
+  \item Crear una carpeta para el curso, por ejemplo \emph{Calculadora de
+    armaduras}.
+  \item Dentro de la carpeta, elegir \emph{Nuevo} $\to$ \emph{Más} $\to$
+    \emph{Google Colaboratory}. Si la opción no aparece, elegir
+    \emph{Conectar más aplicaciones}, buscar \emph{Colaboratory} e instalarla.
+  \item Cambiar el nombre del notebook (arriba a la izquierda), por ejemplo,
+    \emph{Capitulo 02}.
+\end{enumerate}
+
+\pendiente{capturas de pantalla de cada paso en Google Drive y Colab}
+
+\begin{estrategia}
+Recomendamos escribir el código \emph{a mano} en el propio notebook, en lugar
+de copiarlo y pegarlo. Escribir obliga a leer cada línea, y los pequeños
+errores que cometamos en el camino enseñan más que el código perfecto. Si algo
+no funciona, el punto de control al final de cada capítulo permite recuperar
+el estado correcto y seguir.
+\end{estrategia}
+
+\subsection*{Celdas de código}
+
+Un notebook nuevo trae una celda de código vacía. Escribimos en ella la
+siguiente línea y la ejecutamos con el botón de reproducción, a la izquierda
+de la celda, o con las teclas \emph{Mayús + Enter}:
+\fragmento{c02_primera_celda}
+\salida{c02_primera_celda}
+
+La primera ejecución tarda unos segundos, porque Colab prepara una máquina
+para nosotros. Debajo de la celda aparece lo que el programa imprime.
+
+Una celda también puede contener una operación. Si la última línea de una
+celda es una expresión, el notebook muestra su valor:
+\fragmento{c02_operaciones}
+\salida{c02_operaciones}
+
+Python respeta la precedencia habitual: la multiplicación se evalúa antes que
+la suma. Para agregar celdas usamos los botones \emph{+ Código} y
+\emph{+ Texto}; las celdas de texto sirven para anotar qué estamos calculando.
+
+\begin{cuidado}
+El notebook recuerda lo que se ejecutó, no lo que está escrito. Si cambiamos
+una celda y no la volvemos a ejecutar, el resto del notebook sigue usando los
+valores anteriores. Ante un resultado extraño, la opción \emph{Entorno de
+ejecución} $\to$ \emph{Ejecutar todas} vuelve a ejecutar el notebook en orden,
+de arriba hacia abajo.
+\end{cuidado}
+
+% ---------------------------------------------------------------------------
+\section{Variables y operaciones}\label{sec:variables}
+
+Una \concepto{variable} es un nombre que guarda un valor. Guardemos
+las coordenadas de los nodos de la barra 3 del ejemplo A, que va del nodo~1,
+en $(0, 0)$, al nodo~3, en $(3, 4)$:
+\fragmento{c02_variables}
+
+El signo \py{=} no expresa una igualdad matemática: es una
+\termino{asignación}{assignment}. Se lee \enquote{guardar el valor
+\py{0.0} con el nombre \py{x_i}}. Las líneas que empiezan con \py{#} son
+comentarios: Python las ignora, pero a nosotros nos recuerdan qué representa
+cada valor.
+
+\begin{python}
+Los nombres de variables pueden contener letras, números y guiones bajos, pero
+no pueden empezar con un número. En este libro los escribimos en minúsculas,
+sin tildes ni eñes, y separando las palabras con guiones bajos:
+\py{x_i}, \py{longitud}, \py{matriz_global}. Python distingue mayúsculas de
+minúsculas: \py{L} y \py{l} son variables distintas.
+\end{python}
+
+Con las variables definidas, calculamos las proyecciones de la
+\cref{eq:proyecciones}. Al escribir dos expresiones separadas por una coma, el
+notebook muestra ambas:
+\fragmento{c02_diferencias}
+\salida{c02_diferencias}
+
+Las operaciones aritméticas se escriben con \py{+}, \py{-}, \py{*} y \py{/}, y
+la potencia con \py{**}. La suma de los cuadrados de las proyecciones es:
+\fragmento{c02_potencia}
+\salida{c02_potencia}
+
+Los números muy grandes o muy pequeños se escriben en
+\termino{notación científica}{scientific notation}: \py{2.0e8} significa
+$2.0\times10^{8}$. Así escribiremos el módulo de elasticidad del acero en
+\si{\kilo\newton\per\metre\squared}:
+\fragmento{c02_notacion_cientifica}
+\salida{c02_notacion_cientifica}
+
+El producto $EA = \SI{400000}{\kilo\newton}$ es la \emph{rigidez axial} de la
+sección; la retomaremos en el \cref{cap:rigidez_barra}.
+
+% ---------------------------------------------------------------------------
+\section{El módulo \texttt{math}}\label{sec:math}
+
+Python trae incorporadas solo las operaciones básicas. Las funciones
+matemáticas, como la raíz cuadrada o las funciones trigonométricas, están en
+el \termino{módulo}{module} \py{math}, que debemos importar una vez por
+notebook:
+\fragmento{c02_import_math}
+
+A partir de ese momento, escribimos las funciones del módulo con el prefijo
+\py{math} seguido de un punto. La longitud de la barra es:
+\fragmento{c02_longitud}
+\salida{c02_longitud}
+
+Y sus cosenos directores:
+\fragmento{c02_cosenos}
+\salida{c02_cosenos}
+
+Para el ángulo usamos \py{math.atan2(dy, dx)}, que devuelve el ángulo en
+radianes, y \py{math.degrees}, que lo convierte a grados:
+\fragmento{c02_angulo}
+\salida{c02_angulo}
+
+\begin{python}
+\py{math.atan2} recibe \emph{dos} argumentos, primero $\Delta y$ y después
+$\Delta x$, y por eso conoce el signo de cada uno. Así determina el cuadrante
+correcto y devuelve ángulos entre \ang{-180} y \ang{180}. En el
+\cref{sec:barra_python} veremos qué ocurre si usamos en su lugar
+\py{math.atan(dy / dx)}.
+\end{python}
+
+% ---------------------------------------------------------------------------
+\section{Mostrar resultados con \texttt{print} y f-strings}\label{sec:fstrings}
+
+El ángulo anterior aparece con catorce decimales, una precisión que ninguna
+medición justifica. Para presentar resultados usamos \py{print} junto con
+\termino{f-strings}{formatted string literals}: textos precedidos por una
+\py{f} en los que cada expresión entre llaves se reemplaza por su valor.
+Después de los dos puntos indicamos el formato; por ejemplo, \py{:.3f}
+significa \enquote{número con tres decimales}:
+\fragmento{c02_fstring}
+\salida{c02_fstring}
+
+De ahora en adelante, todo resultado que presentemos llevará sus unidades y
+una cantidad razonable de decimales: milímetros para los desplazamientos, tres
+cifras significativas para las fuerzas.
+
+% ---------------------------------------------------------------------------
+\section{La geometría de una barra en Python}\label{sec:barra_python}
+
+Reunimos todo lo anterior para obtener la geometría completa de una barra.
+Los pasos son siempre los mismos:
+
+\begin{estrategia}
+\begin{enumerate}
+  \item Identificar el nodo inicial $i$ y el nodo final $j$ de la barra.
+  \item Calcular las proyecciones $\Delta x$ y $\Delta y$.
+  \item Calcular la longitud $L$ y los cosenos directores $c$ y $s$.
+  \item Calcular el ángulo $\theta$ con \py{math.atan2}.
+  \item Verificar: los signos de $c$ y $s$ deben coincidir con el dibujo, y
+    debe cumplirse $c^2 + s^2 = 1$.
+\end{enumerate}
+\end{estrategia}
+
+\begin{problemaresuelto}[Barra 2 del ejemplo A]
+La barra 2 del ejemplo A va del nodo~2, en $(6, 0)$, al nodo~3, en
+$(3, 4)$, con coordenadas en metros. Determinar su longitud, sus cosenos
+directores y su ángulo.
+
+\solucion
+Las proyecciones son $\Delta x = 3 - 6 = \SI{-3}{\metre}$ y
+$\Delta y = 4 - 0 = \SI{4}{\metre}$. En Python:
+\fragmento{c02_problema_resuelto}
+\salida{c02_problema_resuelto}
+
+\textbf{Verificación.} La barra sube hacia la izquierda, de modo que $c$ debe
+ser negativo y $s$ positivo, como obtuvimos. Además,
+$c^2 + s^2 = 0.36 + 0.64 = 1$. El ángulo está en el segundo cuadrante, entre
+\ang{90} y \ang{180}, lo que también coincide con el dibujo.
+\end{problemaresuelto}
+
+\begin{cuidado}
+Con \py{math.atan(dy / dx)} en lugar de \py{math.atan2(dy, dx)}, el resultado
+para la misma barra es:
+\fragmento{c02_atan_cuidado}
+\salida{c02_atan_cuidado}
+El cociente $\Delta y/\Delta x$ pierde los signos individuales, y
+\py{math.atan} solo devuelve ángulos entre \ang{-90} y \ang{90}. Además, si la
+barra es vertical, $\Delta x = 0$ y la división produce un error. Por eso
+usamos siempre \py{math.atan2}.
+\end{cuidado}
+
+% ---------------------------------------------------------------------------
+\repasoyresumen
+
+\begin{itemize}
+  \item La geometría de una barra que va del nodo $i$ al nodo $j$ queda
+    determinada por $L = \sqrt{\Delta x^2 + \Delta y^2}$,
+    $c = \Delta x / L$ y $s = \Delta y / L$, con
+    $\Delta x = x_j - x_i$ y $\Delta y = y_j - y_i$.
+  \item El orden de los nodos define el sentido de la barra: intercambiarlos
+    cambia los signos de $c$ y $s$.
+  \item Un notebook combina texto y código. Recuerda lo que se ejecutó, no lo
+    que está escrito: ante dudas, \emph{Ejecutar todas}.
+  \item En Python, \py{=} asigna un valor a una variable; la potencia se
+    escribe \py{**} y la notación científica \py{2.0e8}.
+  \item El módulo \py{math} aporta \py{math.sqrt}, \py{math.atan2} y
+    \py{math.degrees}, entre otras funciones.
+  \item Los resultados se presentan con f-strings, con unidades y un número
+    razonable de decimales: \py{f"{L:.3f} m"}.
+\end{itemize}
+
+% ---------------------------------------------------------------------------
+\ejercicios
+
+Los ejercicios con resultado numérico tienen una celda de verificación en el
+notebook del capítulo: al escribir allí el resultado y ejecutar la celda, se
+indica si es correcto. Las soluciones completas están en el
+anexo~\ref{cap:soluciones} y en el notebook de soluciones del capítulo.
+
+\begin{ejercicio}{2.1}
+Calcular la longitud y los cosenos directores de la barra~1 del ejemplo A,
+que va del nodo~1, en $(0, 0)$, al nodo~2, en $(6, 0)$. ¿Por qué el resultado
+podía anticiparse sin calcular?
+\end{ejercicio}
+
+\begin{ejercicio}{2.2}
+Una barra del cordón superior de una armadura de cubierta va de $(0, 0)$ a
+$(4.5, 1.5)$, en metros. Calcular su longitud, sus cosenos directores y su
+ángulo en grados.
+\end{ejercicio}
+
+\begin{ejercicio}{2.3}
+La barra~3 del ejemplo A es de acero ($E = \SI{200}{\giga\pascal}$), tiene
+un área de \SI{20}{\centi\metre\squared} y una longitud de \SI{5}{\metre}.
+Calcular su rigidez axial $EA/L$ en \si{\kilo\newton\per\metre}. Cuidar la
+conversión de unidades.
+\end{ejercicio}
+
+\begin{ejercicio}{2.4}
+Una barra va de $(6, 0)$ a $(0, 3)$. Calcular su ángulo con
+\py{math.atan(dy / dx)} y con \py{math.atan2(dy, dx)}. Explicar cuál es el
+correcto y por qué, apoyándose en un dibujo de la barra.
+\end{ejercicio}
+
+\begin{ejercicio}{2.5}
+Una barra vertical va de $(2, 3)$ a $(2, -1)$. Calcular su longitud, sus
+cosenos directores y su ángulo. ¿Qué ocurre si se intenta calcular el ángulo
+con \py{math.atan(dy / dx)}?
+\end{ejercicio}
+
+\puntodecontrol{02}
