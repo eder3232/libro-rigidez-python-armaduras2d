@@ -299,3 +299,38 @@ colores.
 El grosor va de 1 a 8 puntos, proporcional a $|N|$ respecto de la mayor
 fuerza. El argumento \py{solid_capstyle="round"} redondea los extremos de
 las líneas gruesas.
+
+% ---------------------------------------------------------------------------
+\section*{Capítulo \ref{cap:mi_calculadora}}
+\addcontentsline{toc}{section}{Capítulo \ref{cap:mi_calculadora}}
+
+\soluciondel{12.1}
+El nodo~4 tiene los grados de libertad 7 y 8; la flecha es el desplazamiento
+vertical con el signo cambiado:
+\fragmento{s12_ejercicio_1}
+\salida{s12_ejercicio_1}
+Una relación luz/flecha del orden de 2700 es muy holgada: los límites de
+servicio habituales están entre 300 y 1000.
+
+\soluciondel{12.2}
+Usamos la función \py{barra} del ejemplo C para escribir las barras:
+\fragmento{s12_ejercicio_2}
+\salida{s12_ejercicio_2}
+En el nodo~2 concurren las barras 1 y 2, horizontales, y la barra~5,
+vertical. Como el nodo~2 no tiene carga, el equilibrio vertical exige que la
+barra~5 no tenga fuerza.
+
+\soluciondel{12.3}
+\fragmento{s12_ejercicio_3}
+\grafico{s12_ejercicio_3}
+El viento empuja el puente hacia la derecha: las fuerzas dejan de ser
+simétricas y la reacción horizontal del apoyo articulado equilibra los
+\SI{50}{\kilo\newton} de viento.
+
+\soluciondel{12.4}
+\fragmento{s12_ejercicio_4}
+\salida{s12_ejercicio_4}
+Sin las diagonales 18 y 19, los paneles segundo y tercero son rectángulos
+formados por cordones y montantes, sin ninguna barra que impida que se
+deformen como un paralelogramo: la armadura es un mecanismo. Además,
+$g = 19 + 3 - 24 = -2$.

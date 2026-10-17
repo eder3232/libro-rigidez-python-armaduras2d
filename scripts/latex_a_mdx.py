@@ -47,7 +47,14 @@ class ErrorDeConversion(Exception):
 
 
 def quitar_comentarios(texto):
-    return "\n".join(re.sub(r"(?<!\\)%.*", "", linea) for linea in texto.splitlines())
+    # \py{...} es literal (minted): un % dentro de él no inicia un comentario.
+    patron = r"\\py\{(?:[^{}\n]|\{[^{}\n]*\})*\}|(?<!\\)%.*"
+
+    def reemplazar(coincidencia):
+        texto_hallado = coincidencia.group(0)
+        return texto_hallado if texto_hallado.startswith("\\py{") else ""
+
+    return "\n".join(re.sub(patron, reemplazar, linea) for linea in texto.splitlines())
 
 
 def leer_argumento(texto, pos):
@@ -494,6 +501,8 @@ class Convertidor:
             return self.bloque("## Ejercicios"), pos
         if nombre == "puntodecontrol":
             return self.bloque(f'<PuntoDeControl capitulo="{argumento()}" />'), pos
+        if nombre == "micalculadora":
+            return self.bloque("<MiCalculadora />"), pos
         if nombre == "py" or nombre == "texttt":
             return f"`{argumento()}`", pos
         if nombre == "emph":

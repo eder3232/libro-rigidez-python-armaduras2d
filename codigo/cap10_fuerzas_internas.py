@@ -74,6 +74,7 @@ def mostrar_tabla(encabezados, filas, decimales=2,
             if isinstance(valor, str):
                 linea += f"{valor:>{ancho}}"
             else:
+                valor = round(valor, decimales) + 0.0
                 linea += f"{valor:>{ancho}.{decimales}f}"
         print(linea)
 # [fin: c10_mostrar_tabla]

@@ -1,0 +1,31 @@
+% Flujo de la calculadora: cada función con el capítulo donde se construyó (capítulo 12)
+\begin{tikzpicture}[
+    paso/.style={draw=principal, fill=principal!6, rounded corners=2pt,
+      minimum width=5.6cm, minimum height=0.62cm, font=\small\ttfamily,
+      inner sep=3pt},
+    datos/.style={paso, draw=acento, fill=acento!10, font=\small},
+    flecha/.style={-{Stealth[length=5pt]}, line width=0.8pt, color=principal},
+    capitulo/.style={font=\scriptsize\sffamily, color=texto-suave, anchor=west}]
+  \node[datos] (d) at (0,0) {Datos: nodos, barras, apoyos, cargas};
+  \node[paso, below=0.35cm of d] (g) {calcular\_geometria};
+  \node[paso, below=0.35cm of g] (k) {calcular\_rigideces};
+  \node[paso, below=0.35cm of k] (e) {ensamblar\_rigidez, ensamblar\_cargas};
+  \node[paso, below=0.35cm of e] (c) {clasificar\_gdl};
+  \node[paso, below=0.35cm of c] (p) {particionar};
+  \node[paso, below=0.35cm of p] (u) {resolver\_desplazamientos};
+  \node[paso, below=0.35cm of u] (r) {calcular\_reacciones};
+  \node[paso, below=0.35cm of r] (n) {fuerzas\_axiales};
+  \node[datos, below=0.35cm of n] (s)
+    {Resultados: mostrar, verificar, graficar};
+  \foreach \a/\b in {d/g, g/k, k/e, e/c, c/p, p/u, u/r, r/n, n/s}
+    \draw[flecha] (\a) -- (\b);
+  \foreach \nodo/\texto in {d/cap. 3, g/cap. 4 y 5, k/cap. 5, e/cap. 7 y 8,
+      c/cap. 6, p/cap. 8, u/cap. 9, r/cap. 9, n/cap. 10, s/cap. 10 a 12}
+    \node[capitulo] at ($(\nodo.east)+(0.15,0)$) {\texto};
+  % analizar_armadura agrupa los pasos de cálculo
+  \draw[decorate, decoration={brace, amplitude=6pt, mirror},
+    line width=0.8pt, color=acento]
+    ($(g.north west)+(-0.25,0.05)$) -- ($(n.south west)+(-0.25,-0.05)$)
+    node[midway, left=8pt, font=\small\ttfamily, color=acento, align=right]
+    {analizar\_\\armadura};
+\end{tikzpicture}

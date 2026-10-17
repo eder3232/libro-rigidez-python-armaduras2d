@@ -31,39 +31,39 @@ z
    <g id="line2d_1">
     <path d="M 17.241962 174.557434 
 L 218.081208 174.557434 
-" clip-path="url(#p097f00d9d2)" style="fill: none; stroke: #0072b2; stroke-width: 3; stroke-linecap: square"/>
+" clip-path="url(#pa84c57d05a)" style="fill: none; stroke: #0072b2; stroke-width: 3; stroke-linecap: square"/>
    </g>
    <g id="line2d_2">
     <path d="M 218.081208 174.557434 
 L 117.661585 40.664604 
-" clip-path="url(#p097f00d9d2)" style="fill: none; stroke: #d55e00; stroke-width: 3; stroke-linecap: square"/>
+" clip-path="url(#pa84c57d05a)" style="fill: none; stroke: #d55e00; stroke-width: 3; stroke-linecap: square"/>
    </g>
    <g id="line2d_3">
     <path d="M 17.241962 174.557434 
 L 117.661585 40.664604 
-" clip-path="url(#p097f00d9d2)" style="fill: none; stroke: #d55e00; stroke-width: 3; stroke-linecap: square"/>
+" clip-path="url(#pa84c57d05a)" style="fill: none; stroke: #d55e00; stroke-width: 3; stroke-linecap: square"/>
    </g>
    <g id="line2d_4"/>
    <g id="line2d_5"/>
    <g id="line2d_6">
     <path d="M 17.241962 182.925736 
-" clip-path="url(#p097f00d9d2)" style="fill: none; stroke: #000000; stroke-width: 1.5; stroke-linecap: square"/>
+" clip-path="url(#pa84c57d05a)" style="fill: none; stroke: #000000; stroke-width: 1.5; stroke-linecap: square"/>
     <defs>
-     <path id="md11e222ff7" d="M 0 -7 
+     <path id="mfde8024dc4" d="M 0 -7 
 L -7 7 
 L 7 7 
 z
 " style="stroke: #000000; stroke-linejoin: miter"/>
     </defs>
-    <g clip-path="url(#p097f00d9d2)">
-     <use xlink:href="#md11e222ff7" x="17.241962" y="182.925736" style="stroke: #000000; stroke-linejoin: miter"/>
+    <g clip-path="url(#pa84c57d05a)">
+     <use xlink:href="#mfde8024dc4" x="17.241962" y="182.925736" style="stroke: #000000; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="line2d_7">
     <path d="M 218.081208 182.925736 
-" clip-path="url(#p097f00d9d2)" style="fill: none; stroke: #000000; stroke-width: 1.5; stroke-linecap: square"/>
-    <g clip-path="url(#p097f00d9d2)">
-     <use xlink:href="#md11e222ff7" x="218.081208" y="182.925736" style="stroke: #000000; stroke-linejoin: miter"/>
+" clip-path="url(#pa84c57d05a)" style="fill: none; stroke: #000000; stroke-width: 1.5; stroke-linecap: square"/>
+    <g clip-path="url(#pa84c57d05a)">
+     <use xlink:href="#mfde8024dc4" x="218.081208" y="182.925736" style="stroke: #000000; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="text_1">
@@ -891,7 +891,7 @@ z
   </g>
  </g>
  <defs>
-  <clipPath id="p097f00d9d2">
+  <clipPath id="pa84c57d05a">
    <rect x="7.2" y="23.928" width="220.92317" height="177.408"/>
   </clipPath>
  </defs>

@@ -7,9 +7,13 @@ Por cada capítulo capNN_nombre.py se generan:
 - control_capNN.ipynb: solo las celdas acumulables de los capítulos 1 a NN.
 - soluciones_capNN.ipynb: si existe codigo/soluciones/capNN_nombre.py.
 
+Además, mi_calculadora.ipynb: el notebook final del estudiante, con el motor
+(las definiciones de todo el código acumulable) y las celdas "calculadora".
+
 Uso: uv run python scripts/generar_notebooks.py
 """
 
+import ast
 import sys
 from pathlib import Path
 
@@ -27,7 +31,20 @@ from comun import (
 
 # "libro": celdas que solo registran valores para el texto y las figuras del
 # libro (con valor_libro); no forman parte de los notebooks.
-ETIQUETAS = {"acumulable", "exploracion", "libro"}
+# "calculadora": celdas de la lección que forman además las secciones Datos y
+# Resultados del notebook final mi_calculadora.ipynb.
+ETIQUETAS = {"acumulable", "exploracion", "libro", "calculadora"}
+
+INTRODUCCION_CALCULADORA = """\
+# Mi calculadora de armaduras
+
+Análisis de armaduras planas por el método de rigidez, construido a lo largo
+del libro *Análisis matricial de armaduras con Python*.
+
+1. **Motor**: todas las funciones de la calculadora. Ejecute la celda una vez.
+2. **Datos**: la armadura a analizar. Reemplace estos datos por los de su
+   armadura (unidades: kN y m).
+3. **Resultados**: el análisis, su verificación, los gráficos y las tablas."""
 
 METADATOS_NOTEBOOK = {
     "kernelspec": {"name": "python3", "display_name": "Python 3", "language": "python"},
@@ -56,7 +73,12 @@ def leer_celdas(archivo, exigir_etiquetas):
 
 
 def es_acumulable(celda):
-    return celda.cell_type == "code" and "acumulable" in celda.metadata.get("tags", [])
+    """Las celdas "calculadora" también se acumulan: el punto de control del
+    último capítulo es la calculadora completa, con sus datos."""
+    etiquetas = celda.metadata.get("tags", [])
+    return celda.cell_type == "code" and (
+        "acumulable" in etiquetas or "calculadora" in etiquetas
+    )
 
 
 def celda_estado_previo(codigo_previo):
@@ -82,15 +104,71 @@ def copiar(celda):
     return nbformat.from_dict(dict(celda))
 
 
+def es_definicion(nodo):
+    """Imports, funciones, constantes y la configuración de NumPy: lo que
+    forma el motor de la calculadora, sin los cálculos de los ejemplos."""
+    if isinstance(nodo, (ast.Import, ast.ImportFrom, ast.FunctionDef)):
+        return True
+    if isinstance(nodo, ast.Assign):
+        # Constante: nombre en mayúsculas con un valor literal (TRACCION = "...").
+        # F = ensamblar_cargas(...) es un cálculo, aunque F sea mayúscula.
+        nombres = [t.id for t in nodo.targets if isinstance(t, ast.Name)]
+        return (
+            bool(nombres)
+            and all(n.isupper() for n in nombres)
+            and isinstance(nodo.value, ast.Constant)
+        )
+    if isinstance(nodo, ast.Expr) and isinstance(nodo.value, ast.Call):
+        funcion = nodo.value.func
+        return isinstance(funcion, ast.Attribute) and funcion.attr == "set_printoptions"
+    return False
+
+
+def motor(celdas_acumulables):
+    """Código de las definiciones de las celdas "acumulable" (las celdas
+    "calculadora" van en las secciones Datos y Resultados)."""
+    partes = []
+    for celda in celdas_acumulables:
+        if "acumulable" not in celda.metadata.get("tags", []):
+            continue
+        arbol = ast.parse(celda.source)
+        for nodo in arbol.body:
+            if es_definicion(nodo):
+                partes.append(ast.get_source_segment(celda.source, nodo))
+    return "\n\n\n".join(partes)
+
+
+def notebook_calculadora(acumuladas, celdas_calculadora):
+    """Celdas del notebook final: Motor, Datos y Resultados."""
+    celda_motor = nbformat.v4.new_code_cell(
+        "# @title Motor de la calculadora (ejecutar primero)\n" + motor(acumuladas),
+        metadata={"cellView": "form"},
+    )
+    celdas = [
+        nbformat.v4.new_markdown_cell(INTRODUCCION_CALCULADORA),
+        nbformat.v4.new_markdown_cell("## 1. Motor"),
+        celda_motor,
+        nbformat.v4.new_markdown_cell("## 2. Datos"),
+        copiar(celdas_calculadora[0]),
+        nbformat.v4.new_markdown_cell("## 3. Resultados"),
+    ]
+    celdas += [copiar(c) for c in celdas_calculadora[1:]]
+    return celdas
+
+
 def generar(codigo=CODIGO, destino=NOTEBOOKS):
     """Genera todos los notebooks y devuelve la lista de archivos escritos."""
     destino.mkdir(parents=True, exist_ok=True)
     escritos = []
     acumuladas = []
+    celdas_calculadora = []
 
     for archivo in archivos_de_capitulos(codigo):
         numero = numero_de_capitulo(archivo)
         celdas = leer_celdas(archivo, exigir_etiquetas=True)
+        celdas_calculadora += [
+            copiar(c) for c in celdas if "calculadora" in c.metadata.get("tags", [])
+        ]
         previas = "\n\n".join(c.source for c in acumuladas)
 
         leccion = [copiar(c) for c in celdas]
@@ -117,6 +195,9 @@ def generar(codigo=CODIGO, destino=NOTEBOOKS):
             nombre = f"soluciones_cap{numero:02d}.ipynb"
             escritos.append(escribir(celdas_sol, destino / nombre))
 
+    if celdas_calculadora:
+        celdas = notebook_calculadora(acumuladas, celdas_calculadora)
+        escritos.append(escribir(celdas, destino / "mi_calculadora.ipynb"))
     return escritos
 
 

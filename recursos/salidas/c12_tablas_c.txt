@@ -1,0 +1,44 @@
+Desplazamientos de los nodos (mm)
+       Nodo         ux         uy
+          1      0.000      0.000
+          2      0.313     -3.321
+          3      0.625     -5.695
+          4      1.125     -6.736
+          5      1.625     -5.695
+          6      1.938     -3.321
+          7      2.250      0.000
+          8      2.188     -3.071
+          9      1.688     -5.820
+         10      1.125     -6.736
+         11      0.563     -5.820
+         12      0.063     -3.071
+
+Reacciones (kN)
+       Nodo  Dirección          R
+          1          x       0.00
+          1          y      62.50
+          7          y      62.50
+
+Fuerzas axiales
+      Barra     N (kN)    σ (MPa)     Estado
+          1      62.50      20.83   tracción
+          2      62.50      20.83   tracción
+          3     100.00      33.33   tracción
+          4     100.00      33.33   tracción
+          5      62.50      20.83   tracción
+          6      62.50      20.83   tracción
+          7    -100.00     -33.33 compresión
+          8    -112.50     -37.50 compresión
+          9    -112.50     -37.50 compresión
+         10    -100.00     -33.33 compresión
+         11     -88.39     -29.46 compresión
+         12     -88.39     -29.46 compresión
+         13      25.00      16.67   tracción
+         14     -12.50      -8.33 compresión
+         15       0.00       0.00 sin fuerza
+         16     -12.50      -8.33 compresión
+         17      25.00      16.67   tracción
+         18      53.03      35.36   tracción
+         19      17.68      11.79   tracción
+         20      17.68      11.79   tracción
+         21      53.03      35.36   tracción

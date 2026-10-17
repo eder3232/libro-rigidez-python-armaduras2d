@@ -149,10 +149,11 @@ def generar(
     acumulado = []
     for archivo in archivos_de_capitulos(codigo):
         ejecutar_archivo(archivo, acumulado, salidas, graficos, destinos, valores)
+        # Las celdas "calculadora" también se acumulan (ver generar_notebooks)
         acumulado += [
             c.source
             for c in celdas_de_codigo(archivo)
-            if "acumulable" in c.metadata.get("tags", [])
+            if {"acumulable", "calculadora"} & set(c.metadata.get("tags", []))
         ]
         soluciones = codigo / "soluciones" / archivo.name
         if soluciones.exists():

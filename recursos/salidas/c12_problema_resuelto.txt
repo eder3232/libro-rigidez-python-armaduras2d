@@ -1,0 +1,2 @@
+Barra 3: secciones   100.00 kN, calculadora   100.00 kN
+Barra 8: secciones  -112.50 kN, calculadora  -112.50 kN

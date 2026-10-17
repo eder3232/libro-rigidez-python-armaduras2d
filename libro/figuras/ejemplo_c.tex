@@ -1,0 +1,35 @@
+% Ejemplo C: puente peatonal tipo Pratt de 18 m y 6 paneles (capítulo 12)
+\begin{tikzpicture}[scale=0.54,
+    numero barra/.style={font=\sffamily\tiny, color=black!70, fill=white,
+      inner sep=0.8pt},
+    numero nodo/.style={font=\sffamily\scriptsize\bfseries, color=principal}]
+  % Nodos
+  \foreach \k in {0,...,6}
+    \coordinate (n\the\numexpr\k+1\relax) at (3*\k, 0);
+  \foreach \k in {0,...,4}
+    \coordinate (n\the\numexpr\k+8\relax) at (3*\k+3, 3);
+  % Barras: número, nodo inicial, nodo final
+  \foreach \b/\i/\j in {1/1/2, 2/2/3, 3/3/4, 4/4/5, 5/5/6, 6/6/7,
+      7/8/9, 8/9/10, 9/10/11, 10/11/12, 11/1/8, 12/12/7,
+      13/2/8, 14/3/9, 15/4/10, 16/5/11, 17/6/12,
+      18/8/3, 19/9/4, 20/11/4, 21/12/5}
+    \draw[barra, line width=1.2pt] (n\i) -- node[numero barra] {\b} (n\j);
+  \apoyoarticulado{(n1)}
+  \apoyorodillo{(n7)}
+  % Cargas colgadas del cordón inferior
+  \foreach \i in {2,...,6}
+    \draw[carga] (n\i) -- ++(0,-1.1);
+  \node[font=\small, color=acento] at (10.5,-1.75)
+    {\SI{25}{\kilo\newton} en cada nodo};
+  \foreach \i in {1,...,12}
+    \node[nodo, minimum size=4pt] at (n\i) {};
+  \foreach \i in {1,...,7}
+    \node[numero nodo, above left=1pt] at (n\i) {\i};
+  \foreach \i in {8,...,12}
+    \node[numero nodo, above=2pt] at (n\i) {\i};
+  % Cotas
+  \draw[|-|, color=texto-suave] (0,-2.7) -- node[below, font=\small]
+    {6 paneles de \SI{3}{\metre} = \SI{18}{\metre}} (18,-2.7);
+  \draw[|-|, color=texto-suave] (19,0) -- node[right, font=\small]
+    {\SI{3}{\metre}} (19,3);
+\end{tikzpicture}

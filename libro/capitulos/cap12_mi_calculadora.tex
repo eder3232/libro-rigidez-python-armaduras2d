@@ -1,4 +1,273 @@
 % capitulos/cap12_mi_calculadora.tex
 \chapter{Mi calculadora de armaduras}\label{cap:mi_calculadora}
 
-\pendiente{ver docs/01-indice.md}
+A lo largo de los capítulos anteriores construimos, pieza por pieza, todas las
+etapas del método de rigidez. Cada una es una función que podemos leer,
+entender y verificar. Pero para analizar una armadura todavía tenemos que
+llamarlas una por una, en el orden correcto, como hicimos cada vez con el
+ejemplo B. En este capítulo damos el último paso: reunimos todas las
+funciones en una calculadora que, con los datos de una armadura, entrega sus
+desplazamientos, reacciones y fuerzas, verifica los resultados y los dibuja.
+Y la ponemos a prueba con una armadura de puente de 21 barras.
+
+\begin{objetivos}
+  \item Organizar el código en una función que llama a todas las demás.
+  \item Devolver varios resultados con nombre en un diccionario.
+  \item Presentar, verificar y dibujar los resultados de cualquier armadura.
+  \item Analizar una armadura nueva cambiando solo sus datos.
+\end{objetivos}
+
+% ---------------------------------------------------------------------------
+\section{El camino recorrido}\label{sec:camino}
+
+La \cref{fig:flujo_calculadora} resume la calculadora. Los datos describen
+la armadura (\cref{cap:describir_armadura}); de ellos salen la geometría y la
+rigidez de cada barra (capítulos \ref{cap:geometria} y
+\ref{cap:rigidez_barra}); la numeración de los grados de libertad
+(\cref{cap:grados_de_libertad}) permite ensamblar el sistema y particionarlo
+(capítulos \ref{cap:ensamblaje} y \ref{cap:particion}); su solución da los
+desplazamientos y las reacciones (\cref{cap:desplazamientos_reacciones}), y
+de los desplazamientos salen las fuerzas axiales
+(\cref{cap:fuerzas_internas}). Por último, los resultados se presentan, se
+verifican y se dibujan.
+
+\begin{figure}[ht]
+  \centering
+  \figura{flujo_calculadora}
+  \caption{Las etapas de la calculadora, cada una con el capítulo donde la
+    construimos. La función \texttt{analizar\_armadura} encadena los pasos
+    de cálculo.}
+  \label{fig:flujo_calculadora}
+\end{figure}
+
+% ---------------------------------------------------------------------------
+\section{Una función que lo hace todo}\label{sec:analizar}
+
+Una función puede llamar a otras funciones. La que escribimos ahora no
+calcula nada por sí misma: llama, en orden, a todas las que escribimos antes,
+pasando el resultado de cada etapa a la siguiente. Es la traducción directa
+de la \cref{fig:flujo_calculadora}:
+\fragmento{c12_analizar}
+
+\begin{python}
+Una función que produce muchos resultados puede devolverlos en un
+diccionario, cada uno con su nombre. Es más claro que devolver ocho valores
+separados por comas: quien la usa escribe \py{resultados["N"]} o
+\py{resultados["U"]} y no necesita recordar en qué posición estaba cada uno.
+El método \py{keys} da la lista de claves de un diccionario.
+\end{python}
+
+Con una sola llamada obtenemos todos los resultados del ejemplo A, y las
+fuerzas son, como debe ser, las mismas del \cref{cap:fuerzas_internas}:
+\fragmento{c12_usar_analizar}
+\salida{c12_usar_analizar}
+
+% ---------------------------------------------------------------------------
+\section{El informe de resultados}\label{sec:informe}
+
+Con los resultados en un diccionario, escribimos una función que los presenta
+en tres tablas: los desplazamientos de cada nodo, las reacciones y las fuerzas
+axiales. Para las reacciones necesitamos el nodo y la dirección de cada grado
+de libertad restringido $g$, que obtenemos invirtiendo la numeración del
+\cref{cap:grados_de_libertad}: el nodo es $(g + 1) / 2$ redondeado hacia
+abajo, y la dirección es $x$ si $g$ es impar.
+\fragmento{c12_mostrar_resultados}
+
+\begin{python}
+El operador \py{//} es la \termino{división entera}{floor division}: divide y
+descarta los decimales, de modo que \py{7 // 2} es 3. El operador \py{%} da el
+\termino{resto}{remainder} de la división: \py{7 % 2} es 1. Un número es
+impar si su resto al dividirlo por 2 es 1. La secuencia \py{"\n"} dentro de un
+texto es un salto de línea.
+\end{python}
+
+\fragmento{c12_informe_a}
+\salida{c12_informe_a}
+
+La verificación del equilibrio, global y de cada nodo, también se convierte
+en una función, que reúne las de los capítulos \ref{cap:desplazamientos_reacciones}
+y \ref{cap:fuerzas_internas} e informa si ambas se cumplen:
+\fragmento{c12_verificar}
+
+Y lo mismo con los gráficos del \cref{cap:visualizar}. Para que las armaduras
+largas y bajas, como las de los puentes, se vean bien, la función coloca los
+dos paneles uno sobre otro cuando la armadura es más de dos veces más ancha
+que alta:
+\fragmento{c12_graficar}
+
+Con estas funciones, el ejemplo B, que en cada capítulo nos costó una docena
+de líneas, se resuelve, verifica y dibuja en tres:
+\fragmento{c12_ejemplo_b}
+\salida{c12_ejemplo_b}
+\grafico{c12_ejemplo_b}
+
+% ---------------------------------------------------------------------------
+\section{El ejemplo C: un puente peatonal}\label{sec:ejemplo_c}
+
+Pongamos la calculadora a prueba con una armadura de verdad: un puente
+peatonal de tipo Pratt, de \SI{18}{\metre} de luz y \SI{3}{\metre} de altura,
+con seis paneles de \SI{3}{\metre} (\cref{fig:ejemplo_c}). Los cordones y las
+diagonales extremas tienen \SI{30}{\centi\metre\squared} de área; los
+montantes y las diagonales interiores, \SI{15}{\centi\metre\squared}. El
+tablero transmite una carga de \SI{25}{\kilo\newton} a cada nodo interior del
+cordón inferior.
+
+\begin{figure}[ht]
+  \centering
+  \figura{ejemplo_c}
+  \caption{Ejemplo C: puente peatonal tipo Pratt, con la numeración de sus 12
+    nodos y 21 barras.}
+  \label{fig:ejemplo_c}
+\end{figure}
+
+Con 12 nodos y 21 barras, escribir los datos a mano como en el
+\cref{cap:describir_armadura} sería largo y propenso a errores. Las
+coordenadas siguen un patrón, así que las generamos con bucles. Para las
+barras escribimos una pequeña función que arma el diccionario de cada una,
+de modo que cada barra ocupa una sola expresión. Las áreas se definen una vez
+como constantes, en mayúsculas por convención:
+\fragmento{c12_datos_c}
+
+El análisis completo, con su verificación y sus gráficos, es igual que para
+cualquier otra armadura:
+\fragmento{c12_analisis_c}
+\salida{c12_analisis_c}
+\grafico{c12_analisis_c}
+
+Los resultados muestran el comportamiento típico de una armadura Pratt: el
+cordón superior trabaja en compresión y el inferior en tracción, como las
+fibras superior e inferior de una viga; las diagonales interiores, inclinadas
+hacia el centro, trabajan en tracción, mientras que las extremas, que llevan
+la carga a los apoyos, y los montantes interiores trabajan en compresión. El
+montante central no tiene fuerza, y los montantes extremos, de los que
+\enquote{cuelga} la carga de los nodos 2 y 6, trabajan en tracción. La flecha
+en el centro del vano es de \valor{c12_uy_centro}~\si{\milli\metre}, del
+orden de $L/2700$, y cada apoyo recibe \valor{c12_reaccion}~\si{\kilo\newton},
+la mitad de la carga total. Las tablas completas son:
+\fragmento{c12_tablas_c}
+\salida{c12_tablas_c}
+
+\begin{problemaresuelto}[El método de las secciones]
+Verificar las fuerzas de las barras 3 (cordón inferior) y 8 (cordón superior)
+del ejemplo C con el método de las secciones.
+
+\solucion
+Cortamos la armadura por el tercer panel, entre $x = 6$ y $x = 9$ m, y
+estudiamos el tramo izquierdo. Por simetría, cada reacción vale la mitad de la
+carga total, $R = 5 \cdot 25 / 2 = \SI{62.5}{\kilo\newton}$. Tomando momentos
+respecto del nodo~9, en $(6, 3)$, solo la barra~3 tiene momento entre las
+barras cortadas; respecto del nodo~4, en $(9, 0)$, solo la barra~8:
+\[
+  N_3 = \frac{62.5 \cdot 6 - 25 \cdot 3}{3}, \qquad
+  N_8 = -\frac{62.5 \cdot 9 - 25 \cdot 6 - 25 \cdot 3}{3}.
+\]
+\fragmento{c12_problema_resuelto}
+\salida{c12_problema_resuelto}
+
+\textbf{Verificación.} Ambos métodos dan los mismos valores: la calculadora
+reproduce el análisis clásico de una armadura isostática.
+\end{problemaresuelto}
+
+% ---------------------------------------------------------------------------
+\section{Mi calculadora}\label{sec:mi_calculadora}
+
+Llegamos al producto final del libro: un notebook propio, organizado en tres
+secciones.
+
+\begin{description}
+  \item[Motor.] Todas las funciones que escribimos en el libro. Se ejecuta
+    una vez y no hace falta modificarlo.
+  \item[Datos.] Los cuatro diccionarios que describen la armadura. Es lo
+    único que cambia de un problema a otro.
+  \item[Resultados.] La llamada a \py{analizar_armadura}, la verificación,
+    los gráficos y las tablas.
+\end{description}
+
+Separar el motor de los datos es la lección más valiosa de este capítulo: la
+misma herramienta, escrita y verificada una vez, sirve para cualquier
+armadura.
+
+\micalculadora
+
+\begin{estrategia}
+Para analizar una armadura propia con la calculadora:
+\begin{enumerate}
+  \item Dibujar la armadura y numerar sus nodos (de forma consecutiva, desde
+    1) y sus barras.
+  \item Convertir todos los datos a \si{\kilo\newton} y \si{\metre}:
+    $E$ en \si{\kilo\newton\per\metre\squared} y $A$ en
+    \si{\metre\squared}.
+  \item Reemplazar los diccionarios de la sección Datos y ejecutar la sección
+    Resultados.
+  \item Comprobar que la verificación del equilibrio sea correcta y que el
+    dibujo coincida con la armadura y sus apoyos.
+  \item Revisar que los resultados sean razonables: desplazamientos de
+    milímetros, esfuerzos muy inferiores a la fluencia y un patrón de
+    tracciones y compresiones con sentido físico.
+\end{enumerate}
+\end{estrategia}
+
+Los errores más frecuentes al usar la calculadora, y cómo reconocerlos, son
+los de la \cref{tab:errores_frecuentes}.
+
+\begin{table}[ht]
+  \centering
+  \caption{Errores frecuentes al usar la calculadora.}
+  \label{tab:errores_frecuentes}
+  \small
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    Síntoma & Causa probable & Solución \\
+    \midrule
+    \texttt{KeyError} & Barra con un nodo inexistente & Revisar \py{barras} \\
+    \texttt{ZeroDivisionError} & Dos nodos coinciden & Revisar \py{nodos} \\
+    \enquote{Es inestable} & Faltan barras o apoyos & Revisar el dibujo \\
+    Desplazamientos enormes & Unidades mezcladas & Pasar a kN y m \\
+    El dibujo no coincide & Datos mal escritos & Corregir los datos \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+% ---------------------------------------------------------------------------
+\repasoyresumen
+
+\begin{itemize}
+  \item La función \py{analizar_armadura} encadena todas las etapas del
+    método y devuelve los resultados en un diccionario.
+  \item Tres funciones más presentan, verifican y dibujan los resultados de
+    cualquier armadura.
+  \item \py{//} es la división entera y \py{%}, el resto; con ellos se
+    obtienen el nodo y la dirección de un grado de libertad.
+  \item Los datos de una armadura grande pueden generarse con bucles y
+    funciones auxiliares, como \py{barra}.
+  \item El notebook final separa el motor, que no cambia, de los datos, que
+    describen cada problema, y de los resultados.
+  \item Toda solución nueva se verifica: equilibrio, dibujo y sentido físico.
+\end{itemize}
+
+% ---------------------------------------------------------------------------
+\ejercicios
+
+\begin{ejercicio}{12.1}
+Calcular la flecha (el desplazamiento vertical hacia abajo) del nodo~4 del
+ejemplo C, en el centro del vano, y la relación entre la luz y la flecha.
+\end{ejercicio}
+
+\begin{ejercicio}{12.2}
+Analizar con la calculadora la armadura de cubierta del ejercicio~\ref{ej:3.2}.
+¿Por qué la barra~5 no tiene fuerza?
+\end{ejercicio}
+
+\begin{ejercicio}{12.3}
+Agregar al ejemplo C una carga de viento de \SI{10}{\kilo\newton}
+horizontales en cada nodo del cordón superior, además de las cargas
+verticales, y comparar el diagrama de fuerzas con el original.
+\end{ejercicio}
+
+\begin{ejercicio}{12.4}
+Quitar del ejemplo C las diagonales 18 y 19 e intentar analizarlo. Explicar
+el mensaje de la calculadora con ayuda de la \cref{fig:ejemplo_c}. La
+expresión \py{numero not in (18, 19)} es verdadera si el número no es 18 ni 19.
+\end{ejercicio}
+
+\puntodecontrol{12}

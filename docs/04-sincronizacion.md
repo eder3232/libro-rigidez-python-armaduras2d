@@ -132,7 +132,8 @@ Un único comando (por definir en `scripts/`) ejecuta todas las verificaciones y
 | 8. Cargas y partición del sistema | estable | listo | generado | — |
 | 9. Desplazamientos y reacciones | estable | listo | generado | — |
 | 10. Fuerzas internas | estable (falta: comparación con software comercial) | listo | generado | — |
-| 11. Visualizar los resultados | borrador | listo | generado | — |
+| 11. Visualizar los resultados | estable | listo | generado | — |
+| 12. Mi calculadora de armaduras | borrador | listo | generado | — |
 
 Estados posibles: `pendiente` → `borrador` → `revisado` → `estable`.
 

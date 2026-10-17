@@ -1,0 +1,2 @@
+Equilibrio global: correcto
+Equilibrio nodal: correcto

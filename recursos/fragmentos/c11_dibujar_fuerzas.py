@@ -1,6 +1,8 @@
-def dibujar_fuerzas(ax, nodos, barras, N, decimales=1):
+def dibujar_fuerzas(ax, nodos, barras, N, decimales=1,
+                    tamano=None):
     """Barras en colores según su fuerza axial, con su
-    valor en kN al 40 % de cada barra."""
+    valor en kN al 40 % de cada barra. tamano: tamaño
+    de letra de los valores."""
     for numero, barra in barras.items():
         estado = clasificar_fuerza(N[numero])
         if estado == "tracción":
@@ -17,10 +19,11 @@ def dibujar_fuerzas(ax, nodos, barras, N, decimales=1):
         # los valores de dos diagonales que se cruzan
         xm = i["x"] + 0.4 * (j["x"] - i["x"])
         ym = i["y"] + 0.4 * (j["y"] - i["y"])
+        valor = round(N[numero], decimales) + 0.0
         fondo = {"facecolor": "white", "linewidth": 0}
-        ax.text(xm, ym, f"{N[numero]:.{decimales}f}",
+        ax.text(xm, ym, f"{valor:.{decimales}f}",
                 color=color, ha="center", va="center",
-                bbox=fondo)
+                bbox=fondo, fontsize=tamano)
     # Leyenda con líneas vacías: solo muestran los colores
     ax.plot([], [], color=TRACCION, linewidth=3,
             label="Tracción")

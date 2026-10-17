@@ -107,3 +107,21 @@ export function NotebooksDelCapitulo({ id, capitulo }: { id: string; capitulo: s
 export function Nota({ children }: { children: ReactNode }) {
   return <span className="nota">{children}</span>;
 }
+
+// El notebook final del estudiante. Equivale a \micalculadora en LaTeX.
+export function MiCalculadora() {
+  const notebook = `${URL_NOTEBOOKS}/mi_calculadora.ipynb`;
+  const colab = notebook.replace("https://github.com/", "https://colab.research.google.com/github/");
+  return (
+    <Caja titulo="Mi calculadora de armaduras" tono="principal">
+      <p>
+        El notebook con la calculadora completa, organizado en Motor, Datos y Resultados, listo
+        para copiar a nuestro Google Drive.
+      </p>
+      <p className="caja-acciones">
+        <a href={colab}>Abrir en Colab</a>
+        <a href={notebook}>Ver el notebook</a>
+      </p>
+    </Caja>
+  );
+}

@@ -1,11 +1,327 @@
 export const metadatos = {
   numero: 12,
   titulo: "Mi calculadora de armaduras",
-  sincronizado_con: "0333678181",
+  sincronizado_con: "e93d7901f9",
 };
 
 {/* Generado por scripts/latex_a_mdx.py desde libro/capitulos/cap12_mi_calculadora.tex. No editar a mano. */}
 
 <NotebooksDelCapitulo id="cap12_mi_calculadora" capitulo="12" />
 
+A lo largo de los capítulos anteriores construimos, pieza por pieza, todas las
+etapas del método de rigidez. Cada una es una función que podemos leer,
+entender y verificar. Pero para analizar una armadura todavía tenemos que
+llamarlas una por una, en el orden correcto, como hicimos cada vez con el
+ejemplo B. En este capítulo damos el último paso: reunimos todas las
+funciones en una calculadora que, con los datos de una armadura, entrega sus
+desplazamientos, reacciones y fuerzas, verifica los resultados y los dibuja.
+Y la ponemos a prueba con una armadura de puente de 21 barras.
 
+<Objetivos>
+
+- Organizar el código en una función que llama a todas las demás.
+- Devolver varios resultados con nombre en un diccionario.
+- Presentar, verificar y dibujar los resultados de cualquier armadura.
+- Analizar una armadura nueva cambiando solo sus datos.
+
+</Objetivos>
+
+## 12.1 El camino recorrido
+
+La figura 12.1 resume la calculadora. Los datos describen
+la armadura ([capítulo 3](/capitulos/cap03_describir_armadura)); de ellos salen la geometría y la
+rigidez de cada barra (capítulos 4 y
+5); la numeración de los grados de libertad
+([capítulo 6](/capitulos/cap06_grados_de_libertad)) permite ensamblar el sistema y particionarlo
+(capítulos 7 y 8); su solución da los
+desplazamientos y las reacciones ([capítulo 9](/capitulos/cap09_desplazamientos_reacciones)), y
+de los desplazamientos salen las fuerzas axiales
+([capítulo 10](/capitulos/cap10_fuerzas_internas)). Por último, los resultados se presentan, se
+verifican y se dibujan.
+
+<Figura nombre="flujo_calculadora" numero="12.1">
+Las etapas de la calculadora, cada una con el capítulo donde la construimos. La función `analizar\_armadura` encadena los pasos de cálculo.
+</Figura>
+
+## 12.2 Una función que lo hace todo
+
+Una función puede llamar a otras funciones. La que escribimos ahora no
+calcula nada por sí misma: llama, en orden, a todas las que escribimos antes,
+pasando el resultado de cada etapa a la siguiente. Es la traducción directa
+de la figura 12.1:
+
+<Fragmento nombre="c12_analizar" />
+
+<Python>
+
+Una función que produce muchos resultados puede devolverlos en un
+diccionario, cada uno con su nombre. Es más claro que devolver ocho valores
+separados por comas: quien la usa escribe `resultados["N"]` o
+`resultados["U"]` y no necesita recordar en qué posición estaba cada uno.
+El método `keys` da la lista de claves de un diccionario.
+
+</Python>
+
+Con una sola llamada obtenemos todos los resultados del ejemplo A, y las
+fuerzas son, como debe ser, las mismas del [capítulo 10](/capitulos/cap10_fuerzas_internas):
+
+<Fragmento nombre="c12_usar_analizar" />
+
+<Salida nombre="c12_usar_analizar" />
+
+## 12.3 El informe de resultados
+
+Con los resultados en un diccionario, escribimos una función que los presenta
+en tres tablas: los desplazamientos de cada nodo, las reacciones y las fuerzas
+axiales. Para las reacciones necesitamos el nodo y la dirección de cada grado
+de libertad restringido $g$, que obtenemos invirtiendo la numeración del
+[capítulo 6](/capitulos/cap06_grados_de_libertad): el nodo es $(g + 1) / 2$ redondeado hacia
+abajo, y la dirección es $x$ si $g$ es impar.
+
+<Fragmento nombre="c12_mostrar_resultados" />
+
+<Python>
+
+El operador `//` es la *división entera* (*floor division*): divide y
+descarta los decimales, de modo que `7 // 2` es 3. El operador `%` da el
+*resto* (*remainder*) de la división: `7 % 2` es 1. Un número es
+impar si su resto al dividirlo por 2 es 1. La secuencia `"\n"` dentro de un
+texto es un salto de línea.
+
+</Python>
+
+<Fragmento nombre="c12_informe_a" />
+
+<Salida nombre="c12_informe_a" />
+
+La verificación del equilibrio, global y de cada nodo, también se convierte
+en una función, que reúne las de los capítulos 9
+y 10 e informa si ambas se cumplen:
+
+<Fragmento nombre="c12_verificar" />
+
+Y lo mismo con los gráficos del [capítulo 11](/capitulos/cap11_visualizar). Para que las armaduras
+largas y bajas, como las de los puentes, se vean bien, la función coloca los
+dos paneles uno sobre otro cuando la armadura es más de dos veces más ancha
+que alta:
+
+<Fragmento nombre="c12_graficar" />
+
+Con estas funciones, el ejemplo B, que en cada capítulo nos costó una docena
+de líneas, se resuelve, verifica y dibuja en tres:
+
+<Fragmento nombre="c12_ejemplo_b" />
+
+<Salida nombre="c12_ejemplo_b" />
+
+<Grafico nombre="c12_ejemplo_b" />
+
+## 12.4 El ejemplo C: un puente peatonal
+
+Pongamos la calculadora a prueba con una armadura de verdad: un puente
+peatonal de tipo Pratt, de 18 m de luz y 3 m de altura,
+con seis paneles de 3 m (figura 12.2). Los cordones y las
+diagonales extremas tienen 30 cm² de área; los
+montantes y las diagonales interiores, 15 cm². El
+tablero transmite una carga de 25 kN a cada nodo interior del
+cordón inferior.
+
+<Figura nombre="ejemplo_c" numero="12.2">
+Ejemplo C: puente peatonal tipo Pratt, con la numeración de sus 12 nodos y 21 barras.
+</Figura>
+
+Con 12 nodos y 21 barras, escribir los datos a mano como en el
+[capítulo 3](/capitulos/cap03_describir_armadura) sería largo y propenso a errores. Las
+coordenadas siguen un patrón, así que las generamos con bucles. Para las
+barras escribimos una pequeña función que arma el diccionario de cada una,
+de modo que cada barra ocupa una sola expresión. Las áreas se definen una vez
+como constantes, en mayúsculas por convención:
+
+<Fragmento nombre="c12_datos_c" />
+
+El análisis completo, con su verificación y sus gráficos, es igual que para
+cualquier otra armadura:
+
+<Fragmento nombre="c12_analisis_c" />
+
+<Salida nombre="c12_analisis_c" />
+
+<Grafico nombre="c12_analisis_c" />
+
+Los resultados muestran el comportamiento típico de una armadura Pratt: el
+cordón superior trabaja en compresión y el inferior en tracción, como las
+fibras superior e inferior de una viga; las diagonales interiores, inclinadas
+hacia el centro, trabajan en tracción, mientras que las extremas, que llevan
+la carga a los apoyos, y los montantes interiores trabajan en compresión. El
+montante central no tiene fuerza, y los montantes extremos, de los que
+«cuelga» la carga de los nodos 2 y 6, trabajan en tracción. La flecha
+en el centro del vano es de 6.74 mm, del
+orden de $L/2700$, y cada apoyo recibe 62.5 kN,
+la mitad de la carga total. Las tablas completas son:
+
+<Fragmento nombre="c12_tablas_c" />
+
+<Salida nombre="c12_tablas_c" />
+
+<ProblemaResuelto numero="12.1" titulo="El método de las secciones">
+
+Verificar las fuerzas de las barras 3 (cordón inferior) y 8 (cordón superior)
+del ejemplo C con el método de las secciones.
+
+<Solucion />
+
+Cortamos la armadura por el tercer panel, entre $x = 6$ y $x = 9$ m, y
+estudiamos el tramo izquierdo. Por simetría, cada reacción vale la mitad de la
+carga total, $R = 5 \cdot 25 / 2 = 62.5\,\mathrm{kN}$. Tomando momentos
+respecto del nodo 9, en $(6, 3)$, solo la barra 3 tiene momento entre las
+barras cortadas; respecto del nodo 4, en $(9, 0)$, solo la barra 8:
+
+$$
+N_3 = \frac{62.5 \cdot 6 - 25 \cdot 3}{3}, \qquad
+  N_8 = -\frac{62.5 \cdot 9 - 25 \cdot 6 - 25 \cdot 3}{3}.
+$$
+
+<Fragmento nombre="c12_problema_resuelto" />
+
+<Salida nombre="c12_problema_resuelto" />
+
+**Verificación.** Ambos métodos dan los mismos valores: la calculadora
+reproduce el análisis clásico de una armadura isostática.
+
+</ProblemaResuelto>
+
+## 12.5 Mi calculadora
+
+Llegamos al producto final del libro: un notebook propio, organizado en tres
+secciones.
+
+- **Motor.** Todas las funciones que escribimos en el libro. Se ejecuta una vez y no hace falta modificarlo.
+- **Datos.** Los cuatro diccionarios que describen la armadura. Es lo único que cambia de un problema a otro.
+- **Resultados.** La llamada a `analizar_armadura`, la verificación, los gráficos y las tablas.
+
+Separar el motor de los datos es la lección más valiosa de este capítulo: la
+misma herramienta, escrita y verificada una vez, sirve para cualquier
+armadura.
+
+<MiCalculadora />
+
+<Estrategia>
+
+Para analizar una armadura propia con la calculadora:
+
+1. Dibujar la armadura y numerar sus nodos (de forma consecutiva, desde 1) y sus barras.
+2. Convertir todos los datos a kN y m: $E$ en kN/m² y $A$ en m².
+3. Reemplazar los diccionarios de la sección Datos y ejecutar la sección Resultados.
+4. Comprobar que la verificación del equilibrio sea correcta y que el dibujo coincida con la armadura y sus apoyos.
+5. Revisar que los resultados sean razonables: desplazamientos de milímetros, esfuerzos muy inferiores a la fluencia y un patrón de tracciones y compresiones con sentido físico.
+
+</Estrategia>
+
+Los errores más frecuentes al usar la calculadora, y cómo reconocerlos, son
+los de la tabla 12.1.
+
+**Tabla 12.1:** Errores frecuentes al usar la calculadora.
+
+| Síntoma | Causa probable | Solución |
+| :--- | :--- | :--- |
+| `KeyError` | Barra con un nodo inexistente | Revisar `barras` |
+| `ZeroDivisionError` | Dos nodos coinciden | Revisar `nodos` |
+| «Es inestable» | Faltan barras o apoyos | Revisar el dibujo |
+| Desplazamientos enormes | Unidades mezcladas | Pasar a kN y m |
+| El dibujo no coincide | Datos mal escritos | Corregir los datos |
+
+## Repaso y resumen del capítulo
+
+- La función `analizar_armadura` encadena todas las etapas del método y devuelve los resultados en un diccionario.
+- Tres funciones más presentan, verifican y dibujan los resultados de cualquier armadura.
+- `//` es la división entera y `%`, el resto; con ellos se obtienen el nodo y la dirección de un grado de libertad.
+- Los datos de una armadura grande pueden generarse con bucles y funciones auxiliares, como `barra`.
+- El notebook final separa el motor, que no cambia, de los datos, que describen cada problema, y de los resultados.
+- Toda solución nueva se verifica: equilibrio, dibujo y sentido físico.
+
+## Ejercicios
+
+<Ejercicio numero="12.1">
+
+Calcular la flecha (el desplazamiento vertical hacia abajo) del nodo 4 del
+ejemplo C, en el centro del vano, y la relación entre la luz y la flecha.
+
+<SolucionDelEjercicio>
+
+El nodo 4 tiene los grados de libertad 7 y 8; la flecha es el desplazamiento
+vertical con el signo cambiado:
+
+<Fragmento nombre="s12_ejercicio_1" />
+
+<Salida nombre="s12_ejercicio_1" />
+
+Una relación luz/flecha del orden de 2700 es muy holgada: los límites de
+servicio habituales están entre 300 y 1000.
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<Ejercicio numero="12.2">
+
+Analizar con la calculadora la armadura de cubierta del ejercicio 3.2.
+¿Por qué la barra 5 no tiene fuerza?
+
+<SolucionDelEjercicio>
+
+Usamos la función `barra` del ejemplo C para escribir las barras:
+
+<Fragmento nombre="s12_ejercicio_2" />
+
+<Salida nombre="s12_ejercicio_2" />
+
+En el nodo 2 concurren las barras 1 y 2, horizontales, y la barra 5,
+vertical. Como el nodo 2 no tiene carga, el equilibrio vertical exige que la
+barra 5 no tenga fuerza.
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<Ejercicio numero="12.3">
+
+Agregar al ejemplo C una carga de viento de 10 kN
+horizontales en cada nodo del cordón superior, además de las cargas
+verticales, y comparar el diagrama de fuerzas con el original.
+
+<SolucionDelEjercicio>
+
+<Fragmento nombre="s12_ejercicio_3" />
+
+<Grafico nombre="s12_ejercicio_3" />
+
+El viento empuja el puente hacia la derecha: las fuerzas dejan de ser
+simétricas y la reacción horizontal del apoyo articulado equilibra los
+50 kN de viento.
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<Ejercicio numero="12.4">
+
+Quitar del ejemplo C las diagonales 18 y 19 e intentar analizarlo. Explicar
+el mensaje de la calculadora con ayuda de la figura 12.2. La
+expresión `numero not in (18, 19)` es verdadera si el número no es 18 ni 19.
+
+<SolucionDelEjercicio>
+
+<Fragmento nombre="s12_ejercicio_4" />
+
+<Salida nombre="s12_ejercicio_4" />
+
+Sin las diagonales 18 y 19, los paneles segundo y tercero son rectángulos
+formados por cordones y montantes, sin ninguna barra que impida que se
+deformen como un paralelogramo: la armadura es un mecanismo. Además,
+$g = 19 + 3 - 24 = -2$.
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<PuntoDeControl capitulo="12" />

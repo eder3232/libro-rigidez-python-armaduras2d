@@ -21,6 +21,13 @@ def test_comandos_en_linea():
     assert convertir(r"\termino{bucle}{loop}") == "*bucle* (*loop*)"
 
 
+def test_porcentaje_dentro_de_py_no_es_comentario():
+    from latex_a_mdx import quitar_comentarios
+
+    texto = r"El resto \py{7 % 2} es 1. % comentario"
+    assert quitar_comentarios(texto) == r"El resto \py{7 % 2} es 1. "
+
+
 def test_unidades_en_texto_y_en_matematica():
     assert convertir(r"\SI{20}{\centi\metre\squared}") == "20\u00a0cm²"
     assert convertir(r"$E = \SI{200}{\giga\pascal}$") == r"$E = 200\,\mathrm{GPa}$"

@@ -183,3 +183,27 @@ def test_marca_mal_escrita_es_un_error(codigo, tmp_path):
     )
     with pytest.raises(ValueError, match="mal escrita"):
         extraer(codigo, tmp_path / "fragmentos")
+
+
+def test_mi_calculadora_tiene_motor_datos_y_resultados(codigo, tmp_path):
+    (codigo / "cap02_dos.py").write_text(
+        '# %% tags=["acumulable"]\n'
+        "import math\nCOLOR = 'azul'\ndoble = 2 * area\nF = 3 * area\n\n\n"
+        "def rigidez(E, A, L):\n    return E * A / L\n\n"
+        '# %% tags=["calculadora"]\ndatos = 1\n\n'
+        '# %% tags=["calculadora"]\nprint(rigidez(1, 2, datos))\n',
+        encoding="utf-8",
+    )
+    (codigo / "soluciones" / "cap02_dos.py").unlink()
+    destino = tmp_path / "notebooks"
+    generar(codigo, destino)
+    celdas = fuentes(destino / "mi_calculadora.ipynb")
+    motor = celdas[2]
+    assert "def rigidez" in motor
+    assert "import math" in motor
+    assert "COLOR" in motor
+    # Los cálculos no son parte del motor, aunque su nombre sea mayúscula
+    assert "doble" not in motor
+    assert "F = " not in motor
+    assert celdas[4] == "datos = 1"
+    assert celdas[6] == "print(rigidez(1, 2, datos))"
