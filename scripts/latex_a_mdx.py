@@ -201,11 +201,12 @@ COMANDOS_IGNORADOS = {
 
 
 class Convertidor:
-    def __init__(self, capitulo, etiquetas, soluciones, ids_de_capitulos):
+    def __init__(self, capitulo, etiquetas, soluciones, ids_de_capitulos, valores=None):
         self.capitulo = capitulo
         self.etiquetas = etiquetas
         self.soluciones = soluciones
         self.ids_de_capitulos = ids_de_capitulos
+        self.valores = valores or {}
         self.seccion = 0
         self.problema = 0
 
@@ -415,7 +416,20 @@ class Convertidor:
 
         texto = reemplazar(r"\\SI(?![A-Za-z])", si_completo, texto)
         texto = reemplazar(r"\\si(?![A-Za-z])", si_unidad, texto)
+
+        def valor(texto, pos):
+            nombre, pos = leer_argumento(texto, pos)
+            return numero(self.valor_de(nombre), True), pos
+
+        texto = reemplazar(r"\\valor(?![A-Za-z])", valor, texto)
         return reemplazar(r"\\ang(?![A-Za-z])", angulo, texto)
+
+    def valor_de(self, nombre):
+        if nombre not in self.valores:
+            raise ErrorDeConversion(
+                f"valor desconocido: {nombre} (¿se ejecutó generar_salidas.py?)"
+            )
+        return self.valores[nombre]
 
     def texto(self, texto):
         salida, pos = [], 0
@@ -511,6 +525,8 @@ class Convertidor:
             return self.numero_de(argumento()), pos
         if nombre == "cref":
             return self.referencia(argumento()), pos
+        if nombre == "valor":
+            return numero(self.valor_de(argumento()), False), pos
         if nombre == "eqref":
             return f"({self.numero_de(argumento())})", pos
         if nombre in SIMBOLOS:
@@ -576,6 +592,15 @@ def cita_textual(clave, detalle=None):
     return f"{autores} ({campos['year']}{detalle})"
 
 
+def leer_valores():
+    """Valores calculados por el código ({nombre: número}), de recursos/."""
+    archivo = RAIZ / "recursos" / "valores.tex"
+    if not archivo.exists():
+        return {}
+    patron = r"\\csname valor@([a-z0-9_]+)\\endcsname\{([^}]*)\}"
+    return dict(re.findall(patron, archivo.read_text(encoding="utf-8")))
+
+
 def leer_soluciones():
     """Devuelve {clave: texto LaTeX} de cada \\soluciondel del anexo."""
     texto = quitar_comentarios(SOLUCIONES.read_text(encoding="utf-8"))
@@ -610,7 +635,11 @@ def convertir(id_capitulo):
     etiquetas = leer_etiquetas()
     numero_capitulo = etiquetas[cabecera.group(2)]
     convertidor = Convertidor(
-        numero_capitulo, etiquetas, leer_soluciones(), ids_de_capitulos()
+        numero_capitulo,
+        etiquetas,
+        leer_soluciones(),
+        ids_de_capitulos(),
+        leer_valores(),
     )
     cuerpo = convertidor.bloques(texto[cabecera.end() :])
     cuerpo = re.sub(r"[ \t]+\n", "\n", cuerpo)

@@ -172,6 +172,20 @@ desequilibrio = equilibrio_nodal(
 print(f"Desequilibrio nodal: {desequilibrio:.1e} kN")
 # [fin: c10_ejemplo_b]
 
+# %% tags=["libro"]
+# Valores que citan el texto y las figuras del capítulo
+for numero, fuerza in N.items():
+    valor_libro(f"c10_n{numero}", fuerza, 2)
+for numero, fuerza in N_b.items():
+    valor_libro(f"c10_nb{numero}", fuerza, 2)
+for posicion, gdl in enumerate(restringidos):
+    valor_libro(f"c10_r{gdl}_magnitud", abs(R[posicion]), 2)
+valor_libro("c10_acortamiento_2", u1 - u2, 3)
+valor_libro("c10_nb5_magnitud", abs(N_b[5]), 1)
+valor_libro("c10_nb6_magnitud", abs(N_b[6]), 1)
+sigma_max = abs(N[2]) / barras[2]["area"] / 1000
+valor_libro("c10_sigma_max", sigma_max, 0)
+
 # %% [markdown]
 # ## Ejercicios
 #

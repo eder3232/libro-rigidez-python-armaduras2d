@@ -25,7 +25,9 @@ from comun import (
     quitar_marcas_de_fragmentos,
 )
 
-ETIQUETAS = {"acumulable", "exploracion"}
+# "libro": celdas que solo registran valores para el texto y las figuras del
+# libro (con valor_libro); no forman parte de los notebooks.
+ETIQUETAS = {"acumulable", "exploracion", "libro"}
 
 METADATOS_NOTEBOOK = {
     "kernelspec": {"name": "python3", "display_name": "Python 3", "language": "python"},
@@ -46,6 +48,8 @@ def leer_celdas(archivo, exigir_etiquetas):
                     f"exactamente una etiqueta {sorted(ETIQUETAS)}.\n"
                     f"Celda:\n{celda.source[:200]}"
                 )
+            if "libro" in etiquetas:
+                continue
             celda.source = quitar_marcas_de_fragmentos(celda.source)
         celdas.append(celda)
     return celdas

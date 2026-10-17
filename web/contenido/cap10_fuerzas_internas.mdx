@@ -1,7 +1,7 @@
 export const metadatos = {
   numero: 10,
   titulo: "Fuerzas internas",
-  sincronizado_con: "8d8a90678c",
+  sincronizado_con: "57a1578db3",
 };
 
 {/* Generado por scripts/latex_a_mdx.py desde libro/capitulos/cap10_fuerzas_internas.tex. No editar a mano. */}
@@ -36,7 +36,7 @@ extremos, $\vf' = \mkl\,\vul$: las mismas matrices del
 
 La fuerza en el extremo final, $f'_2$, actúa en la dirección del eje $x'$:
 si es positiva, la barra tira de sus nodos y está en tracción
-(figura 10.1). Por eso tomamos $N = f'_2$. Desarrollando el
+(figura 10.2). Por eso tomamos $N = f'_2$. Desarrollando el
 producto obtenemos una expresión que muestra el sentido físico del cálculo:
 
 <EcuacionClave>
@@ -52,9 +52,16 @@ $$
 
 La fuerza axial es la rigidez axial por el alargamiento de la barra, la
 diferencia entre los desplazamientos de sus extremos en la dirección de la
-barra: la ley de Hooke.
+barra: la ley de Hooke. La figura 10.1 lo muestra
+gráficamente. Cada nodo se desplaza en cualquier dirección, pero solo la
+componente de su desplazamiento a lo largo de la barra la estira o la
+acorta; la componente perpendicular solo la hace girar.
 
-<Figura nombre="convencion_axial" numero="10.1">
+<Figura nombre="alargamiento_barra" numero="10.1">
+Los desplazamientos de los extremos (exagerados), proyectados sobre el eje de la barra, dan $u'_1$ y $u'_2$. Su diferencia es el alargamiento.
+</Figura>
+
+<Figura nombre="convencion_axial" numero="10.2">
 Convención de signos: la fuerza axial es positiva en tracción. En ambos casos se muestran las fuerzas que la barra recibe en sus extremos.
 </Figura>
 
@@ -70,7 +77,7 @@ lista de índices de la barra, como en el ensamblaje:
 
 La barra se acorta 0.599 mm, y con
 $EA/L = 80\,\mathrm{kN/mm}$ resulta
-$N = 80 \cdot (-0.599) = -47.9\,\mathrm{kN}$: compresión. Las fuerzas
+$N = -47.92$ kN: compresión. Las fuerzas
 en los extremos son iguales y opuestas, como corresponde a una barra en
 equilibrio.
 
@@ -113,9 +120,14 @@ en texto con la función `str`, para que no se muestre con decimales.
 
 La barra 1, el tirante inferior, trabaja en tracción, y las dos barras
 inclinadas, en compresión: el comportamiento que esperamos de una armadura
-triangular cargada desde arriba. El mayor esfuerzo, 24 MPa,
-es menos del 10 % de la fluencia de un acero estructural
+triangular cargada desde arriba (figura 10.3). El mayor
+esfuerzo, 24 MPa, es menos del
+10 % de la fluencia de un acero estructural
 ($f_y = 250\,\mathrm{MPa}$).
+
+<Figura nombre="resultados_ejemplo_a" numero="10.3">
+Resultados del ejemplo A: fuerzas axiales y reacciones. Las barras en tracción se dibujan en azul y las comprimidas, en naranja.
+</Figura>
 
 <Cuidado>
 
@@ -146,6 +158,10 @@ Esta verificación no es circular: usa solo las fuerzas de las barras y la
 geometría, no la matriz global. Si hubiéramos cometido un error en el
 ensamblaje o en la solución, las fuerzas no equilibrarían los nodos.
 
+<Figura nombre="nudo_3" numero="10.4">
+Diagrama de cuerpo libre del nodo 3 del ejemplo A. Las fuerzas de las barras se suponen en tracción: cada barra tira del nodo hacia su otro extremo.
+</Figura>
+
 <ProblemaResuelto numero="10.1" titulo="El método de los nudos">
 
 Calcular las fuerzas de las barras del ejemplo A con el método de los nudos
@@ -154,9 +170,9 @@ y compararlas con las del método de rigidez.
 <Solucion />
 
 En el nodo 3 concurren dos barras, y sus dos ecuaciones de equilibrio dan
-las dos fuerzas. Suponiendo tracción, cada barra tira del nodo 3 hacia su
-otro extremo: la barra 2, en la dirección $(0.6, -0.8)$, y la barra 3, en la
-dirección $(-0.6, -0.8)$. Con la carga $(20, -50)$:
+las dos fuerzas (figura 10.4). Suponiendo tracción, cada barra tira del
+nodo 3 hacia su otro extremo: la barra 2, en la dirección $(0.6, -0.8)$, y la
+barra 3, en la dirección $(-0.6, -0.8)$. Con la carga $(20, -50)$:
 
 $$
 0.6\,N_2 - 0.6\,N_3 + 20 = 0, \qquad
@@ -189,9 +205,16 @@ la cadena completa de funciones:
 <Salida nombre="c10_ejemplo_b" />
 
 Los nodos están en equilibrio. Las dos diagonales trabajan de forma muy
-distinta: la diagonal 6, que va del apoyo con rodillo al nodo cargado 3,
-toma una compresión de 39.8 kN, y la diagonal 5, una
-tracción de 10.2 kN.
+distinta (figura 10.5): la diagonal 6, que va del apoyo
+con rodillo al nodo cargado 3, toma una compresión de
+39.8 kN, y la diagonal 5, una tracción de
+10.2 kN. La carga horizontal empuja el
+cuadro hacia la derecha, y la diagonal que se acorta con ese movimiento, la
+6, es la que más trabaja.
+
+<Figura nombre="resultados_ejemplo_b" numero="10.5">
+Fuerzas axiales del ejemplo B. Las dos diagonales se reparten la carga según su rigidez: algo que la estática sola no puede determinar.
+</Figura>
 
 ## Repaso y resumen del capítulo
 

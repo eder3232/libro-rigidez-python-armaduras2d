@@ -19,6 +19,7 @@ import ast
 import contextlib
 import io
 import os
+import re
 import sys
 import warnings
 from pathlib import Path
@@ -99,12 +100,20 @@ def celdas_de_codigo(archivo):
 METADATOS = {"pdf": {"CreationDate": None, "Producer": None}, "svg": {"Date": None}}
 
 
-def ejecutar_archivo(archivo, codigo_previo, salidas, graficos, destinos):
+def ejecutar_archivo(archivo, codigo_previo, salidas, graficos, destinos, valores):
     """Ejecuta un archivo de capítulo y guarda las salidas de sus fragmentos.
 
     destinos: {extensión: carpeta} donde se guardan los gráficos.
+    valores: diccionario donde las celdas "libro" registran los números que
+    cita el texto, con valor_libro(nombre, numero, decimales).
     """
-    espacio = {"__name__": "__main__"}
+
+    def valor_libro(nombre, numero, decimales=2):
+        if not re.fullmatch(r"[a-z0-9_]+", nombre):
+            raise ValueError(f"nombre de valor inválido: {nombre}")
+        valores[nombre] = f"{round(float(numero), decimales) + 0.0:.{decimales}f}"
+
+    espacio = {"__name__": "__main__", "valor_libro": valor_libro}
     for fuente in codigo_previo:
         ejecutar_celda(fuente, espacio)
     plt.close("all")
@@ -131,14 +140,15 @@ def generar(
     destino=RECURSOS / "salidas",
     destino_pdf=RECURSOS / "graficos",
     destino_svg=RAIZ / "web" / "public" / "graficos",
+    destino_valores=RECURSOS / "valores.tex",
 ):
-    """Genera todas las salidas y gráficos, y devuelve sus nombres."""
+    """Genera todas las salidas, gráficos y valores, y devuelve sus nombres."""
     configurar_graficos()
     destinos = {"pdf": destino_pdf, "svg": destino_svg}
-    salidas, graficos = {}, set()
+    salidas, graficos, valores = {}, set(), {}
     acumulado = []
     for archivo in archivos_de_capitulos(codigo):
-        ejecutar_archivo(archivo, acumulado, salidas, graficos, destinos)
+        ejecutar_archivo(archivo, acumulado, salidas, graficos, destinos, valores)
         acumulado += [
             c.source
             for c in celdas_de_codigo(archivo)
@@ -146,8 +156,11 @@ def generar(
         ]
         soluciones = codigo / "soluciones" / archivo.name
         if soluciones.exists():
-            ejecutar_archivo(soluciones, acumulado, salidas, graficos, destinos)
+            ejecutar_archivo(
+                soluciones, acumulado, salidas, graficos, destinos, valores
+            )
 
+    escribir_valores(valores, destino_valores)
     _limpiar(destino, "txt", salidas)
     _limpiar(destino_pdf, "pdf", graficos)
     _limpiar(destino_svg, "svg", graficos)
@@ -155,6 +168,22 @@ def generar(
     for nombre, texto in salidas.items():
         (destino / f"{nombre}.txt").write_text(texto, encoding="utf-8", newline="\n")
     return sorted(salidas) + sorted(graficos)
+
+
+def escribir_valores(valores, archivo):
+    """Escribe los valores como definiciones de LaTeX, leídas por \\valor{nombre}.
+
+    Solo reescribe el archivo si cambió, para no forzar a regenerar las figuras.
+    """
+    lineas = ["% Generado por scripts/generar_salidas.py. No editar a mano."]
+    for nombre in sorted(valores):
+        lineas.append(
+            rf"\expandafter\def\csname valor@{nombre}\endcsname{{{valores[nombre]}}}"
+        )
+    contenido = "\n".join(lineas) + "\n"
+    if not archivo.exists() or archivo.read_text(encoding="utf-8") != contenido:
+        archivo.parent.mkdir(parents=True, exist_ok=True)
+        archivo.write_text(contenido, encoding="utf-8", newline="\n")
 
 
 def _limpiar(carpeta, extension, vigentes):

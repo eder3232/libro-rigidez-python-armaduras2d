@@ -137,8 +137,35 @@ def test_grafico_se_guarda_en_pdf_y_svg(codigo, tmp_path):
 
 def salidas_en(codigo, carpeta):
     return generar_salidas(
-        codigo, carpeta / "salidas", carpeta / "pdf", carpeta / "svg"
+        codigo,
+        carpeta / "salidas",
+        carpeta / "pdf",
+        carpeta / "svg",
+        carpeta / "valores.tex",
     )
+
+
+CELDA_LIBRO = (
+    '# %% tags=["libro"]\nvalor_libro("area_cm2", area * 1e4, 1)\n'
+    'valor_libro("negativo", -1e-15, 2)\n'
+)
+
+
+def test_celda_libro_registra_valores(codigo, tmp_path):
+    (codigo / "cap02_dos.py").write_text(CELDA_LIBRO, encoding="utf-8")
+    (codigo / "soluciones" / "cap02_dos.py").unlink()
+    salidas_en(codigo, tmp_path)
+    texto = (tmp_path / "valores.tex").read_text(encoding="utf-8")
+    assert r"\csname valor@area_cm2\endcsname{20.0}" in texto
+    assert r"\csname valor@negativo\endcsname{0.00}" in texto
+
+
+def test_celda_libro_no_aparece_en_los_notebooks(codigo, tmp_path):
+    (codigo / "cap02_dos.py").write_text(CELDA_LIBRO, encoding="utf-8")
+    (codigo / "soluciones" / "cap02_dos.py").unlink()
+    destino = tmp_path / "notebooks"
+    generar(codigo, destino)
+    assert "valor_libro" not in "".join(fuentes(destino / "cap02_dos.ipynb"))
 
 
 def test_linea_demasiado_larga_en_un_fragmento_es_un_error(codigo, tmp_path):

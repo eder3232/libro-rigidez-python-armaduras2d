@@ -77,11 +77,19 @@ def generar(todas=False):
     for viejo in DESTINO.glob("*.svg"):
         if viejo.stem not in nombres:
             viejo.unlink()
+    valores = RAIZ / "recursos" / "valores.tex"
     convertidas = []
     for nombre in nombres:
         svg = DESTINO / f"{nombre}.svg"
         tex = FIGURAS / f"{nombre}.tex"
-        if todas or not svg.exists() or tex.stat().st_mtime > svg.stat().st_mtime:
+        # Una figura que muestra valores calculados depende también de ellos
+        fuentes = [tex]
+        if r"\valor" in tex.read_text(encoding="utf-8") and valores.exists():
+            fuentes.append(valores)
+        modificada = not svg.exists() or any(
+            f.stat().st_mtime > svg.stat().st_mtime for f in fuentes
+        )
+        if todas or modificada:
             convertir(nombre)
             convertidas.append(nombre)
     return convertidas

@@ -1,0 +1,34 @@
+% Resultados del ejemplo B: fuerzas axiales en kN (tracción en azul, compresión
+% en naranja) (capítulo 10). Los valores vienen de recursos/valores.tex.
+\begin{tikzpicture}[scale=0.95,
+    valor/.style={font=\sffamily\small, fill=white, inner sep=1.5pt,
+      rounded corners=1pt}]
+  \coordinate (n1) at (0,0);
+  \coordinate (n2) at (3,0);
+  \coordinate (n3) at (0,4);
+  \coordinate (n4) at (3,4);
+  \draw[barra traccion, line width=2.4pt] (n1) -- node[valor, text=traccion]
+    {\valor{c10_nb1}} (n2);
+  \draw[barra compresion, line width=2.4pt] (n2) -- node[valor, text=compresion]
+    {\valor{c10_nb2}} (n4);
+  \draw[barra compresion, line width=2.4pt] (n3) -- node[valor, text=compresion]
+    {\valor{c10_nb3}} (n4);
+  \draw[barra compresion, line width=2.4pt] (n1) -- node[valor, text=compresion]
+    {\valor{c10_nb4}} (n3);
+  \draw[barra traccion, line width=2.4pt] (n1) -- node[valor, text=traccion,
+    pos=0.25] {\valor{c10_nb5}} (n4);
+  \draw[barra compresion, line width=2.4pt] (n2) -- node[valor, text=compresion,
+    pos=0.25] {\valor{c10_nb6}} (n3);
+  \apoyoarticulado{(n1)}
+  \apoyorodillo{(n2)}
+  \cargapuntual{(n3)}{(1.3,0)}{\SI{30}{\kilo\newton}}
+  \cargapuntual{(n3)}{(0,-1.3)}{\SI{40}{\kilo\newton}}
+  \cargapuntual{(n4)}{(0,-1.3)}{\SI{40}{\kilo\newton}}
+  \foreach \n in {n1, n2, n3, n4}
+    \node[nodo] at (\n) {};
+  \node[etiqueta nodo, above left=2pt] at (n1) {1};
+  \node[etiqueta nodo, above right=2pt] at (n2) {2};
+  \node[etiqueta nodo, below left=2pt] at (n3) {3};
+  \node[etiqueta nodo, below right=2pt] at (n4) {4};
+  \node[font=\small, anchor=west] at (4.6,2) {valores en kN};
+\end{tikzpicture}

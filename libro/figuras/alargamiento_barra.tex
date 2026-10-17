@@ -1,0 +1,37 @@
+% Alargamiento de una barra: desplazamientos de sus extremos (exagerados) y sus
+% proyecciones sobre el eje de la barra (capítulo 10)
+\begin{tikzpicture}[scale=1.15,
+    desplazamiento/.style={-{Stealth[length=5pt]}, line width=1pt,
+      color=principal},
+    proyeccion/.style={line width=2.2pt, color=acento},
+    texto/.style={font=\small}]
+  \coordinate (i) at (0,0);
+  \coordinate (j) at (4,2);
+  \coordinate (ip) at ($(i)+(0.6,-0.45)$);
+  \coordinate (jp) at ($(j)+(1.2,0.2)$);
+  \coordinate (pi) at ($(i)!(ip)!(j)$);
+  \coordinate (pj) at ($(i)!(jp)!(j)$);
+  % Eje de la barra
+  \draw[densely dashed, color=neutro] ($(i)!-0.15!(j)$) -- ($(i)!1.5!(j)$)
+    node[right, texto, color=texto-suave] {$x'$};
+  % Barra original y deformada
+  \draw[barra] (i) -- (j);
+  \draw[barra deformada] (ip) -- (jp);
+  % Proyecciones de los desplazamientos sobre el eje
+  \draw[densely dotted, color=texto-suave] (ip) -- (pi);
+  \draw[densely dotted, color=texto-suave] (jp) -- (pj);
+  \draw[proyeccion] (i) -- (pi);
+  \draw[proyeccion] (j) -- (pj);
+  \node[texto, color=acento, above left=1pt] at ($(i)!0.5!(pi)$) {$u'_1$};
+  \node[texto, color=acento, above left=1pt] at ($(j)!0.5!(pj)$) {$u'_2$};
+  % Desplazamientos de los nodos
+  \draw[desplazamiento] (i) -- (ip) node[below, texto] {$\vu_i$};
+  \draw[desplazamiento] (j) -- (jp) node[right, texto] {$\vu_j$};
+  \node[nodo] at (i) {};
+  \node[nodo] at (j) {};
+  \node[etiqueta nodo, left=4pt] at (i) {$i$};
+  \node[etiqueta nodo, above=4pt] at (j) {$j$};
+  % Leyenda
+  \node[texto, anchor=west, align=left] at (5.4,0.4)
+    {alargamiento:\\ $\delta = u'_2 - u'_1$\\[2pt] $N = \EAL\,\delta$};
+\end{tikzpicture}

@@ -39,3 +39,14 @@
 
 % Figura con una sola fuente para el libro y la web: libro/figuras/<nombre>.tex
 \newcommand{\figura}[1]{\input{figuras/#1.tex}}
+
+% Números calculados por el código (scripts/generar_salidas.py los registra en
+% recursos/valores.tex): \valor{nombre} los escribe con el formato de siunitx.
+\InputIfFileExists{../recursos/valores.tex}{}{}
+\newcommand{\valor}[1]{%
+  \ifcsname valor@#1\endcsname
+    \num{\csname valor@#1\endcsname}%
+  \else
+    \PackageError{base}{No existe el valor '#1'}
+      {Ejecute scripts/generar_salidas.py o revise el nombre.}%
+  \fi}

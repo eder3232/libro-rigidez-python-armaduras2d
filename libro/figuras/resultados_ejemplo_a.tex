@@ -1,0 +1,40 @@
+% Resultados del ejemplo A: fuerzas axiales en kN (tracción en azul, compresión
+% en naranja) y reacciones (capítulo 10). Los valores vienen de recursos/valores.tex.
+\begin{tikzpicture}[scale=0.85,
+    reaccion/.style={-{Stealth[length=7pt]}, line width=1.2pt, color=principal},
+    valor/.style={font=\sffamily\small, fill=white, inner sep=1.5pt,
+      rounded corners=1pt}]
+  \coordinate (n1) at (0,0);
+  \coordinate (n2) at (6,0);
+  \coordinate (n3) at (3,4);
+  \draw[barra traccion, line width=2.4pt] (n1) -- node[valor, text=traccion]
+    {\valor{c10_n1}} (n2);
+  \draw[barra compresion, line width=2.4pt] (n2) -- node[valor, text=compresion]
+    {\valor{c10_n2}} (n3);
+  \draw[barra compresion, line width=2.4pt] (n1) -- node[valor, text=compresion]
+    {\valor{c10_n3}} (n3);
+  \apoyoarticulado{(n1)}
+  \apoyorodillo{(n2)}
+  \cargapuntual{(n3)}{(1.4,0)}{\SI{20}{\kilo\newton}}
+  \cargapuntual{(n3)}{(0,-1.4)}{\SI{50}{\kilo\newton}}
+  % Reacciones
+  \draw[reaccion] (-0.45,-0.25) -- ++(-1.3,0)
+    node[left, font=\small] {\valor{c10_r1_magnitud}};
+  \draw[reaccion] (-0.45,-1.7) -- ++(0,1.15)
+    node[pos=0, below, font=\small] {\valor{c10_r2_magnitud}};
+  \draw[reaccion] (6,-1.9) -- ++(0,1.15)
+    node[pos=0, below, font=\small] {\valor{c10_r4_magnitud}};
+  \foreach \n in {n1, n2, n3}
+    \node[nodo] at (\n) {};
+  \node[etiqueta nodo, above left=2pt] at (n1) {1};
+  \node[etiqueta nodo, above right=2pt] at (n2) {2};
+  \node[etiqueta nodo, above right=4pt] at (n3) {3};
+  % Leyenda
+  \draw[barra traccion, line width=2.4pt] (7.6,3.6) -- ++(0.8,0)
+    node[right, font=\small, color=black] {tracción};
+  \draw[barra compresion, line width=2.4pt] (7.6,3.0) -- ++(0.8,0)
+    node[right, font=\small, color=black] {compresión};
+  \draw[reaccion] (7.6,2.4) -- ++(0.8,0)
+    node[right, font=\small, color=black] {reacción};
+  \node[font=\small, anchor=west] at (7.6,1.8) {valores en kN};
+\end{tikzpicture}

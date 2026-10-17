@@ -73,3 +73,9 @@ def test_align_numera_cada_linea():
 def test_formula_en_linea_queda_en_una_sola_linea():
     resultado = convertir("es $a\n- b$ y sigue")
     assert resultado == "es $a - b$ y sigue"
+
+
+def test_valor_en_texto_y_en_matematica():
+    convertidor = Convertidor("10", {}, {}, {}, {"c10_n2": "-47.92"})
+    assert convertidor.bloques(r"N = \valor{c10_n2} kN") == "N = −47.92 kN"
+    assert convertidor.bloques(r"$N = \valor{c10_n2}$") == "$N = -47.92$"

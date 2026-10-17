@@ -1,0 +1,24 @@
+% Diagrama de cuerpo libre del nodo 3 del ejemplo A, con las fuerzas de las
+% barras supuestas en tracción (capítulo 10)
+\begin{tikzpicture}[scale=1.0,
+    fuerza barra/.style={-{Stealth[length=7pt]}, line width=1.2pt,
+      color=principal},
+    texto/.style={font=\small}]
+  \coordinate (n3) at (0,0);
+  % Barras, recortadas
+  \draw[barra, color=neutro, line width=1.2pt] (n3) -- ++(1.5,-2);
+  \draw[barra, color=neutro, line width=1.2pt] (n3) -- ++(-1.5,-2);
+  \node[texto, color=texto-suave] at (1.85,-2.15) {hacia el nodo 2};
+  \node[texto, color=texto-suave] at (-1.85,-2.15) {hacia el nodo 1};
+  % Fuerzas de las barras (tracción: tiran del nodo hacia la barra)
+  \draw[fuerza barra] (n3) -- ++(0.9,-1.2) node[right, texto] {$N_2$};
+  \draw[fuerza barra] (n3) -- ++(-0.9,-1.2) node[left, texto] {$N_3$};
+  % Cargas
+  \cargapuntual{(n3)}{(1.3,0)}{\SI{20}{\kilo\newton}}
+  \cargapuntual{(n3)}{(0,-1.3)}{\SI{50}{\kilo\newton}}
+  \node[nodo] at (n3) {};
+  \node[etiqueta nodo, above right=3pt] at (n3) {3};
+  % Direcciones
+  \node[texto, anchor=west, align=left] at (2.6,0.2)
+    {$N_2$: dirección $(0.6, -0.8)$\\ $N_3$: dirección $(-0.6, -0.8)$};
+\end{tikzpicture}
