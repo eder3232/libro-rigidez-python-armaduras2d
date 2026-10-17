@@ -1,9 +1,94 @@
 export const metadatos = {
   numero: "D",
   titulo: "Validación con software comercial",
-  sincronizado_con: "d5b39a507f",
+  sincronizado_con: "e041f0b6a3",
 };
 
 {/* Generado por scripts/latex_a_mdx.py desde libro/anexos/anexoD_validacion.tex. No editar a mano. */}
 
+A lo largo del libro verificamos la calculadora con el cálculo a mano
+(ejemplo A), con propiedades que deben cumplirse (simetría, equilibrio) y con
+el método de las secciones (ejemplo C). Este anexo agrega una verificación
+independiente: comparar sus resultados con los de un programa comercial de
+análisis estructural, para los ejemplos B y C.
 
+## D.1 Cómo modelar una armadura en un programa comercial
+
+Los programas comerciales analizan pórticos, cuyas barras resisten flexión.
+Para que reproduzcan el modelo de armadura del libro hay que cuidar cinco
+cosas:
+
+1. **Barras articuladas.** Liberar los momentos en ambos extremos de cada barra, o usar un elemento de tipo armadura si el programa lo tiene. Así cada barra trabaja solo con fuerza axial.
+2. **Sin peso propio.** Los programas suelen incluir el peso de las barras en las cargas; el libro no lo considera, de modo que hay que anularlo.
+3. **Las mismas propiedades.** Un material con $E = 200\,\mathrm{GPa}$ y secciones definidas por su área, sin importar su forma.
+4. **Los mismos apoyos y cargas.** Un apoyo articulado en el nodo 1, uno de rodillo con el desplazamiento vertical restringido en el nodo 2 (ejemplo B) o 7 (ejemplo C), y las cargas aplicadas en los nodos.
+5. **Unidades coherentes.** Trabajar en kilonewtons y metros, como la calculadora, o convertir los resultados antes de compararlos.
+
+Los desplazamientos de los programas comerciales y los de la calculadora
+deben coincidir en sus primeras cifras significativas. Diferencias pequeñas
+en la última cifra se deben al redondeo de los datos; una diferencia mayor
+indica un error en uno de los dos modelos, casi siempre en el apoyo, las
+unidades o el peso propio.
+
+## D.2 Ejemplo B
+
+El ejemplo B (figura 3.2) es hiperestático, de modo que sus fuerzas
+dependen de la rigidez de las barras: es la prueba más exigente para la
+calculadora. La tabla D.1 compara los desplazamientos, y
+la tabla D.2, las reacciones y las fuerzas axiales.
+
+**Tabla D.1:** Ejemplo B: desplazamientos de los nodos, en milímetros.
+
+| Nodo | $u_x$ calculadora | $u_x$ comercial | $u_y$ calculadora | $u_y$ comercial |
+| :---: | :---: | :---: | :---: | :---: |
+| 1 | 0.000 | — | 0.000 | — |
+| 2 | 0.179 | — | 0.000 | — |
+| 3 | 0.900 | — | −0.081 | — |
+| 4 | 0.854 | — | −0.481 | — |
+
+**Tabla D.2:** Ejemplo B: reacciones y fuerzas axiales, en kilonewtons.
+
+| Resultado | Calculadora | Comercial |
+| :--- | :---: | :---: |
+| Reacción $x$ del nodo 1 | −30.00 | — |
+| Reacción $y$ del nodo 1 | 0.00 | — |
+| Reacción $y$ del nodo 2 | 80.00 | — |
+| Barra 1 | 23.89 | — |
+| Barra 2 | −48.15 | — |
+| Barra 3 | −6.11 | — |
+| Barra 4 | −8.15 | — |
+| Barra 5 | 10.19 | — |
+| Barra 6 | −39.81 | — |
+
+## D.3 Ejemplo C
+
+El ejemplo C (figura 12.2) es isostático: sus fuerzas dependen solo
+del equilibrio, y ya las verificamos con el método de las secciones en el
+[capítulo 12](/capitulos/cap12_mi_calculadora). Compararlas con un programa comercial confirma que
+ambos modelos tienen la misma geometría y las mismas cargas; la flecha, en
+cambio, depende de las áreas y del módulo de elasticidad, y verifica las
+rigideces.
+
+**Tabla D.3:** Ejemplo C: flecha y reacciones.
+
+| Resultado | Calculadora | Comercial |
+| :--- | :---: | :---: |
+| Desplazamiento $u_y$ del nodo 4 (mm) | −6.736 | — |
+| Reacción $y$ del nodo 1 (kN) | 62.50 | — |
+| Reacción $y$ del nodo 7 (kN) | 62.50 | — |
+
+**Tabla D.4:** Ejemplo C: fuerzas axiales, en kilonewtons.
+
+| Barra | Calculadora | Comercial | Barra | Calculadora | Comercial |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| 1 | 62.50 | — | 12 | −88.39 | — |
+| 2 | 62.50 | — | 13 | 25.00 | — |
+| 3 | 100.00 | — | 14 | −12.50 | — |
+| 4 | 100.00 | — | 15 | 0.00 | — |
+| 5 | 62.50 | — | 16 | −12.50 | — |
+| 6 | 62.50 | — | 17 | 25.00 | — |
+| 7 | −100.00 | — | 18 | 53.03 | — |
+| 8 | −112.50 | — | 19 | 17.68 | — |
+| 9 | −112.50 | — | 20 | 17.68 | — |
+| 10 | −100.00 | — | 21 | 53.03 | — |
+| 11 | −88.39 | — |  |  |  |

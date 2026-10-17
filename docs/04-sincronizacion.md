@@ -141,7 +141,8 @@ Un único comando (por definir en `scripts/`) ejecuta todas las verificaciones y
 | 12. Mi calculadora de armaduras | estable | listo | generado | — |
 | Anexo A. Referencia rápida de Python y NumPy | estable | — | generado | — |
 | Anexo B. Leer un error de Python | estable | listo (celdas "error") | generado | — |
-| Anexo C. Trabajar en local | borrador | listo (calculadora.py) | generado | — |
+| Anexo C. Trabajar en local | estable | listo (calculadora.py) | generado | — |
+| Anexo D. Validación con software comercial | borrador (falta: columna del programa comercial) | listo | generado | — |
 
 Estados posibles: `pendiente` → `borrador` → `revisado` → `estable`.
 
