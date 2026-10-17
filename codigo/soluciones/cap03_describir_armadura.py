@@ -67,12 +67,6 @@ print(3 in cargas, 1 in cargas)
 
 # %%
 # [inicio: s03_ejercicio_4]
-nodos_b = {
-    1: {"x": 0.0, "y": 0.0},
-    2: {"x": 3.0, "y": 0.0},
-    3: {"x": 0.0, "y": 4.0},
-    4: {"x": 3.0, "y": 4.0},
-}
 n1, n2 = nodos_b[1], nodos_b[2]
 n3, n4 = nodos_b[3], nodos_b[4]
 

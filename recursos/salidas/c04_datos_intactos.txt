@@ -1,0 +1,1 @@
+{'nodo_inicial': 1, 'nodo_final': 2, 'elasticidad': 200000000.0, 'area': 0.002}

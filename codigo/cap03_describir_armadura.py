@@ -150,7 +150,7 @@ plt.show()
 # %% [markdown]
 # ## Problema resuelto 3.1: el modelo del ejemplo B
 
-# %% tags=["exploracion"]
+# %% tags=["acumulable"]
 # [inicio: c03_problema_resuelto]
 # Ejemplo B. Unidades: kN y m
 nodos_b = {
@@ -184,12 +184,15 @@ cargas_b = {
     3: {"x": 30.0, "y": -40.0},
     4: {"x": 0.0, "y": -40.0},
 }
+# [fin: c03_problema_resuelto]
 
+# %% tags=["exploracion"]
+# [inicio: c03_problema_resuelto_verificacion]
 inicial = barras_b[5]["nodo_inicial"]
 final = barras_b[5]["nodo_final"]
 print(f"Nodos: {len(nodos_b)}, barras: {len(barras_b)}")
 print(f"Barra 5: del nodo {inicial} al nodo {final}")
-# [fin: c03_problema_resuelto]
+# [fin: c03_problema_resuelto_verificacion]
 
 # %% [markdown]
 # ## Ejercicios

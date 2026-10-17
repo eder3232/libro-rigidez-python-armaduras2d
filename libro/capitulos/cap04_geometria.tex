@@ -1,4 +1,194 @@
 % capitulos/cap04_geometria.tex
 \chapter{La geometría de todas las barras}\label{cap:geometria}
 
-\pendiente{ver docs/01-indice.md}
+En el \cref{cap:primer_notebook} calculamos la geometría de una barra, y en el
+\cref{cap:describir_armadura} describimos la armadura completa con
+diccionarios. Ahora unimos ambas cosas: calculamos la longitud y los cosenos
+directores de \emph{todas} las barras, sin importar cuántas sean. La
+herramienta que lo hace posible es el bucle, la instrucción que repite un
+mismo cálculo para cada elemento de una colección. Con ella, nuestra
+calculadora deja de depender del tamaño de la armadura.
+
+\begin{objetivos}
+  \item Repetir un cálculo con el bucle \py{for}.
+  \item Recorrer un diccionario con \py{.items()} y acumular resultados.
+  \item Calcular la geometría de todas las barras y guardarla en un
+    diccionario nuevo, sin modificar los datos de entrada.
+  \item Presentar los resultados en una tabla y dibujar cualquier armadura.
+\end{objetivos}
+
+% ---------------------------------------------------------------------------
+\section{El mismo cálculo para cada barra}\label{sec:mismo_calculo}
+
+La geometría de una barra depende solo de las coordenadas de sus dos nodos:
+\[
+  L = \sqrt{\Delta x^2 + \Delta y^2}, \qquad
+  c = \frac{\Delta x}{L}, \qquad s = \frac{\Delta y}{L}.
+\]
+Para el ejemplo A, con tres barras, podríamos copiar tres veces el cálculo del
+\cref{cap:primer_notebook}. Pero una armadura de cubierta típica tiene entre
+20 y 50 barras, y la de un puente, varios cientos. Copiar el cálculo sería
+tedioso y, sobre todo, una fuente segura de errores: basta con olvidar
+cambiar un número en una de las copias.
+
+Lo que necesitamos es escribir el cálculo \emph{una sola vez} y pedirle a
+Python que lo repita para cada barra del diccionario \py{barras}.
+
+% ---------------------------------------------------------------------------
+\section{El bucle \texttt{for}}\label{sec:for}
+
+Un \termino{bucle}{loop} \py{for} repite un bloque de instrucciones para cada
+elemento de una colección. En cada repetición, la variable que sigue a
+\py{for} toma el valor del elemento siguiente:
+\fragmento{c04_for_lista}
+\salida{c04_for_lista}
+
+\begin{python}
+El bloque que se repite es el que está \emph{sangrado} (desplazado hacia la
+derecha) debajo de la línea del \py{for}, que termina en dos puntos. Python
+usa la sangría, normalmente de cuatro espacios, para saber qué instrucciones
+pertenecen al bucle. Colab la agrega automáticamente al pulsar Enter después
+de los dos puntos; para salir del bloque basta con borrarla.
+\end{python}
+
+Si recorremos un diccionario, la variable toma, una por una, sus
+\emph{claves}. Con cada clave podemos leer el valor correspondiente:
+\fragmento{c04_for_dict}
+\salida{c04_for_dict}
+
+Casi siempre necesitamos la clave y el valor a la vez. El método
+\py{.items()} entrega ambos en cada repetición, y los recibimos en dos
+variables separadas por una coma:
+\fragmento{c04_items}
+\salida{c04_items}
+
+Un uso muy frecuente de los bucles es \emph{acumular} un resultado. Empezamos
+con un valor inicial y, en cada repetición, le sumamos algo. El operador
+\py{+=} suma al valor que la variable ya tenía: \py{a += b} equivale a
+\py{a = a + b}. Así obtenemos, por ejemplo, la longitud total de las barras:
+\fragmento{c04_acumulador}
+\salida{c04_acumulador}
+
+% ---------------------------------------------------------------------------
+\section{La geometría de todas las barras}\label{sec:geometria_todas}
+
+Ya tenemos todas las piezas. Recorremos las barras; para cada una, buscamos
+sus nodos en el diccionario \py{nodos}, calculamos las proyecciones, la
+longitud y los cosenos directores, y guardamos el resultado en un diccionario
+nuevo, \py{geometria}, con el número de barra como clave:
+\fragmento{c04_geometria}
+
+Este código forma parte de nuestra calculadora: es la primera pieza que
+funciona para \emph{cualquier} armadura descrita con los diccionarios del
+\cref{cap:describir_armadura}.
+
+\begin{cuidado}
+Guardamos los resultados en un diccionario nuevo, en lugar de agregarlos a
+\py{barras}. Así los datos de entrada nunca cambian: si algo sale mal, podemos
+volver a ejecutar el cálculo con la seguridad de partir de los mismos datos.
+Mezclar datos y resultados en la misma estructura es una causa frecuente de
+errores difíciles de rastrear.
+\end{cuidado}
+
+Para presentar los resultados recorremos \py{geometria} e imprimimos una fila
+por barra. En las f-strings, el número antes del punto indica el
+\emph{ancho} de la columna: \py{:7.3f} reserva siete caracteres con tres
+decimales, y \py{:>5} alinea el número de barra a la derecha en cinco
+caracteres. Así las columnas quedan alineadas:
+\fragmento{c04_tabla}
+\salida{c04_tabla}
+
+% ---------------------------------------------------------------------------
+\section{Verificación}\label{sec:verificacion_geometria}
+
+Los valores coinciden con los que calculamos a mano en el
+\cref{cap:primer_notebook}: la barra~1 es horizontal ($c = 1$, $s = 0$), y las
+barras 2 y 3 son las hipotenusas de dos triángulos 3-4-5, con $L = 5$, $s =
+0.8$ y $c = \pm 0.6$. El signo de $c$ en la barra~2 es negativo porque va del
+nodo~2 al nodo~3, hacia la izquierda.
+
+Una verificación que no depende del ejemplo es que, para toda barra, debe
+cumplirse $c^2 + s^2 = 1$:
+\fragmento{c04_verificacion}
+\salida{c04_verificacion}
+
+Finalmente, comprobamos que los datos de entrada no cambiaron: la barra~1
+conserva sus cuatro datos originales y nada más.
+\fragmento{c04_datos_intactos}
+\salida{c04_datos_intactos}
+
+% ---------------------------------------------------------------------------
+\section{Dibujar cualquier armadura}\label{sec:dibujar_cualquier}
+
+En el \cref{cap:describir_armadura} escribimos una línea \py{ax.plot} por
+cada barra. Con un bucle, el mismo dibujo funciona para cualquier armadura.
+Aprovechamos además para escribir el número de cada barra en su punto medio,
+con \py{ax.text(x, y, texto)}:
+\fragmento{c04_dibujo}
+\grafico{c04_dibujo}
+
+\begin{problemaresuelto}[La geometría del ejemplo B]
+Calcular la longitud y los cosenos directores de las seis barras del ejemplo
+B (\cref{fig:ejemplo_b}) y verificar los resultados.
+
+\solucion
+Aplicamos el mismo bucle a los diccionarios \py{nodos_b} y \py{barras_b} del
+\cref{cap:describir_armadura}, y guardamos los resultados en
+\py{geometria_b}:
+\fragmento{c04_problema_resuelto}
+\salida{c04_problema_resuelto}
+
+\textbf{Verificación.} Las barras 1 y 3 son horizontales de \SI{3}{\metre} y
+las barras 2 y 4, verticales de \SI{4}{\metre}. Las diagonales 5 y 6 miden
+\SI{5}{\metre}; la diagonal~5 sube hacia la derecha ($c > 0$) y la 6, hacia la
+izquierda ($c < 0$), como se ve en la figura.
+\end{problemaresuelto}
+
+Para resolver el problema copiamos el bucle y cambiamos los nombres de los
+diccionarios. Funciona, pero es justamente la clase de repetición que
+queríamos evitar. En el \cref{cap:rigidez_barra} aprenderemos a darle un
+nombre a un cálculo, con una \emph{función}, para usarlo con cualquier
+armadura sin copiarlo.
+
+% ---------------------------------------------------------------------------
+\repasoyresumen
+
+\begin{itemize}
+  \item El bucle \py{for} repite el bloque sangrado debajo de él para cada
+    elemento de una colección.
+  \item Al recorrer un diccionario, \py{for} entrega sus claves;
+    \py{.items()} entrega la clave y el valor a la vez.
+  \item Un acumulador empieza con un valor inicial y crece en cada repetición
+    con \py{+=}.
+  \item La geometría de todas las barras se guarda en un diccionario nuevo,
+    \py{geometria}, con el número de barra como clave. Los datos de entrada no
+    se modifican.
+  \item En las f-strings, \py{:7.3f} fija el ancho y los decimales de una
+    columna, y \py{:>5} alinea a la derecha.
+  \item Para toda barra debe cumplirse $c^2 + s^2 = 1$.
+\end{itemize}
+
+% ---------------------------------------------------------------------------
+\ejercicios
+
+\begin{ejercicio}{4.1}
+Modificar el bucle de la geometría para calcular también el ángulo $\theta$
+de cada barra del ejemplo A, en grados, y mostrarlo para las tres barras.
+\end{ejercicio}
+
+\begin{ejercicio}{4.2}
+El peso específico del acero es $\gamma = \SI{78.5}{\kilo\newton\per\metre\cubed}$.
+Calcular el peso propio total de las barras del ejemplo A, sabiendo que el
+peso de una barra es $\gamma A L$.
+\end{ejercicio}
+
+\begin{ejercicio}{4.3}
+Calcular la longitud total de las barras del ejemplo B con un acumulador.
+\end{ejercicio}
+
+\begin{ejercicio}{4.4}
+Dibujar la armadura del ejemplo B con un bucle, numerando sus barras, y
+comparar el dibujo con la \cref{fig:ejemplo_b}.
+\end{ejercicio}
+
+\puntodecontrol{04}

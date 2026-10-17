@@ -61,3 +61,31 @@ tiene carga y el nodo~1 no.
 \soluciondel{3.4}
 \fragmento{s03_ejercicio_4}
 \grafico{s03_ejercicio_4}
+
+% ---------------------------------------------------------------------------
+\section*{Capítulo \ref{cap:geometria}}
+\addcontentsline{toc}{section}{Capítulo \ref{cap:geometria}}
+
+\soluciondel{4.1}
+\fragmento{s04_ejercicio_1}
+\salida{s04_ejercicio_1}
+
+\soluciondel{4.2}
+Usamos las longitudes ya calculadas en el diccionario \py{geometria}:
+\fragmento{s04_ejercicio_2}
+\salida{s04_ejercicio_2}
+
+\soluciondel{4.3}
+\fragmento{s04_ejercicio_3}
+\salida{s04_ejercicio_3}
+El resultado coincide con la suma de las longitudes de la tabla del problema
+resuelto 4.1: $3 + 4 + 3 + 4 + 5 + 5 = \SI{24}{\metre}$.
+
+\soluciondel{4.4}
+\fragmento{s04_ejercicio_4}
+\grafico{s04_ejercicio_4}
+Los números de las diagonales 5 y 6 se superponen, porque ambas barras tienen
+el mismo punto medio. Una mejora sencilla es ubicar cada número en otro punto
+de su barra, por ejemplo al \SI{40}{\percent} de su longitud desde el nodo
+inicial: \py{xm = inicial["x"] + 0.4 * (final["x"] - inicial["x"])}, y lo
+mismo para \py{ym}.

@@ -4,8 +4,8 @@ line-length = 58
 
 [lint]
 # Código de notebook: expresiones sueltas que se muestran e imports por celda.
-ignore = ["B018", "I001", "E402"]
+# F821: cada capítulo usa las variables definidas en los capítulos anteriores.
+ignore = ["B018", "I001", "E402", "F821"]
 
 [lint.per-file-ignores]
-# Las soluciones se ejecutan después del código de su capítulo.
-"soluciones/*" = ["F821"]
+"tests/*" = ["E501"]
