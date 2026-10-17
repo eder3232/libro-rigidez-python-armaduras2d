@@ -15,6 +15,7 @@ import {
 import { Ejercicio, SolucionDelEjercicio } from "@/components/ejercicios";
 import { Figura } from "@/components/Figura";
 import { Fragmento } from "@/components/Fragmento";
+import { Grafico } from "@/components/Grafico";
 import { Salida } from "@/components/Salida";
 
 // Componentes disponibles en todos los capítulos sin importarlos.
@@ -33,6 +34,7 @@ const componentes: MDXComponents = {
   Figura,
   Fragmento,
   Salida,
+  Grafico,
   Ejercicio,
   SolucionDelEjercicio,
 };

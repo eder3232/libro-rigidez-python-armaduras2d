@@ -1,0 +1,1 @@
+Nodos: 3, barras: 3

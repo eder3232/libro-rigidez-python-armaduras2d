@@ -1,0 +1,2 @@
+Nodos: 4, barras: 6
+Barra 5: del nodo 1 al nodo 4

@@ -110,16 +110,35 @@ def test_salidas_usan_el_estado_de_capitulos_anteriores(codigo, tmp_path):
         encoding="utf-8",
     )
     (codigo / "soluciones" / "cap02_dos.py").unlink()
-    destino = tmp_path / "salidas"
-    assert "doble" in generar_salidas(codigo, destino)
-    assert (destino / "doble.txt").read_text(encoding="utf-8") == "0.004\n"
+    assert "doble" in salidas_en(codigo, tmp_path)
+    texto = (tmp_path / "salidas" / "doble.txt").read_text(encoding="utf-8")
+    assert texto == "0.004\n"
 
 
-def test_salida_de_print_y_ultima_expresion(codigo, tmp_path):
-    destino = tmp_path / "salidas"
-    generar_salidas(codigo, destino)
-    # El fragmento "area" es una asignación: no produce salida.
-    assert not (destino / "area.txt").exists()
+def test_asignacion_no_produce_salida(codigo, tmp_path):
+    salidas_en(codigo, tmp_path)
+    assert not (tmp_path / "salidas" / "area.txt").exists()
+
+
+def test_grafico_se_guarda_en_pdf_y_svg(codigo, tmp_path):
+    (codigo / "cap02_dos.py").write_text(
+        '# %% tags=["exploracion"]\n# [inicio: dibujo]\n'
+        "import matplotlib.pyplot as plt\n"
+        "plt.plot([0, 1], [0, area])\n"
+        "plt.show()\n# [fin: dibujo]\n",
+        encoding="utf-8",
+    )
+    (codigo / "soluciones" / "cap02_dos.py").unlink()
+    salidas_en(codigo, tmp_path)
+    assert (tmp_path / "pdf" / "dibujo.pdf").exists()
+    assert (tmp_path / "svg" / "dibujo.svg").exists()
+    assert not (tmp_path / "salidas" / "dibujo.txt").exists()
+
+
+def salidas_en(codigo, carpeta):
+    return generar_salidas(
+        codigo, carpeta / "salidas", carpeta / "pdf", carpeta / "svg"
+    )
 
 
 def test_linea_demasiado_larga_en_un_fragmento_es_un_error(codigo, tmp_path):

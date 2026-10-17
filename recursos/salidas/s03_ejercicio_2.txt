@@ -1,0 +1,2 @@
+Nodos: 4
+Barras: 5

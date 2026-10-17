@@ -1,4 +1,6 @@
 extend = "../pyproject.toml"
+# El código del libro debe caber en la página impresa (ver scripts/extraer_fragmentos.py).
+line-length = 58
 
 [lint]
 # Código de notebook: expresiones sueltas que se muestran e imports por celda.

@@ -35,5 +35,29 @@ derecha y hacia abajo, y \py{math.atan} no puede distinguir ambos casos.
 \soluciondel{2.5}
 \fragmento{s02_ejercicio_5}
 \salida{s02_ejercicio_5}
-Con \py{math.atan(dy / dx)} la división por $\Delta x = 0$ produce el error
-\py{ZeroDivisionError} y el programa se detiene.
+Si se usa \py{math.atan(dy / dx)}, la división por $\Delta x = 0$ produce el
+error \py{ZeroDivisionError} y el programa se detiene.
+
+% ---------------------------------------------------------------------------
+\section*{Capítulo \ref{cap:describir_armadura}}
+\addcontentsline{toc}{section}{Capítulo \ref{cap:describir_armadura}}
+
+\soluciondel{3.1}
+\fragmento{s03_ejercicio_1}
+\salida{s03_ejercicio_1}
+La consulta encadenada \py{nodos[barras[3]["nodo_inicial"]]} obtiene el nodo
+desde la barra, sin escribir su número a mano.
+
+\soluciondel{3.2}
+\fragmento{s03_ejercicio_2}
+\salida{s03_ejercicio_2}
+
+\soluciondel{3.3}
+\fragmento{s03_ejercicio_3}
+\salida{s03_ejercicio_3}
+El nodo~3 no tiene apoyo, de modo que \py{get} devuelve \py{None}. El nodo~3
+tiene carga y el nodo~1 no.
+
+\soluciondel{3.4}
+\fragmento{s03_ejercicio_4}
+\grafico{s03_ejercicio_4}

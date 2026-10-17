@@ -240,8 +240,8 @@ $c^2 + s^2 = 0.36 + 0.64 = 1$. El ángulo está en el segundo cuadrante, entre
 \end{problemaresuelto}
 
 \begin{cuidado}
-Con \py{math.atan(dy / dx)} en lugar de \py{math.atan2(dy, dx)}, el resultado
-para la misma barra es:
+Si para la misma barra usamos \py{math.atan(dy / dx)}, en lugar de
+\py{math.atan2(dy, dx)}, obtenemos:
 \fragmento{c02_atan_cuidado}
 \salida{c02_atan_cuidado}
 El cociente $\Delta y/\Delta x$ pierde los signos individuales, y

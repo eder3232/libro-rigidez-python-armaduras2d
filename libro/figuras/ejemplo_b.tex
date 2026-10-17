@@ -1,0 +1,26 @@
+% Ejemplo B: cuadro arriostrado hiperestático, con apoyos y cargas
+\begin{tikzpicture}[scale=0.85]
+  \coordinate (n1) at (0,0);
+  \coordinate (n2) at (3,0);
+  \coordinate (n3) at (0,4);
+  \coordinate (n4) at (3,4);
+  \draw[barra] (n1) -- node[etiqueta barra] {1} (n2);
+  \draw[barra] (n2) -- node[etiqueta barra] {2} (n4);
+  \draw[barra] (n3) -- node[etiqueta barra] {3} (n4);
+  \draw[barra] (n1) -- node[etiqueta barra] {4} (n3);
+  \draw[barra] (n1) -- node[etiqueta barra, pos=0.3] {5} (n4);
+  \draw[barra] (n2) -- node[etiqueta barra, pos=0.3] {6} (n3);
+  \apoyoarticulado{(n1)}
+  \apoyorodillo{(n2)}
+  \cargapuntual{(n3)}{(1.4,0)}{\SI{30}{\kilo\newton}}
+  \cargapuntual{(n3)}{(0,-1.4)}{\SI{40}{\kilo\newton}}
+  \cargapuntual{(n4)}{(0,-1.4)}{\SI{40}{\kilo\newton}}
+  \foreach \n in {n1, n2, n3, n4}
+    \node[nodo] at (\n) {};
+  \node[etiqueta nodo, above left=2pt] at (n1) {1};
+  \node[etiqueta nodo, above right=2pt] at (n2) {2};
+  \node[etiqueta nodo, below left=2pt] at (n3) {3};
+  \node[etiqueta nodo, below right=2pt] at (n4) {4};
+  \draw[eje] (-1.6,-0.9) -- ++(0.8,0) node[right, font=\small] {$x$};
+  \draw[eje] (-1.6,-0.9) -- ++(0,0.8) node[above, font=\small] {$y$};
+\end{tikzpicture}

@@ -61,8 +61,16 @@
 \RequirePackage[backend=biber, style=authoryear, maxcitenames=2]{biblatex}
 \RequirePackage{imakeidx}
 \makeindex[intoc, title={Índice alfabético}]
+\PassOptionsToPackage{hyphens}{url}  % las direcciones largas se cortan en los guiones
 \RequirePackage[hidelinks]{hyperref}
+\expandafter\def\expandafter\UrlBreaks\expandafter{\UrlBreaks\do\_\do\.}
+\Urlmuskip=0mu plus 2mu
 \RequirePackage[spanish, noabbrev, nameinlink]{cleveref}
+\crefname{table}{tabla}{tablas}
+\Crefname{table}{Tabla}{Tablas}
+
+% Páginas de alto variable: evita estirar el espacio entre párrafos y código
+\raggedbottom
 % Ruta de los fragmentos extraídos por scripts/extraer_fragmentos.py
 \newcommand{\rutafragmentos}{../recursos/fragmentos}
 
@@ -117,9 +125,18 @@
       {Ejecute scripts/generar_salidas.py o revise el nombre.}}%
 }
 
+% Gráfico que dibuja un fragmento al ejecutarse (generado por scripts/generar_salidas.py)
+\newcommand{\rutagraficos}{../recursos/graficos}
+\newcommand{\grafico}[1]{%
+  \IfFileExists{\rutagraficos/#1.pdf}
+    {\par\smallskip{\centering\includegraphics{\rutagraficos/#1.pdf}\par}\smallskip}
+    {\PackageError{armaduras}{No existe el gráfico '#1'}
+      {Ejecute scripts/generar_salidas.py o revise el nombre.}}%
+}
+
 % Código breve escrito en el texto (solo para ejemplos que no son de la calculadora)
 \newminted[codigo]{python}{}
-\newmintinline[py]{python}{bgcolor={}}
+\newmintinline[py]{python}{bgcolor={}, breaklines, breakafter={,(}, breakbefore={.}}
 
 % Nota al margen
 \newcommand{\nota}[1]{\marginnote{#1}}
