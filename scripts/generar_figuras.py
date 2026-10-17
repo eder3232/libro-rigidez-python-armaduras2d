@@ -31,7 +31,10 @@ PLANTILLA = r"""\documentclass[border=4pt]{standalone}
 def convertir(nombre):
     """Compila una figura a DVI y la convierte a SVG."""
     TEMPORAL.mkdir(parents=True, exist_ok=True)
-    fuente = TEMPORAL / f"{nombre}.tex"
+    # Un nombre distinto al de la figura: si coincidiera, el \input del libro
+    # (que también busca en build/) encontraría este documento independiente.
+    independiente = f"independiente_{nombre}"
+    fuente = TEMPORAL / f"{independiente}.tex"
     fuente.write_text(PLANTILLA % nombre, encoding="utf-8")
     compilacion = subprocess.run(
         [
@@ -60,7 +63,7 @@ def convertir(nombre):
             "--exact-bbox",
             "-o",
             str(DESTINO / f"{nombre}.svg"),
-            str(TEMPORAL / f"{nombre}.dvi"),
+            str(TEMPORAL / f"{independiente}.dvi"),
         ],
         check=True,
         capture_output=True,
