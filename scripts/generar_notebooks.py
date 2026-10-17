@@ -117,7 +117,9 @@ def generar(codigo=CODIGO, destino=NOTEBOOKS):
 
 
 def escribir(celdas, ruta):
-    nbformat.write(nuevo_notebook(celdas), ruta)
+    # Saltos de línea de Unix también en Windows, para no generar cambios en git.
+    with open(ruta, "w", encoding="utf-8", newline="\n") as archivo:
+        nbformat.write(nuevo_notebook(celdas), archivo)
     return ruta
 
 

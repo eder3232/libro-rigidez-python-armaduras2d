@@ -115,6 +115,7 @@ Un único comando (por definir en `scripts/`) ejecuta todas las verificaciones y
 | Capítulo | LaTeX | Código y tests | Web | Animaciones |
 |---|---|---|---|---|
 | 2. Nuestro primer notebook | estable (falta: capturas de Colab) | listo | adaptado | — |
+| 3. Describir una armadura | borrador | listo | pendiente (se adapta cuando el LaTeX esté estable) | — |
 
 Estados posibles: `pendiente` → `borrador` → `revisado` → `estable`.
 
