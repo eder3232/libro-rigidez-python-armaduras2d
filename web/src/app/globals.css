@@ -259,3 +259,33 @@ main {
   max-width: 100%;
   height: auto;
 }
+
+/* Nota al margen del libro */
+.nota {
+  font-family: var(--fuente-sans), sans-serif;
+  font-size: 0.85em;
+  color: var(--texto-suave);
+}
+.nota::before {
+  content: "(";
+}
+.nota::after {
+  content: ")";
+}
+
+/* Tablas: líneas horizontales al estilo de booktabs, como en el libro */
+.prosa table {
+  margin: 0.5rem auto 1.5rem;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  border-top: 1.5px solid var(--texto);
+  border-bottom: 1.5px solid var(--texto);
+}
+.prosa thead th {
+  border-bottom: 1px solid var(--texto);
+  font-weight: 400;
+}
+.prosa th,
+.prosa td {
+  padding: 0.3rem 0.9rem;
+}

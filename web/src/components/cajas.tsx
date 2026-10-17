@@ -102,3 +102,8 @@ export function NotebooksDelCapitulo({ id, capitulo }: { id: string; capitulo: s
     </aside>
   );
 }
+
+// Nota breve: en el libro va al margen; en la web, en línea y atenuada.
+export function Nota({ children }: { children: ReactNode }) {
+  return <span className="nota">{children}</span>;
+}

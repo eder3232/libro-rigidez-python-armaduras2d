@@ -1,10 +1,10 @@
 # Sincronización entre LaTeX, web y notebooks
 
-El libro se publica en dos formatos escritos a mano (LaTeX y Next.js) más notebooks generados. Este documento define **qué tiene una sola fuente, qué se duplica y cómo se controla**.
+El libro se publica en LaTeX (PDF), en la web (Next.js) y en notebooks. Este documento define **qué tiene una sola fuente y cómo se genera todo lo demás**.
 
 ## Principio
 
-> Lo que es peligroso desincronizar (código, números, figuras, notación) **nunca se escribe dos veces**. Solo la prosa se duplica, y siempre en una dirección: de LaTeX a la web.
+> **Nada se escribe dos veces.** El código, los números, las figuras, la notación y también la prosa tienen una sola fuente; la web y los notebooks se generan a partir de ella (decisión D20).
 
 ## Fuentes únicas
 
@@ -15,9 +15,11 @@ El libro se publica en dos formatos escritos a mano (LaTeX y Next.js) más noteb
 | Salidas del código | `recursos/salidas/` (generadas por `scripts/generar_salidas.py`) | LaTeX (`\salida`) y web (`<Salida>`) |
 | Números citados en el texto | `recursos/` (generados por scripts que ejecutan el código) | LaTeX (`.tex`) y web (`.json`) |
 | Tablas de resultados | `recursos/` (generadas) | LaTeX y web |
-| Figuras con datos | `recursos/` (generadas: PDF para LaTeX, SVG para la web) | LaTeX y web |
+| Gráficos del código | generados al ejecutar el código: `recursos/graficos/` (PDF) y `web/public/graficos/` (SVG) | LaTeX (`\grafico`) y web (`<Grafico>`) |
+| Esquemas (TikZ) | `libro/figuras/*.tex`, convertidos a SVG por `scripts/generar_figuras.py` | LaTeX (`\figura`) y web (`<Figura>`) |
 | Macros matemáticas | `libro/estilo/notacion.tex` | LaTeX y KaTeX en la web |
-| Prosa | `libro/` (LaTeX, canónica) | adaptada a mano en `web/` |
+| Prosa | `libro/capitulos/*.tex` | web: `web/contenido/*.mdx`, generado por `scripts/latex_a_mdx.py` |
+| Soluciones de los ejercicios | `libro/anexos/anexoF_soluciones.tex` | web: plegadas debajo de cada ejercicio (las coloca el convertidor) |
 
 ## Código: archivos por capítulo
 
@@ -70,10 +72,11 @@ Los enlaces "Abrir en Colab" apuntan a los notebooks publicados en el repositori
 
 ## Prosa: de LaTeX a la web
 
+La prosa se escribe **solo en LaTeX**. `scripts/latex_a_mdx.py` traduce los comandos semánticos del libro a los componentes de la web (ver la tabla de equivalencias en la [plantilla de capítulo](02-plantilla-capitulo.md)) y escribe `web/contenido/capNN_nombre.mdx`. **Los MDX no se editan a mano**: cualquier cambio se hace en el `.tex` y se vuelve a generar.
+
 1. El capítulo se escribe y revisa en LaTeX.
-2. Cuando se marca como **estable**, se adapta a MDX en `web/`.
-3. La adaptación puede **agregar** lo que el papel no puede dar (animaciones, código ejecutable, soluciones plegables) y **reformular** para pantalla, pero **no puede cambiar el contenido técnico**. Si al adaptar se descubre un error, se corrige primero en LaTeX.
-4. Cada archivo MDX exporta sus metadatos, incluido el commit de LaTeX con el que se sincronizó:
+2. Se compila el libro (`latexmk`): el convertidor toma la numeración de figuras, ecuaciones y capítulos de los `.aux`, para que las referencias de la web coincidan con las del PDF.
+3. Se genera el MDX. Cada uno registra el commit del `.tex` del que proviene:
 
    ```js
    export const metadatos = {
@@ -83,7 +86,12 @@ Los enlaces "Abrir en Colab" apuntan a los notebooks publicados en el repositori
    };
    ```
 
-   Un script compara ese commit con el último cambio del `.tex` correspondiente y avisa si la web quedó atrás.
+**Contenido exclusivo de un formato:**
+
+- `\soloweb{...}`: aparece solo en la web y se copia tal cual al MDX. Es el lugar de las animaciones interactivas y de cualquier componente propio de la web.
+- `\sololibro{...}`: aparece solo en el PDF (por ejemplo, una referencia a un número de página).
+
+El convertidor falla ante cualquier comando o entorno que no conozca, para que nada se pierda en silencio. Si un capítulo necesita un comando nuevo, se define en `armaduras.sty`, en el convertidor y, si corresponde, como componente de la web.
 
 ## Nombres de archivo
 
@@ -114,9 +122,9 @@ Un único comando (por definir en `scripts/`) ejecuta todas las verificaciones y
 
 | Capítulo | LaTeX | Código y tests | Web | Animaciones |
 |---|---|---|---|---|
-| 2. Nuestro primer notebook | estable (falta: capturas de Colab) | listo | adaptado | — |
-| 3. Describir una armadura | borrador | listo | pendiente (se adapta cuando el LaTeX esté estable) | — |
-| 4. La geometría de todas las barras | borrador | listo | pendiente (se adapta cuando el LaTeX esté estable) | — |
+| 2. Nuestro primer notebook | estable (falta: capturas de Colab) | listo | generado | — |
+| 3. Describir una armadura | estable | listo | generado | — |
+| 4. La geometría de todas las barras | estable | listo | generado | — |
 
 Estados posibles: `pendiente` → `borrador` → `revisado` → `estable`.
 
@@ -138,6 +146,8 @@ Estados posibles: `pendiente` → `borrador` → `revisado` → `estable`.
 | Extraer los fragmentos | `uv run python scripts/extraer_fragmentos.py` |
 | Generar las salidas | `uv run python scripts/generar_salidas.py` |
 | Generar los notebooks | `uv run python scripts/generar_notebooks.py` |
+| Convertir las figuras TikZ a SVG | `uv run python scripts/generar_figuras.py` |
+| Generar la web de un capítulo | `uv run python scripts/latex_a_mdx.py cap04_geometria` (después de compilar el libro) |
 | Compilar el libro | `cd libro && latexmk libro.tex` (PDF en `libro/build/`) |
 | Compilar la muestra tipográfica | `cd libro && latexmk muestra.tex` |
 | Web en desarrollo | `cd web && pnpm dev` |

@@ -1,7 +1,360 @@
 export const metadatos = {
   numero: 3,
   titulo: "Describir una armadura",
-  sincronizado_con: "pendiente",
+  sincronizado_con: "b6f23ca",
 };
 
-*Capítulo en preparación.*
+{/* Generado por scripts/latex_a_mdx.py desde libro/capitulos/cap03_describir_armadura.tex. No editar a mano. */}
+
+<NotebooksDelCapitulo id="cap03_describir_armadura" capitulo="03" />
+
+Antes de calcular cualquier cosa, nuestra calculadora necesita conocer la
+armadura: dónde están sus nodos, qué barras los unen, de qué material y
+sección son, cómo está apoyada y qué cargas recibe. En el capítulo anterior
+guardamos cada coordenada en una variable suelta; con tres barras eso ya
+resulta incómodo, y con cincuenta sería imposible. En este capítulo aprendemos
+a organizar toda esa información en estructuras de datos de Python, y
+construimos el modelo completo del ejemplo A.
+
+<Objetivos>
+
+- Identificar los datos que definen una armadura plana.
+- Usar listas y diccionarios, y elegir entre ellos.
+- Escribir el modelo de una armadura con diccionarios anidados.
+- Consultar el modelo y dibujarlo con Matplotlib para verificarlo.
+
+</Objetivos>
+
+## 3.1 Los datos de una armadura
+
+Recordemos las hipótesis con las que analizamos armaduras: las barras son
+rectas y se unen en nodos articulados, las cargas actúan solo en los nodos y
+el material es elástico lineal. Con ellas, cada barra trabaja únicamente a
+fuerza axial y la armadura queda definida por cuatro grupos de datos:
+
+- **Nodos.** Las coordenadas $(x, y)$ de cada nodo.
+- **Barras.** El nodo inicial y el nodo final de cada barra, su módulo de elasticidad $E$ y el área $A$ de su sección.
+- **Apoyos.** En qué direcciones está impedido el desplazamiento de cada nodo apoyado: un apoyo articulado impide ambas; un rodillo, solo una.
+- **Cargas.** Las componentes $F_x$ y $F_y$ de las fuerzas aplicadas en los nodos.
+
+La figura 3.1 y la tabla 3.1 reúnen estos datos para el
+ejemplo A, que nos acompañará en los próximos capítulos.
+
+<Figura nombre="ejemplo_a" numero="3.1">
+Ejemplo A: armadura triangular isostática.
+</Figura>
+
+**Tabla 3.1:** Datos del ejemplo A. Todas las barras son de acero ($E = 200\,\mathrm{GPa}$) con un área de 20 cm².
+
+| Nodo | Coordenadas (m) | Apoyo | Carga (kN) |
+| :---: | :---: | :---: | :---: |
+| 1 | $(0, 0)$ | articulado | — |
+| 2 | $(6, 0)$ | rodillo (impide $y$) | — |
+| 3 | $(3, 4)$ | — | $F_x = 20$, $F_y = -50$ |
+
+| Barra | Nodo inicial | Nodo final |
+| :---: | :---: | :---: |
+| 1 | 1 | 2 |
+| 2 | 2 | 3 |
+| 3 | 1 | 3 |
+
+## 3.2 Listas
+
+Una *lista* (*list*) es una colección ordenada de valores, escrita entre
+corchetes y separada por comas. Por ejemplo, las coordenadas del nodo 3:
+
+<Fragmento nombre="c03_lista" />
+
+<Salida nombre="c03_lista" />
+
+Cada elemento ocupa una posición, llamada *índice* (*index*), y se
+obtiene escribiendo el índice entre corchetes:
+
+<Fragmento nombre="c03_indices" />
+
+<Salida nombre="c03_indices" />
+
+<Cuidado>
+
+En Python, las posiciones de una lista se cuentan *desde cero*: el primer
+elemento es `coordenadas_nodo_3[0]` y el segundo,
+`coordenadas_nodo_3[1]`. Es una convención de la mayoría de los lenguajes
+de programación, pero choca con la numeración de nodos y barras, que en
+ingeniería empieza en 1.
+
+</Cuidado>
+
+Ese desfase se vuelve peligroso cuando usamos una lista para guardar
+propiedades de las barras. Si guardamos las áreas de las barras 1, 2 y 3 en
+una lista (aquí con un área distinta en la barra 3, para notar la
+diferencia), el área de la barra 3 está en la posición 2:
+
+<Fragmento nombre="c03_areas" />
+
+<Salida nombre="c03_areas" />
+
+Las listas pueden crecer: el método `append` agrega un elemento al final, y
+la función `len` cuenta los elementos:
+
+<Fragmento nombre="c03_append" />
+
+<Salida nombre="c03_append" />
+
+## 3.3 Diccionarios
+
+Un *diccionario* (*dictionary*) guarda pares *clave: valor*, entre
+llaves. A diferencia de la lista, cada valor se obtiene por su clave, no por
+su posición:
+
+<Fragmento nombre="c03_diccionario" />
+
+<Salida nombre="c03_diccionario" />
+
+Las claves pueden ser textos, como `"x"` e `"y"`, o números. Con números
+como claves resolvemos el problema de la sección anterior: el área de la
+barra 3 se obtiene con la clave 3, sin traducciones.
+
+<Fragmento nombre="c03_claves_numericas" />
+
+<Salida nombre="c03_claves_numericas" />
+
+<Recuerda>
+
+Usamos *listas* para colecciones en las que solo importa el orden, y
+*diccionarios* cuando cada valor tiene un nombre o un número propio. Los
+nodos y las barras tienen número propio: por eso los guardaremos en
+diccionarios cuyas claves son esos números, empezando en 1.
+
+</Recuerda>
+
+## 3.4 El modelo del ejemplo A
+
+Un valor de un diccionario puede ser, a su vez, otro diccionario. Con esta
+idea, los *diccionarios anidados* (*nested dictionaries*), escribimos el
+modelo completo. Primero los nodos, cada uno con sus coordenadas:
+
+<Fragmento nombre="c03_nodos" />
+
+Después las barras, cada una con sus nodos y sus propiedades. Un diccionario
+puede ocupar varias líneas: Python sabe que continúa mientras la llave no se
+haya cerrado.
+
+<Fragmento nombre="c03_barras" />
+
+Los apoyos indican, para cada nodo apoyado, si el desplazamiento en $x$ y en
+$y$ está impedido. Los valores `True` (verdadero) y `False` (falso) son
+los *booleanos* (*booleans*) de Python:
+
+<Fragmento nombre="c03_apoyos" />
+
+Por último, las cargas, con su signo según los ejes globales:
+
+<Fragmento nombre="c03_cargas" />
+
+<Estrategia>
+
+Para escribir el modelo de cualquier armadura:
+
+1. Dibujar la armadura, numerar los nodos y las barras desde 1 y elegir el sentido de cada barra (nodo inicial y nodo final).
+2. Fijar las unidades (en este libro, kN y m) y convertir todos los datos a ellas.
+3. Escribir los cuatro diccionarios: `nodos`, `barras`, `apoyos` y `cargas`.
+4. Verificar el modelo consultándolo y dibujándolo.
+
+</Estrategia>
+
+Separar los apoyos y las cargas de los nodos tiene una ventaja: los nodos sin
+apoyo o sin carga simplemente no aparecen en esos diccionarios, sin entradas
+vacías que mantener.
+
+## 3.5 Consultar el modelo
+
+Para leer un valor anidado encadenamos las claves. Los nodos de la barra 2:
+
+<Fragmento nombre="c03_consulta" />
+
+<Salida nombre="c03_consulta" />
+
+Y las coordenadas del nodo inicial de la barra 2, usando el número de nodo
+como clave del diccionario `nodos`:
+
+<Fragmento nombre="c03_consulta_encadenada" />
+
+<Salida nombre="c03_consulta_encadenada" />
+
+Esta consulta encadenada, de la barra a sus nodos y de los nodos a sus
+coordenadas, es exactamente la que necesitaremos en el
+[capítulo 4](/capitulos/cap04_geometria) para calcular la geometría de todas las barras.
+
+El operador `in` pregunta si una clave existe en un diccionario. El nodo 3
+no tiene apoyo, pero sí carga:
+
+<Fragmento nombre="c03_in" />
+
+<Salida nombre="c03_in" />
+
+Pedir una clave que no existe, como `apoyos[3]`, produce el error
+`KeyError` y detiene el programa. El método `get` devuelve en cambio el
+valor `None` («nada»), o el valor que indiquemos:
+
+<Fragmento nombre="c03_get" />
+
+<Salida nombre="c03_get" />
+
+Finalmente, `len` también cuenta las entradas de un diccionario:
+
+<Fragmento nombre="c03_len" />
+
+<Salida nombre="c03_len" />
+
+## 3.6 Ver la armadura
+
+Un error en las coordenadas o en la conectividad es fácil de cometer y difícil
+de detectar leyendo números. La mejor verificación es *ver* la armadura.
+Para dibujar usamos *Matplotlib*, la biblioteca de gráficos más usada
+de Python, que importamos con el nombre corto `plt`:
+
+<Fragmento nombre="c03_import_plt" />
+
+`plt.subplots()` crea una figura con unos ejes; `ax.plot` dibuja una
+línea entre los puntos cuyas abscisas y ordenadas recibe en dos listas, y el
+texto `"k-o"` pide línea negra (`k`) continua (`-`) con círculos en
+los extremos (`o`). Dibujamos así cada barra:
+
+<Fragmento nombre="c03_dibujo" />
+
+<Grafico nombre="c03_dibujo" />
+
+La instrucción `ax.set_aspect("equal")` usa la misma escala en ambos ejes,
+para que la armadura no se vea deformada.
+
+**Verificación.** El dibujo coincide con la figura 3.1: tres
+nodos en $(0, 0)$, $(6, 0)$ y $(3, 4)$, unidos por tres barras.
+
+<Python>
+
+Escribimos una línea `ax.plot` por cada barra. Con tres barras es
+aceptable; con cincuenta sería tedioso y propenso a errores. En el
+[capítulo 4](/capitulos/cap04_geometria) aprenderemos a recorrer el diccionario `barras` con un
+bucle y a dibujar cualquier armadura con unas pocas líneas.
+
+</Python>
+
+<Figura nombre="ejemplo_b" numero="3.2">
+Ejemplo B: cuadro arriostrado hiperestático.
+</Figura>
+
+<ProblemaResuelto numero="3.1" titulo="El modelo del ejemplo B">
+
+Escribir el modelo de datos del ejemplo B (figura 3.2): un cuadro
+de 3 m por 4 m con sus dos diagonales, articulado en el
+nodo 1 y con un rodillo en el nodo 2. Todas las barras son de acero, con un
+área de 20 cm². Verificar la cantidad de nodos y de
+barras.
+
+<Solucion />
+
+Seguimos la estrategia de resolución: la numeración ya está en la figura, las
+unidades son kN y m, y los diccionarios llevan el
+sufijo `_b` para no reemplazar los del ejemplo A:
+
+<Fragmento nombre="c03_problema_resuelto" />
+
+**Verificación.** Contamos los nodos y las barras, y revisamos una de
+las diagonales:
+
+<Fragmento nombre="c03_problema_resuelto_verificacion" />
+
+<Salida nombre="c03_problema_resuelto_verificacion" />
+
+La cantidad de nodos y de barras coincide con la figura, y la barra 5 es la
+diagonal que va del nodo 1 al nodo 4. Este modelo nos acompañará, junto con el
+del ejemplo A, en los próximos capítulos.
+
+</ProblemaResuelto>
+
+## Repaso y resumen del capítulo
+
+- Una armadura plana queda definida por sus nodos (coordenadas), sus barras (nodos, $E$ y $A$), sus apoyos (direcciones impedidas) y sus cargas (componentes en los nodos).
+- Una lista es una colección ordenada; sus posiciones se cuentan desde cero. Un diccionario asocia claves con valores.
+- El modelo de la calculadora usa cuatro diccionarios: `nodos`, `barras`, `apoyos` y `cargas`, con los números de nodo y de barra como claves, empezando en 1.
+- Los valores anidados se leen encadenando claves entre corchetes, de la barra a sus nodos y de los nodos a sus coordenadas.
+- `in` pregunta si una clave existe; `get` lee una clave sin producir un error si no existe; `len` cuenta los elementos.
+- Todo modelo se verifica dibujándolo con `plt.subplots` y `ax.plot`, con la misma escala en ambos ejes.
+
+## Ejercicios
+
+<Ejercicio numero="3.1">
+
+Usando los diccionarios del ejemplo A, obtener las coordenadas de los nodos
+de la barra 3 a partir de `barras[3]`, sin escribir los números de nodo a
+mano, y calcular la longitud de la barra.
+
+<SolucionDelEjercicio>
+
+<Fragmento nombre="s03_ejercicio_1" />
+
+<Salida nombre="s03_ejercicio_1" />
+
+La consulta encadenada `nodos[barras[3]["nodo_inicial"]]` obtiene el nodo
+desde la barra, sin escribir su número a mano.
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<Ejercicio numero="3.2">
+
+Una armadura de cubierta tiene los nodos 1 en $(0, 0)$, 2 en $(4, 0)$, 3 en
+$(8, 0)$ y 4 en $(4, 1.5)$, en metros. Sus barras son 1: 1–2, 2: 2–3,
+3: 1–4, 4: 4–3 y 5: 2–4, todas de acero; las cuatro primeras tienen un área
+de 15 cm² y la barra 5, de
+10 cm². Está articulada en el nodo 1, tiene un rodillo
+en el nodo 3 y una carga de 30 kN hacia abajo en el nodo 4.
+Escribir su modelo con los nombres `nodos_cubierta`, `barras_cubierta`,
+`apoyos_cubierta` y `cargas_cubierta`.
+
+<SolucionDelEjercicio>
+
+<Fragmento nombre="s03_ejercicio_2" />
+
+<Salida nombre="s03_ejercicio_2" />
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<Ejercicio numero="3.3">
+
+Predecir, sin ejecutarlo, qué muestran `apoyos.get(3)` y
+`3 in cargas, 1 in cargas` para el ejemplo A. Comprobar la predicción en
+el notebook.
+
+<SolucionDelEjercicio>
+
+<Fragmento nombre="s03_ejercicio_3" />
+
+<Salida nombre="s03_ejercicio_3" />
+
+El nodo 3 no tiene apoyo, de modo que `get` devuelve `None`. El nodo 3
+tiene carga y el nodo 1 no.
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<Ejercicio numero="3.4">
+
+Dibujar la armadura del ejemplo B con Matplotlib y comparar el dibujo con la
+figura 3.2.
+
+<SolucionDelEjercicio>
+
+<Fragmento nombre="s03_ejercicio_4" />
+
+<Grafico nombre="s03_ejercicio_4" />
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<PuntoDeControl capitulo="03" />
