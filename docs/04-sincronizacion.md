@@ -15,7 +15,7 @@ El libro se publica en dos formatos escritos a mano (LaTeX y Next.js) más noteb
 | Números citados en el texto | `recursos/` (generados por scripts que ejecutan el código) | LaTeX (`.tex`) y web (`.json`) |
 | Tablas de resultados | `recursos/` (generadas) | LaTeX y web |
 | Figuras con datos | `recursos/` (generadas: PDF para LaTeX, SVG para la web) | LaTeX y web |
-| Macros matemáticas | un archivo de macros en `recursos/` | LaTeX y KaTeX en la web |
+| Macros matemáticas | `libro/estilo/notacion.tex` | LaTeX y KaTeX en la web |
 | Prosa | `libro/` (LaTeX, canónica) | adaptada a mano en `web/` |
 
 ## Código: archivos por capítulo

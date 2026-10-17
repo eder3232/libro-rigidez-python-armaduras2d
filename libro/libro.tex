@@ -1,0 +1,59 @@
+% Análisis matricial de armaduras con Python
+% Compilar desde esta carpeta con: latexmk libro.tex
+\documentclass[
+  fontsize=10.5pt,
+  twoside=true,
+  open=right,
+  headings=standardclasses,
+  numbers=noenddot,
+  bibliography=totoc,
+]{scrbook}
+
+\usepackage{estilo/armaduras}
+\addbibresource{bibliografia.bib}
+
+\title{Análisis matricial de armaduras con Python}
+\subtitle{Aprende el método de rigidez construyendo tu propia calculadora}
+\author{\pendiente{nombre del autor}}
+\date{Versión preliminar}
+
+\begin{document}
+
+\frontmatter
+\maketitle
+\tableofcontents
+\include{capitulos/prefacio}
+
+\mainmatter
+\part{Primeros pasos}
+\include{capitulos/cap01_por_que_programar}
+\include{capitulos/cap02_primer_notebook}
+
+\part{Del modelo a la matriz}
+\include{capitulos/cap03_describir_armadura}
+\include{capitulos/cap04_geometria}
+\include{capitulos/cap05_rigidez_barra}
+\include{capitulos/cap06_grados_de_libertad}
+\include{capitulos/cap07_ensamblaje}
+
+\part{Resolver y entender}
+\include{capitulos/cap08_particion}
+\include{capitulos/cap09_desplazamientos_reacciones}
+\include{capitulos/cap10_fuerzas_internas}
+\include{capitulos/cap11_visualizar}
+\include{capitulos/cap12_mi_calculadora}
+
+\appendix
+\include{anexos/anexoA_referencia_python}
+\include{anexos/anexoB_leer_errores}
+\include{anexos/anexoC_trabajar_en_local}
+\include{anexos/anexoD_validacion}
+\include{anexos/anexoE_notacion}
+\include{anexos/anexoF_soluciones}
+
+\backmatter
+\nocite{*}
+\printbibliography[title={Bibliografía}]
+\printindex
+
+\end{document}

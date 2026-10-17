@@ -48,7 +48,7 @@ Prueba preliminar con los datos de A: desplazamientos de 0.4 a 0.7 mm y esfuerzo
 - **Python nuevo:** ninguno.
 - **Animación:** el diagrama de flujo del método, donde cada paso enlaza al capítulo correspondiente.
 
-### Capítulo 2. Tu primer notebook
+### Capítulo 2. Nuestro primer notebook
 
 - **Construimos:** la geometría de **una** barra: longitud, coseno y seno.
 - **Python nuevo:** crear un notebook en Drive y abrirlo con Colab; celdas de código y de texto; ejecutar; variables; operaciones aritméticas; `import math`; `print` y f-strings.

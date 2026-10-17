@@ -1,0 +1,162 @@
+% Maqueta del libro "Análisis matricial de armaduras con Python".
+%
+% Todo el formato vive aquí. Los capítulos solo usan los comandos semánticos
+% definidos al final de este archivo (ver docs/03-guia-de-estilo.md).
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{estilo/armaduras}[2026/10/17 Maqueta del libro]
+
+% ---------------------------------------------------------------------------
+% Idioma y tipografía
+% ---------------------------------------------------------------------------
+\RequirePackage[spanish, es-nodecimaldot, es-tabla, es-noshorthands]{babel}
+\RequirePackage{amsmath, amssymb}
+\RequirePackage{unicode-math}
+\setmainfont{Libertinus Serif}
+\setsansfont{Libertinus Sans}
+\setmonofont{Source Code Pro}[Scale=MatchLowercase]
+\setmathfont{Libertinus Math}
+\RequirePackage[final]{microtype}
+
+% ---------------------------------------------------------------------------
+% Página: márgenes amplios con espacio para notas al margen
+% ---------------------------------------------------------------------------
+\RequirePackage[
+  paperwidth=19cm, paperheight=24.5cm,
+  inner=2.2cm, outer=5.4cm, top=2.4cm, bottom=2.6cm,
+  marginparwidth=3.8cm, marginparsep=0.6cm,
+]{geometry}
+\RequirePackage{marginnote}
+\renewcommand*{\marginfont}{\footnotesize\sffamily\color{texto-suave}}
+
+% ---------------------------------------------------------------------------
+% Colores (un principal y un acento; tracción y compresión de Okabe-Ito,
+% distinguibles con daltonismo)
+% ---------------------------------------------------------------------------
+\RequirePackage{xcolor}
+\definecolor{principal}{HTML}{1F4E79}
+\definecolor{acento}{HTML}{C8641E}
+\definecolor{texto-suave}{HTML}{5A5A5A}
+\definecolor{fondo-codigo}{HTML}{F6F4EF}
+\definecolor{traccion}{HTML}{0072B2}
+\definecolor{compresion}{HTML}{D55E00}
+\definecolor{neutro}{HTML}{8C8C8C}
+
+% ---------------------------------------------------------------------------
+% Títulos
+% ---------------------------------------------------------------------------
+\setkomafont{disposition}{\sffamily\color{principal}}
+\setkomafont{chapter}{\sffamily\Huge\color{principal}}
+\setkomafont{chapterprefix}{\sffamily\large\color{acento}}
+\RedeclareSectionCommand[prefixfont=\sffamily\large\color{acento}]{chapter}
+\KOMAoptions{chapterprefix=true}
+\RequirePackage[automark, headsepline=0.4pt]{scrlayer-scrpage}
+\pagestyle{scrheadings}
+\setkomafont{pagehead}{\sffamily\footnotesize\color{texto-suave}}
+\setkomafont{pagenumber}{\sffamily\footnotesize\color{principal}}
+
+% ---------------------------------------------------------------------------
+% Figuras, tablas y referencias
+% ---------------------------------------------------------------------------
+\RequirePackage{graphicx}
+\RequirePackage{booktabs}
+\RequirePackage{siunitx}
+\sisetup{output-decimal-marker={.}, group-separator={\,}, per-mode=symbol}
+\RequirePackage{tikz}
+\usetikzlibrary{arrows.meta, calc, patterns, decorations.pathmorphing}
+\setkomafont{caption}{\small}
+\setkomafont{captionlabel}{\small\sffamily\bfseries\color{principal}}
+\numberwithin{equation}{chapter}
+
+% ---------------------------------------------------------------------------
+% Código (antes de csquotes, que debe cargarse después de fvextra)
+% ---------------------------------------------------------------------------
+\RequirePackage{minted}
+\setminted{
+  fontsize=\small,
+  bgcolor=fondo-codigo,
+  breaklines,
+  style=friendly,
+}
+
+% ---------------------------------------------------------------------------
+% Bibliografía, índice y referencias cruzadas
+% ---------------------------------------------------------------------------
+\RequirePackage{csquotes}
+\RequirePackage[backend=biber, style=authoryear, maxcitenames=2]{biblatex}
+\RequirePackage{imakeidx}
+\makeindex[intoc, title={Índice alfabético}]
+\RequirePackage[hidelinks]{hyperref}
+\RequirePackage[spanish, noabbrev, nameinlink]{cleveref}
+% Ruta de los fragmentos extraídos por scripts/extraer_fragmentos.py
+\newcommand{\rutafragmentos}{../recursos/fragmentos}
+
+% ---------------------------------------------------------------------------
+% Cajas
+% ---------------------------------------------------------------------------
+\RequirePackage[most, minted]{tcolorbox}
+\tcbset{
+  caja/.style={
+    enhanced, breakable, sharp corners, boxrule=0pt, frame hidden,
+    borderline west={2.5pt}{0pt}{#1},
+    colback=#1!6, left=10pt, right=8pt, top=6pt, bottom=6pt,
+    fonttitle=\sffamily\bfseries\small, coltitle=#1,
+    detach title, before upper={\tcbtitle\par\smallskip}, fontupper=\small,
+  },
+}
+
+\input{estilo/notacion.tex}
+\input{estilo/simbolos.tex}
+
+% ===========================================================================
+% Comandos semánticos: lo único que usan los capítulos
+% ===========================================================================
+
+% Cajas de la plantilla de capítulo (docs/02-plantilla-capitulo.md)
+\newtcolorbox{recuerda}{caja=principal, title={Recuerda}}
+\newtcolorbox{python}{caja=traccion, title={Python}}
+\newtcolorbox{cuidado}{caja=acento, title={Cuidado}}
+\newtcolorbox{parasabermas}{caja=neutro, title={Para saber más}}
+
+% Objetivos de aprendizaje, al inicio de cada capítulo
+\newenvironment{objetivos}
+  {\begin{tcolorbox}[caja=principal, title={Al terminar este capítulo podremos}]
+   \begin{itemize}}
+  {\end{itemize}\end{tcolorbox}}
+
+% Fragmento de código con una sola fuente en codigo/
+\newcommand{\fragmento}[1]{%
+  \IfFileExists{\rutafragmentos/#1.py}
+    {\inputminted{python}{\rutafragmentos/#1.py}}
+    {\PackageError{armaduras}{No existe el fragmento '#1'}
+      {Ejecute scripts/extraer_fragmentos.py o revise el nombre.}}%
+}
+
+% Código breve escrito en el texto (solo para ejemplos que no son de la calculadora)
+\newminted[codigo]{python}{}
+\newmintinline[py]{python}{bgcolor={}}
+
+% Nota al margen
+\newcommand{\nota}[1]{\marginnote{#1}}
+
+% Término técnico: primera aparición, con su equivalente en inglés y entrada en el índice
+\newcommand{\termino}[2]{\emph{#1}\index{#1} (\emph{#2})}
+
+% Punto de control al final de cada capítulo
+\newcommand{\urlnotebooks}{https://github.com/USUARIO/libro-rigidez-python-armaduras2d/blob/main/notebooks}
+\newcommand{\puntodecontrol}[1]{%
+  \begin{tcolorbox}[caja=acento, title={Punto de control}]
+  Si algo no funcionó o se omitió una parte, el notebook con todo el código
+  hasta este capítulo permite continuar desde aquí:\par\smallskip
+  \url{\urlnotebooks/control_cap#1.ipynb}
+  \end{tcolorbox}}
+
+% Marca de contenido por escribir (desaparece de la versión final)
+\newcommand{\pendiente}[1]{{\color{acento}\sffamily\small[Pendiente: #1]}}
+
+% Ejercicios
+\newcounter{ejercicio}[chapter]
+\renewcommand{\theejercicio}{\thechapter.\arabic{ejercicio}}
+\newenvironment{ejercicio}
+  {\refstepcounter{ejercicio}\par\medskip\noindent
+   {\sffamily\bfseries\color{principal}Ejercicio \theejercicio}\quad}
+  {\par\medskip}

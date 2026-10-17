@@ -1,0 +1,9 @@
+# Compilación del libro: latexmk libro.tex  (o latexmk muestra.tex)
+$pdf_mode = 4;            # LuaLaTeX
+$out_dir = 'build';
+$bibtex_use = 2;          # biber
+$lualatex = 'lualatex -interaction=nonstopmode -file-line-error -synctex=1 %O %S';
+
+# \include escribe un .aux por capítulo: sus carpetas deben existir en build/
+use File::Path qw(make_path);
+make_path("$out_dir/capitulos", "$out_dir/anexos");

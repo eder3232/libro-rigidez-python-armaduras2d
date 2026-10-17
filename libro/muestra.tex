@@ -1,0 +1,126 @@
+% Muestra tipográfica: reúne todos los elementos de la maqueta en pocas páginas
+% para revisar el diseño. No forma parte del libro.
+% Compilar desde esta carpeta con: latexmk muestra.tex
+\documentclass[
+  fontsize=10.5pt,
+  twoside=true,
+  headings=standardclasses,
+  numbers=noenddot,
+]{scrbook}
+
+\usepackage{estilo/armaduras}
+\addbibresource{bibliografia.bib}
+
+\begin{document}
+
+\setcounter{chapter}{4}
+\chapter{La rigidez de una barra}
+
+\begin{objetivos}
+  \item Calcular la matriz de rigidez de una barra en coordenadas locales.
+  \item Transformarla a coordenadas globales con la matriz $\mT$.
+  \item Verificar que el resultado es simétrico y singular.
+\end{objetivos}
+
+Una barra de armadura solo trabaja a fuerza axial. Si conocemos su
+\termino{módulo de elasticidad}{modulus of elasticity} $E$, el área $A$ de su
+sección y su longitud $L$, la relación entre las fuerzas y los desplazamientos
+de sus extremos, en la dirección de la barra, es
+\nota{Esta es la ley de Hooke escrita para los dos extremos de la barra.}
+\begin{equation}\label{eq:rigidez-local}
+  \mkl = \EAL
+  \begin{bmatrix} 1 & -1 \\ -1 & 1 \end{bmatrix}.
+\end{equation}
+
+\begin{recuerda}
+La matriz de transformación lleva los desplazamientos globales a la dirección
+de la barra: $\vul = \mT\,\vu$, con
+$\mT = \begin{bmatrix} c & s & 0 & 0 \\ 0 & 0 & c & s \end{bmatrix}$.
+Por lo tanto, $\mk = \mT\transp \mkl \mT$.
+\end{recuerda}
+
+\section{La barra del ejemplo A}
+
+La \cref{fig:ejemplo-a} muestra la armadura del ejemplo A. Sus tres barras son
+de acero ($E = \SI{200}{\giga\pascal}$) con un área de \SI{20}{\centi\metre\squared}.
+
+\begin{figure}[ht]
+  \centering
+  \begin{tikzpicture}[scale=0.85]
+    \coordinate (n1) at (0,0);
+    \coordinate (n2) at (6,0);
+    \coordinate (n3) at (3,4);
+    \draw[barra] (n1) -- node[etiqueta barra] {1} (n2);
+    \draw[barra] (n2) -- node[etiqueta barra] {2} (n3);
+    \draw[barra] (n1) -- node[etiqueta barra] {3} (n3);
+    \apoyoarticulado{(n1)}
+    \apoyorodillo{(n2)}
+    \cargapuntual{(n3)}{(1.4,0)}{\SI{20}{\kilo\newton}}
+    \cargapuntual{(n3)}{(0,-1.4)}{\SI{50}{\kilo\newton}}
+    \foreach \n/\pos in {n1/above left, n2/above right, n3/right}
+      \node[nodo] at (\n) {};
+    \node[etiqueta nodo, above left=2pt] at (n1) {1};
+    \node[etiqueta nodo, above right=2pt] at (n2) {2};
+    \node[etiqueta nodo, above right=4pt] at (n3) {3};
+    \draw[eje] (-1.4,-0.9) -- ++(0.8,0) node[right, font=\small] {$x$};
+    \draw[eje] (-1.4,-0.9) -- ++(0,0.8) node[above, font=\small] {$y$};
+  \end{tikzpicture}
+  \caption{Ejemplo A: armadura triangular isostática.}
+  \label{fig:ejemplo-a}
+\end{figure}
+
+\begin{python}
+En Python, el producto de matrices se escribe con el operador \py{@}.
+La transpuesta de un arreglo \py{T} de NumPy es \py{T.T}.
+\end{python}
+
+La función que construye la matriz de una barra traduce la
+\cref{eq:rigidez-local} casi literalmente:
+
+\begin{codigo}
+import numpy as np
+
+def rigidez_barra(E, A, L, c, s):
+    """Matriz de rigidez global (4 x 4) de una barra."""
+    k_local = E * A / L * np.array([[1, -1], [-1, 1]])
+    T = np.array([[c, s, 0, 0], [0, 0, c, s]])
+    return T.T @ k_local @ T
+\end{codigo}
+
+\begin{cuidado}
+La matriz de una barra aislada es singular: la barra puede moverse como cuerpo
+rígido. Intentar resolver un sistema con ella produce un error. Los apoyos son
+los que eliminan esa singularidad.
+\end{cuidado}
+
+\begin{table}[ht]
+  \centering
+  \caption{Geometría de las barras del ejemplo A.}
+  \begin{tabular}{@{}c S[table-format=1.2] S[table-format=-1.2] S[table-format=-1.2]@{}}
+    \toprule
+    {Barra} & {$L$ (\si{\metre})} & {$c$} & {$s$} \\
+    \midrule
+    1 & 6.00 & 1.00 & 0.00 \\
+    2 & 5.00 & -0.60 & 0.80 \\
+    3 & 5.00 & 0.60 & 0.80 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{parasabermas}
+La deducción completa de la matriz de rigidez se encuentra en
+\textcite{kassimali2012} y en \textcite{mcguire2000}.
+\end{parasabermas}
+
+\section*{Ejercicios}
+
+\begin{ejercicio}
+Calcular la matriz de rigidez en coordenadas globales de la barra~2 del
+ejemplo A y verificar que es simétrica.
+\end{ejercicio}
+
+\puntodecontrol{05}
+
+\printbibliography[heading=subbibliography]
+
+\end{document}

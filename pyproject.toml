@@ -1,0 +1,29 @@
+[project]
+name = "libro-rigidez-python-armaduras2d"
+version = "0.1.0"
+description = "Análisis matricial de armaduras con Python: código, generadores y verificaciones del libro"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy",
+    "matplotlib",
+]
+
+[dependency-groups]
+dev = [
+    "jupytext",
+    "nbclient",
+    "ipykernel",
+    "pytest",
+    "ruff",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["codigo/tests", "scripts/tests"]
+
+[tool.ruff]
+line-length = 88
+extend-include = ["*.ipynb"]

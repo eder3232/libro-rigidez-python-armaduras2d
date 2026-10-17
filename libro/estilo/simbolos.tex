@@ -1,0 +1,41 @@
+% Símbolos TikZ para los esquemas estructurales del libro.
+% Todos los esquemas usan estos estilos para verse idénticos.
+
+\tikzset{
+  barra/.style={line width=1.6pt, line cap=round, color=black!80},
+  barra traccion/.style={barra, color=traccion},
+  barra compresion/.style={barra, color=compresion},
+  barra deformada/.style={line width=1pt, dashed, color=acento},
+  nodo/.style={circle, fill=white, draw=black!80, line width=1pt,
+    inner sep=0pt, minimum size=6pt},
+  etiqueta nodo/.style={font=\sffamily\small\bfseries, color=principal},
+  etiqueta barra/.style={font=\sffamily\small, color=black!70,
+    fill=white, inner sep=1.5pt, rounded corners=1pt},
+  carga/.style={-{Stealth[length=7pt]}, line width=1.2pt, color=acento},
+  eje/.style={-{Stealth[length=5pt]}, line width=0.6pt, color=black!60},
+}
+
+% \apoyoarticulado{(x,y)}: triángulo con terreno rayado
+\newcommand{\apoyoarticulado}[1]{%
+  \begin{scope}[shift={#1}]
+    \draw[line width=0.9pt, fill=black!8] (0,0) -- (-0.22,-0.32) -- (0.22,-0.32) -- cycle;
+    \fill[pattern=north east lines, pattern color=black!50]
+      (-0.34,-0.32) rectangle (0.34,-0.44);
+    \draw[line width=0.9pt] (-0.34,-0.32) -- (0.34,-0.32);
+  \end{scope}}
+
+% \apoyorodillo{(x,y)}: triángulo sobre rodillos (restringe solo la vertical)
+\newcommand{\apoyorodillo}[1]{%
+  \begin{scope}[shift={#1}]
+    \draw[line width=0.9pt, fill=black!8] (0,0) -- (-0.22,-0.28) -- (0.22,-0.28) -- cycle;
+    \foreach \x in {-0.13, 0, 0.13}
+      \draw[line width=0.7pt] (\x,-0.33) circle (0.05);
+    \fill[pattern=north east lines, pattern color=black!50]
+      (-0.34,-0.38) rectangle (0.34,-0.5);
+    \draw[line width=0.9pt] (-0.34,-0.38) -- (0.34,-0.38);
+  \end{scope}}
+
+% \cargapuntual{(x,y)}{(dx,dy)}{texto}: flecha que llega al punto (x,y)
+\newcommand{\cargapuntual}[3]{%
+  \draw[carga] ($#1 - #2$) -- #1 node[pos=0, anchor=center, font=\sffamily\small,
+    color=acento, fill=white, inner sep=1.5pt] {#3};}
