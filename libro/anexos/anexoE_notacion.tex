@@ -1,4 +1,148 @@
 % anexos/anexoE_notacion.tex
 \chapter{Notación y convenciones de signos}\label{cap:notacion}
 
-\pendiente{ver docs/01-indice.md}
+Este anexo reúne la notación, las convenciones de signos y las unidades del
+libro, y la correspondencia entre cada símbolo y su nombre en la calculadora.
+Las matrices y los vectores se escriben en negrita, y los escalares en
+cursiva.
+
+% ---------------------------------------------------------------------------
+\section{Símbolos}\label{sec:e_simbolos}
+
+\begin{table}[ht]
+  \centering
+  \caption{Datos y geometría.}
+  \label{tab:e_geometria}
+  \small
+  \begin{tabular}{@{}llcc@{}}
+    \toprule
+    Símbolo & Significado & Unidad & Cap. \\
+    \midrule
+    $n$, $b$, $r$ & Cantidad de nodos, barras y reacciones & --- & 6 \\
+    $g = b + r - 2n$ & Grado de indeterminación & --- & 6 \\
+    $(x_i, y_i)$ & Coordenadas del nodo $i$ & \si{\metre} & 2 \\
+    $\Delta x$, $\Delta y$ & Proyecciones de una barra & \si{\metre} & 2 \\
+    $L$ & Longitud de una barra & \si{\metre} & 2 \\
+    $\theta$ & Ángulo de una barra con el eje $x$ & --- & 2 \\
+    $c$, $s$ & Cosenos directores, $\cos\theta$ y $\sin\theta$ & --- & 2 \\
+    $E$ & Módulo de elasticidad & \si{\kilo\newton\per\metre\squared} & 5 \\
+    $A$ & Área de la sección & \si{\metre\squared} & 5 \\
+    $EA/L$ & Rigidez axial de una barra & \si{\kilo\newton\per\metre} & 5 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[ht]
+  \centering
+  \caption{Matrices, vectores y resultados.}
+  \label{tab:e_matrices}
+  \small
+  \begin{tabular}{@{}llc@{}}
+    \toprule
+    Símbolo & Significado & Cap. \\
+    \midrule
+    $\mkl$ & Rigidez de una barra en coordenadas locales ($2 \times 2$) & 5 \\
+    $\mT$ & Matriz de transformación ($2 \times 4$) & 5 \\
+    $\mk = \mT\transp\,\mkl\,\mT$ & Rigidez de una barra en coordenadas globales ($4 \times 4$) & 5 \\
+    $\vul$, $\vu$ & Desplazamientos de los extremos de una barra & 5 \\
+    $2i - 1$, $2i$ & Grados de libertad $x$ e $y$ del nodo $i$ & 6 \\
+    $\mK$ & Matriz de rigidez de la armadura ($2n \times 2n$) & 7 \\
+    $\vU$, $\vF$ & Desplazamientos de los nodos y cargas aplicadas & 7 y 8 \\
+    $l$, $r$ & Subíndices: grados de libertad libres y restringidos & 8 \\
+    $\mK_{ll}$, $\mK_{lr}$, $\mK_{rl}$, $\mK_{rr}$ & Bloques de la partición de $\mK$ & 8 \\
+    $\vect{R}$ & Reacciones de los apoyos & 9 \\
+    $N$ & Fuerza axial de una barra & 10 \\
+    $\sigma = N/A$ & Esfuerzo axial de una barra & 10 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+% ---------------------------------------------------------------------------
+\section{Convenciones de signos}\label{sec:e_signos}
+
+\begin{itemize}
+  \item \textbf{Ejes globales:} $x$ hacia la derecha e $y$ hacia arriba.
+  \item \textbf{Ángulo de una barra:} $\theta$ se mide desde el eje $x$, en
+    sentido antihorario, hasta la dirección que va del nodo inicial al nodo
+    final (\cref{fig:geometria_barra}). Cambiar el orden de los nodos cambia
+    el signo de $c$ y $s$, pero no la matriz $\mk$ ni la fuerza axial.
+  \item \textbf{Desplazamientos, cargas y reacciones:} positivos en el sentido
+    positivo de los ejes globales. Una carga hacia abajo es negativa.
+  \item \textbf{Grados de libertad de una barra:} $u_1$ y $u_2$ son los
+    desplazamientos $x$ e $y$ del nodo inicial; $u_3$ y $u_4$, los del nodo
+    final (\cref{fig:barra_gdl}).
+  \item \textbf{Fuerza axial:} positiva en tracción y negativa en compresión
+    (\cref{fig:convencion_axial}).
+  \item \textbf{Numeración:} nodos, barras y grados de libertad se numeran
+    desde 1. La función \py{indices} es el único lugar de la calculadora que
+    traduce esa numeración a los índices de NumPy, que empiezan en 0.
+\end{itemize}
+
+% ---------------------------------------------------------------------------
+\section{Unidades}\label{sec:e_unidades}
+
+Los cálculos se hacen siempre en kilonewtons y metros. Los resultados se
+presentan en las unidades más legibles para cada magnitud.
+
+\begin{table}[ht]
+  \centering
+  \caption{Unidades de cálculo y de presentación.}
+  \label{tab:e_unidades}
+  \small
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    Magnitud & En los cálculos & Al presentar \\
+    \midrule
+    Longitudes y coordenadas & \si{\metre} & \si{\metre} \\
+    Áreas & \si{\metre\squared} & \si{\centi\metre\squared} \\
+    Módulo de elasticidad & \si{\kilo\newton\per\metre\squared} & \si{\giga\pascal} \\
+    Fuerzas, cargas y reacciones & \si{\kilo\newton} & \si{\kilo\newton} \\
+    Desplazamientos & \si{\metre} & \si{\milli\metre} \\
+    Esfuerzos & \si{\kilo\newton\per\metre\squared} & \si{\mega\pascal} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Las equivalencias más útiles son:
+\begin{itemize}
+  \item $\SI{1}{\giga\pascal} = \SI{e6}{\kilo\newton\per\metre\squared}$, de
+    modo que $E = \SI{200}{\giga\pascal} =
+    \SI{2.0e8}{\kilo\newton\per\metre\squared}$;
+  \item $\SI{1}{\centi\metre\squared} = \SI{e-4}{\metre\squared}$, de modo
+    que $A = \SI{20}{\centi\metre\squared} = \SI{0.0020}{\metre\squared}$;
+  \item $\SI{1}{\mega\pascal} = \SI{1000}{\kilo\newton\per\metre\squared}$.
+\end{itemize}
+
+% ---------------------------------------------------------------------------
+\section{Del símbolo al código}\label{sec:e_codigo}
+
+La \cref{tab:e_codigo} indica cómo se llama cada símbolo en la calculadora.
+En todas las funciones, los desplazamientos están en metros; las funciones
+que los muestran, como \py{mostrar_resultados}, los convierten a milímetros
+solo al imprimirlos.
+
+\begin{table}[hb]
+  \centering
+  \caption{Cada símbolo y su nombre en la calculadora.}
+  \label{tab:e_codigo}
+  \small
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    Símbolo & En la calculadora \\
+    \midrule
+    $(x_i, y_i)$ & \py{nodos[i]["x"]}, \py{nodos[i]["y"]} \\
+    $E$, $A$ & \py{barras[n]["elasticidad"]}, \py{barras[n]["area"]} \\
+    $L$ & \py{geometria[n]["longitud"]} \\
+    $c$, $s$ & \py{geometria[n]["c"]}, \py{geometria[n]["s"]} \\
+    $\mkl$ & \py{rigidez_local(E, A, L)} \\
+    $\mT$ & \py{matriz_transformacion(c, s)} \\
+    $\mk$ & \py{rigideces[n]} \\
+    $\mK$, $\vF$, $\vU$ & \py{K}, \py{F}, \py{U} \\
+    Grados de libertad $l$ y $r$ & \py{libres}, \py{restringidos} \\
+    $\mK_{ll}$, $\mK_{lr}$, $\mK_{rl}$, $\mK_{rr}$ & \py{K_ll}, \py{K_lr}, \py{K_rl}, \py{K_rr} \\
+    $\vU_l$, $\vU_r$, $\vF_l$, $\vF_r$ & \py{U_l}, \py{U_r}, \py{F_l}, \py{F_r} \\
+    $\vect{R}$ & \py{R} \\
+    $N$ de la barra $n$ & \py{N[n]} \\
+    \bottomrule
+  \end{tabular}
+\end{table}

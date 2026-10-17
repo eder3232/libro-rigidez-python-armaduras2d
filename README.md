@@ -4,7 +4,7 @@
 
 Texto universitario para estudiantes de 4.º año de Ingeniería Civil: aprenden a **construir su propia calculadora de armaduras 2D** con el método matricial de rigidez, escribiendo el código en Python paso a paso.
 
-> **Estado:** borrador completo de los capítulos 1 a 12 y de los anexos A a D (el E está en preparación). Falta la validación con SAP2000 y algunas capturas de pantalla: ver [**Validación con SAP2000 y capturas pendientes**](docs/05-validacion-sap2000.md).
+> **Estado:** texto completo: prefacio, capítulos 1 a 12 y anexos A a F. Falta la validación con SAP2000 y algunas capturas de pantalla: ver [**Validación con SAP2000 y capturas pendientes**](docs/05-validacion-sap2000.md).
 
 ## Construir el libro
 

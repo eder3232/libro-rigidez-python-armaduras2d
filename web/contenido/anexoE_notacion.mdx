@@ -1,9 +1,102 @@
 export const metadatos = {
   numero: "E",
   titulo: "Notación y convenciones de signos",
-  sincronizado_con: "d99d0ad52c",
+  sincronizado_con: "0fa2db1ee5",
 };
 
 {/* Generado por scripts/latex_a_mdx.py desde libro/anexos/anexoE_notacion.tex. No editar a mano. */}
 
+Este anexo reúne la notación, las convenciones de signos y las unidades del
+libro, y la correspondencia entre cada símbolo y su nombre en la calculadora.
+Las matrices y los vectores se escriben en negrita, y los escalares en
+cursiva.
 
+## E.1 Símbolos
+
+**Tabla E.1:** Datos y geometría.
+
+| Símbolo | Significado | Unidad | Cap. |
+| :--- | :--- | :---: | :---: |
+| $n$, $b$, $r$ | Cantidad de nodos, barras y reacciones | — | 6 |
+| $g = b + r - 2n$ | Grado de indeterminación | — | 6 |
+| $(x_i, y_i)$ | Coordenadas del nodo $i$ | m | 2 |
+| $\Delta x$, $\Delta y$ | Proyecciones de una barra | m | 2 |
+| $L$ | Longitud de una barra | m | 2 |
+| $\theta$ | Ángulo de una barra con el eje $x$ | — | 2 |
+| $c$, $s$ | Cosenos directores, $\cos\theta$ y $\sin\theta$ | — | 2 |
+| $E$ | Módulo de elasticidad | kN/m² | 5 |
+| $A$ | Área de la sección | m² | 5 |
+| $EA/L$ | Rigidez axial de una barra | kN/m | 5 |
+
+**Tabla E.2:** Matrices, vectores y resultados.
+
+| Símbolo | Significado | Cap. |
+| :--- | :--- | :---: |
+| $\mkl$ | Rigidez de una barra en coordenadas locales ($2 \times 2$) | 5 |
+| $\mT$ | Matriz de transformación ($2 \times 4$) | 5 |
+| $\mk = \mT\transp\,\mkl\,\mT$ | Rigidez de una barra en coordenadas globales ($4 \times 4$) | 5 |
+| $\vul$, $\vu$ | Desplazamientos de los extremos de una barra | 5 |
+| $2i - 1$, $2i$ | Grados de libertad $x$ e $y$ del nodo $i$ | 6 |
+| $\mK$ | Matriz de rigidez de la armadura ($2n \times 2n$) | 7 |
+| $\vU$, $\vF$ | Desplazamientos de los nodos y cargas aplicadas | 7 y 8 |
+| $l$, $r$ | Subíndices: grados de libertad libres y restringidos | 8 |
+| $\mK_{ll}$, $\mK_{lr}$, $\mK_{rl}$, $\mK_{rr}$ | Bloques de la partición de $\mK$ | 8 |
+| $\vect{R}$ | Reacciones de los apoyos | 9 |
+| $N$ | Fuerza axial de una barra | 10 |
+| $\sigma = N/A$ | Esfuerzo axial de una barra | 10 |
+
+## E.2 Convenciones de signos
+
+- **Ejes globales:** $x$ hacia la derecha e $y$ hacia arriba.
+- **Ángulo de una barra:** $\theta$ se mide desde el eje $x$, en sentido antihorario, hasta la dirección que va del nodo inicial al nodo final (figura 2.1). Cambiar el orden de los nodos cambia el signo de $c$ y $s$, pero no la matriz $\mk$ ni la fuerza axial.
+- **Desplazamientos, cargas y reacciones:** positivos en el sentido positivo de los ejes globales. Una carga hacia abajo es negativa.
+- **Grados de libertad de una barra:** $u_1$ y $u_2$ son los desplazamientos $x$ e $y$ del nodo inicial; $u_3$ y $u_4$, los del nodo final (figura 5.1).
+- **Fuerza axial:** positiva en tracción y negativa en compresión (figura 10.2).
+- **Numeración:** nodos, barras y grados de libertad se numeran desde 1. La función `indices` es el único lugar de la calculadora que traduce esa numeración a los índices de NumPy, que empiezan en 0.
+
+## E.3 Unidades
+
+Los cálculos se hacen siempre en kilonewtons y metros. Los resultados se
+presentan en las unidades más legibles para cada magnitud.
+
+**Tabla E.3:** Unidades de cálculo y de presentación.
+
+| Magnitud | En los cálculos | Al presentar |
+| :--- | :--- | :--- |
+| Longitudes y coordenadas | m | m |
+| Áreas | m² | cm² |
+| Módulo de elasticidad | kN/m² | GPa |
+| Fuerzas, cargas y reacciones | kN | kN |
+| Desplazamientos | m | mm |
+| Esfuerzos | kN/m² | MPa |
+
+Las equivalencias más útiles son:
+
+- $1\,\mathrm{GPa} = \times10^{6}\,\mathrm{kN/m^2}$, de modo que $E = 200\,\mathrm{GPa} = 2.0\times10^{8}\,\mathrm{kN/m^2}$;
+- $1\,\mathrm{cm^2} = \times10^{-4}\,\mathrm{m^2}$, de modo que $A = 20\,\mathrm{cm^2} = 0.0020\,\mathrm{m^2}$;
+- $1\,\mathrm{MPa} = 1000\,\mathrm{kN/m^2}$.
+
+## E.4 Del símbolo al código
+
+La tabla E.4 indica cómo se llama cada símbolo en la calculadora.
+En todas las funciones, los desplazamientos están en metros; las funciones
+que los muestran, como `mostrar_resultados`, los convierten a milímetros
+solo al imprimirlos.
+
+**Tabla E.4:** Cada símbolo y su nombre en la calculadora.
+
+| Símbolo | En la calculadora |
+| :--- | :--- |
+| $(x_i, y_i)$ | `nodos[i]["x"]`, `nodos[i]["y"]` |
+| $E$, $A$ | `barras[n]["elasticidad"]`, `barras[n]["area"]` |
+| $L$ | `geometria[n]["longitud"]` |
+| $c$, $s$ | `geometria[n]["c"]`, `geometria[n]["s"]` |
+| $\mkl$ | `rigidez_local(E, A, L)` |
+| $\mT$ | `matriz_transformacion(c, s)` |
+| $\mk$ | `rigideces[n]` |
+| $\mK$, $\vF$, $\vU$ | `K`, `F`, `U` |
+| Grados de libertad $l$ y $r$ | `libres`, `restringidos` |
+| $\mK_{ll}$, $\mK_{lr}$, $\mK_{rl}$, $\mK_{rr}$ | `K_ll`, `K_lr`, `K_rl`, `K_rr` |
+| $\vU_l$, $\vU_r$, $\vF_l$, $\vF_r$ | `U_l`, `U_r`, `F_l`, `F_r` |
+| $\vect{R}$ | `R` |
+| $N$ de la barra $n$ | `N[n]` |
