@@ -145,7 +145,7 @@ Un único comando (por definir en `scripts/`) ejecuta todas las verificaciones y
 | Anexo B. Leer un error de Python | estable | listo (celdas "error") | generado | — |
 | Anexo C. Trabajar en local | estable | listo (calculadora.py) | generado | — |
 | Anexo D. Validación con software comercial | borrador (falta: resultados de SAP2000 y capturas; ver docs/05-validacion-sap2000.md) | listo | generado | — |
-| Anexo E. Notación y convenciones de signos | borrador | — | generado | — |
+| Anexo E. Notación y convenciones de signos | estable | — | generado | — |
 
 Estados posibles: `pendiente` → `borrador` → `revisado` → `estable`.
 

@@ -78,6 +78,14 @@ mostrar_vector(U * 1000, list(range(1, len(U) + 1)),
                decimales=3)
 # [fin: c09_mostrar_u]
 
+# %% tags=["libro"]
+# Desplazamientos que cita el texto, en mm (gdl 5 y 6: nodo 3; gdl 3: nodo 2)
+ux_3, uy_3, ux_2 = U[indices([5, 6, 3])] * 1000
+valor_libro("c09_ux_3", ux_3, 3)
+valor_libro("c09_uy_3", uy_3, 3)
+valor_libro("c09_uy_3_abajo", -uy_3, 3)
+valor_libro("c09_ux_2", ux_2, 3)
+
 # %% tags=["acumulable"]
 # [inicio: c09_reacciones]
 def calcular_reacciones(K_rl, K_rr, U_l, U_r, F_r):
