@@ -1,4 +1,108 @@
 % capitulos/prefacio.tex
 \addchap{Prefacio}
 
-\pendiente{cómo usar este libro (docs/01-indice.md)}
+Este libro enseña el método de rigidez para armaduras planas de la manera en
+que mejor se aprende un método: aplicándolo paso a paso hasta poder usarlo sin
+ayuda. Cada paso del método se convierte en unas pocas líneas de Python, y al
+final del libro esas líneas forman una calculadora completa, escrita por
+nosotros mismos, que analiza cualquier armadura plana: calcula sus
+desplazamientos, reacciones y fuerzas axiales, verifica el equilibrio y dibuja
+los resultados.
+
+\section*{A quién va dirigido}
+
+El libro está pensado para estudiantes de ingeniería civil que cursan análisis
+estructural, por lo general en el cuarto año de la carrera, y para docentes
+que quieran acompañar ese curso con programación. Supone que conocemos la
+estática de armaduras, las nociones de esfuerzo y deformación de resistencia
+de materiales y el álgebra de matrices. \emph{No} supone ningún conocimiento
+de programación: aprendemos Python a medida que el método lo necesita, y
+siempre con ejemplos de armaduras.
+
+\section*{Tres formatos, un mismo contenido}
+
+El libro existe en tres formatos que se complementan:
+\begin{description}
+  \item[El libro impreso o en PDF,] para leer con calma, estudiar la teoría y
+    resolver los ejercicios. Las soluciones están en el anexo~F.
+  \item[La versión web,] con el mismo texto, el código listo para copiar, las
+    soluciones plegadas debajo de cada ejercicio y enlaces directos a los
+    notebooks.
+  \item[Los notebooks,] archivos de Google Colab con el código de cada
+    capítulo, sus soluciones y sus puntos de control.
+\end{description}
+Todo está en el repositorio del libro,
+\url{https://github.com/eder3232/libro-rigidez-python-armaduras2d}.
+
+\section*{Cómo trabajar con el libro}
+
+Lo más importante es \emph{escribir el código}, no solo leerlo. Recomendamos
+trabajar así:
+\begin{enumerate}
+  \item Crear un notebook propio en nuestro Google Drive, como se explica en
+    el \cref{cap:primer_notebook}, y abrirlo con Google Colab. No hace falta
+    instalar nada.
+  \item Leer cada capítulo con el notebook abierto al lado, y escribir y
+    ejecutar cada fragmento de código a medida que aparece.
+  \item Comparar lo que obtenemos con la salida que muestra el libro. Si
+    coinciden, seguimos; si no, buscamos la diferencia antes de avanzar.
+  \item Resolver los ejercicios del capítulo antes de mirar las soluciones.
+\end{enumerate}
+Los capítulos se apoyan unos en otros: el código de cada uno usa las
+funciones de los anteriores. Por eso conviene leerlos en orden.
+
+\section*{Los puntos de control}
+
+Puede pasar que algo no funcione y no encontremos el error, o que queramos
+saltarnos un capítulo. Para eso, cada capítulo termina con un \emph{punto de
+control}: un notebook con todo el código del libro hasta ese capítulo, ya
+escrito y probado. Basta con abrirlo, copiarlo a nuestro Drive y continuar
+desde ahí. El capítulo 12 ofrece, además, la calculadora completa, organizada
+para analizar nuestras propias armaduras.
+
+\section*{Las cajas del texto}
+
+El texto se acompaña de cajas con un papel fijo:
+\begin{description}
+  \item[Recuerda:] la teoría que ya conocemos, en la notación del libro.
+  \item[Python:] una herramienta del lenguaje que usamos por primera vez.
+  \item[Cuidado:] un error frecuente y cómo evitarlo.
+  \item[Estrategia de resolución:] los pasos para resolver un tipo de
+    problema.
+  \item[Para saber más:] una ampliación que puede omitirse sin perder el hilo.
+  \item[Problema resuelto:] un ejemplo completo, con su enunciado, su
+    solución y su verificación.
+\end{description}
+Las ecuaciones más importantes aparecen resaltadas con un fondo de color.
+
+El código aparece sobre un fondo claro, con sus colores habituales, y lo que
+produce al ejecutarse aparece debajo, marcado con una línea vertical a la
+izquierda. Los fragmentos de código del libro son exactamente los de los
+notebooks: se extraen automáticamente de un mismo archivo y se ejecutan antes
+de cada edición, de modo que toda salida impresa es la que produce el código.
+
+\section*{Notación y unidades}
+
+Las matrices se escriben en negrita mayúscula ($\mK$, $\mT$) y los vectores
+en negrita ($\vU$, $\vF$); la notación completa y las convenciones de signos
+están en el anexo~E. Trabajamos siempre en kilonewtons y metros, de modo que
+el módulo de elasticidad va en \si{\kilo\newton\per\metre\squared} y las
+áreas en \si{\metre\squared}. Los nodos, las barras y los grados de libertad
+se numeran desde 1, como en cualquier texto de análisis estructural.
+
+\begin{parasabermas}
+En el ámbito hispanohablante, una misma estructura recibe nombres distintos:
+\emph{armadura} en buena parte de América Latina, \emph{cercha} en Colombia,
+Venezuela y España, y \emph{reticulado} en el Cono Sur. En este libro usamos
+\enquote{armadura}, pero los tres términos significan lo mismo.
+\end{parasabermas}
+
+\section*{Licencia}
+
+Este libro es una obra abierta. El texto y las figuras se distribuyen bajo la
+licencia Creative Commons Atribución-NoComercial-CompartirIgual 4.0 (CC BY-NC-SA
+4.0), y el código, bajo la licencia MIT: podemos usarlo, modificarlo e
+incorporarlo en nuestros propios programas, citando su origen.
+
+\bigskip
+\noindent Eddy Eder Sucapuca Cruz

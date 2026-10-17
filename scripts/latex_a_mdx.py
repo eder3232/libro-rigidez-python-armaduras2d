@@ -641,9 +641,16 @@ def huella(archivo):
 def convertir(id_capitulo):
     archivo = CAPITULOS / f"{id_capitulo}.tex"
     texto = quitar_comentarios(archivo.read_text(encoding="utf-8"))
-    cabecera = re.search(r"\\chapter\{(.*?)\}\\label\{(cap:[^}]+)\}", texto)
     etiquetas = leer_etiquetas()
-    numero_capitulo = etiquetas[cabecera.group(2)]
+    cabecera = re.search(r"\\chapter\{(.*?)\}\\label\{(cap:[^}]+)\}", texto)
+    if cabecera:
+        numero_capitulo = etiquetas[cabecera.group(2)]
+        nombre_destino = id_capitulo
+    else:
+        # Capítulo sin número (\addchap), como el prefacio: va primero en la web.
+        cabecera = re.search(r"\\addchap\{(.*?)\}", texto)
+        numero_capitulo = "0"
+        nombre_destino = f"cap00_{id_capitulo}"
     convertidor = Convertidor(
         numero_capitulo,
         etiquetas,
@@ -672,13 +679,14 @@ def convertir(id_capitulo):
         " No editar a mano. */}\n\n"
         f"{notebooks}{cuerpo}\n"
     )
-    destino = DESTINO / f"{id_capitulo}.mdx"
+    destino = DESTINO / f"{nombre_destino}.mdx"
     destino.write_text(mdx, encoding="utf-8", newline="\n")
     return destino
 
 
 def todos_los_capitulos():
-    return sorted(archivo.stem for archivo in CAPITULOS.glob("cap*.tex"))
+    capitulos = sorted(archivo.stem for archivo in CAPITULOS.glob("cap*.tex"))
+    return ["prefacio", *capitulos]
 
 
 if __name__ == "__main__":

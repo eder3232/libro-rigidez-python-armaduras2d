@@ -123,7 +123,8 @@ Un único comando (por definir en `scripts/`) ejecuta todas las verificaciones y
 
 | Capítulo | LaTeX | Código y tests | Web | Animaciones |
 |---|---|---|---|---|
-| 1. Por qué programar el método de rigidez | borrador | — (sin código) | generado | — |
+| Prefacio | borrador | — (sin código) | generado | — |
+| 1. Por qué programar el método de rigidez | estable | — (sin código) | generado | — |
 | 2. Nuestro primer notebook | estable (falta: capturas de Colab) | listo | generado | — |
 | 3. Describir una armadura | estable | listo | generado | — |
 | 4. La geometría de todas las barras | estable | listo | generado | — |

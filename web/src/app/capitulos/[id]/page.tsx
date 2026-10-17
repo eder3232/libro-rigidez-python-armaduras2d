@@ -12,6 +12,8 @@ export async function generateMetadata({
 }: PageProps<"/capitulos/[id]">): Promise<Metadata> {
   const { id } = await params;
   const { metadatos } = await cargarCapitulo(id);
+  // El número 0 corresponde al prefacio, que no tiene número de capítulo.
+  if (metadatos.numero === 0) return { title: metadatos.titulo };
   return { title: `${metadatos.numero}. ${metadatos.titulo}` };
 }
 
@@ -20,7 +22,7 @@ export default async function Capitulo({ params }: PageProps<"/capitulos/[id]">)
   const { Contenido, metadatos } = await cargarCapitulo(id);
   return (
     <article className="prosa">
-      <p className="capitulo-numero">Capítulo {metadatos.numero}</p>
+      {metadatos.numero > 0 && <p className="capitulo-numero">Capítulo {metadatos.numero}</p>}
       <h1>{metadatos.titulo}</h1>
       <Contenido />
     </article>
