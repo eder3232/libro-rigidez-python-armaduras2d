@@ -1,4 +1,137 @@
 % anexos/anexoC_trabajar_en_local.tex
 \chapter{Trabajar en local}\label{cap:trabajar_en_local}
 
-\pendiente{ver docs/01-indice.md}
+Todo el libro puede seguirse con Google Colab, sin instalar nada. Este anexo es
+opcional: está pensado para quien quiera usar la calculadora en su propio
+computador, sin conexión a internet, o incorporarla en programas más grandes.
+
+% ---------------------------------------------------------------------------
+\section{Qué necesitamos}\label{sec:c_requisitos}
+
+Para trabajar en local necesitamos tres cosas:
+\begin{itemize}
+  \item \textbf{Python}, la misma versión que usa Colab (3.12 al escribir este
+    libro) o una más reciente.
+  \item \textbf{Los paquetes} que usa la calculadora: NumPy y Matplotlib, y
+    Jupyter si queremos trabajar con notebooks.
+  \item \textbf{Un editor.} Recomendamos Visual Studio Code, gratuito, con
+    las extensiones \emph{Python} y \emph{Jupyter}: abre los notebooks del
+    libro igual que Colab.
+\end{itemize}
+
+% ---------------------------------------------------------------------------
+\section{El problema de los entornos}\label{sec:c_entornos}
+
+Instalar Python es fácil; lo que suele complicarse es instalar los paquetes.
+Si instalamos todos los paquetes de todos nuestros proyectos en una misma
+instalación de Python, tarde o temprano dos proyectos necesitarán versiones
+distintas del mismo paquete, y uno de los dos dejará de funcionar. Además, es
+frecuente terminar con varias instalaciones de Python en el mismo computador
+sin saber cuál se está usando.
+
+La solución es un \termino{entorno virtual}{virtual environment}: una carpeta
+con su propia copia de Python y sus propios paquetes, separada del resto del
+sistema. Cada proyecto tiene su entorno, y lo que instalamos en uno no afecta
+a los demás. Hay tres caminos habituales para crearlos:
+\begin{description}
+  \item[Anaconda.] Una distribución que trae Python, cientos de paquetes y
+    su propio gestor de entornos, \texttt{conda}. Es cómoda, pero ocupa
+    varios gigabytes, y mezclar \texttt{conda} con \texttt{pip} en un mismo
+    entorno es una fuente frecuente de conflictos. Sus condiciones de uso
+    para organizaciones han cambiado en los últimos años; conviene revisarlas
+    antes de usarla en una empresa.
+  \item[Python, \texttt{venv} y \texttt{pip}.] El camino clásico: Python
+    descargado de \url{https://www.python.org}, entornos con el módulo
+    \texttt{venv} y paquetes con \texttt{pip}, que vienen incluidos.
+  \item[uv.] Una herramienta más reciente que instala Python, crea el
+    entorno e instala los paquetes con un solo programa, y lo hace muy
+    rápido. Es la que usamos para escribir este libro.
+\end{description}
+Para un proyecto pequeño como la calculadora, que solo necesita NumPy y
+Matplotlib, recomendamos uv o el camino clásico.
+
+% ---------------------------------------------------------------------------
+\section{Con uv}\label{sec:c_uv}
+
+Instalamos uv siguiendo las instrucciones de su sitio,
+\url{https://docs.astral.sh/uv}. Después, en una terminal, creamos un
+proyecto para la calculadora e instalamos sus paquetes:
+\begin{consola}
+uv init mi-calculadora
+cd mi-calculadora
+uv add numpy matplotlib jupyter
+\end{consola}
+uv descarga la versión de Python que haga falta y crea el entorno dentro de la
+carpeta del proyecto. Para abrir Jupyter en el navegador, o para ejecutar un
+archivo de Python con el entorno del proyecto:
+\begin{consola}
+uv run jupyter lab
+uv run python mi_armadura.py
+\end{consola}
+
+% ---------------------------------------------------------------------------
+\section{Con venv y pip}\label{sec:c_venv}
+
+Instalamos Python desde \url{https://www.python.org}. En Windows, durante la
+instalación, marcamos la opción \emph{Add python.exe to PATH}. Después, en una
+terminal abierta en la carpeta del proyecto, creamos el entorno y lo
+activamos. En Windows:
+\begin{consola}
+python -m venv .venv
+.venv\Scripts\activate
+\end{consola}
+En macOS o Linux:
+\begin{consola}
+python3 -m venv .venv
+source .venv/bin/activate
+\end{consola}
+Con el entorno activo, el nombre \texttt{(.venv)} aparece al comienzo de la
+línea de la terminal, e instalamos los paquetes:
+\begin{consola}
+pip install numpy matplotlib jupyter
+\end{consola}
+El entorno debe activarse de nuevo cada vez que abrimos una terminal. Visual
+Studio Code lo detecta solo si la carpeta \texttt{.venv} está en el proyecto.
+
+% ---------------------------------------------------------------------------
+\section{La calculadora como módulo}\label{sec:c_modulo}
+
+En Colab, el motor de la calculadora es la primera celda de nuestro notebook.
+En local podemos guardarlo en un archivo aparte y usarlo desde cualquier
+notebook o programa: un archivo \texttt{.py} con funciones que se importa
+desde otros archivos se llama \termino{módulo}{module}, como \texttt{math} o
+NumPy.
+
+El repositorio del libro incluye ese archivo, \texttt{calculadora.py}, en la
+carpeta \texttt{notebooks}. Contiene exactamente el mismo código que la
+sección Motor de \texttt{mi\_calculadora.ipynb} y se genera a partir de él, de
+modo que siempre coinciden. Lo copiamos en la carpeta de nuestro proyecto y,
+en un archivo o notebook de la misma carpeta, importamos las funciones que
+necesitamos:
+\begin{codigo}
+from calculadora import (analizar_armadura,
+                         mostrar_resultados,
+                         verificar_resultados,
+                         graficar_resultados)
+
+nodos = {1: {"x": 0.0, "y": 0.0},
+         2: {"x": 6.0, "y": 0.0},
+         3: {"x": 3.0, "y": 4.0}}
+# ... barras, apoyos y cargas, como en el capítulo 3
+
+resultados = analizar_armadura(nodos, barras,
+                               apoyos, cargas)
+verificar_resultados(nodos, barras, resultados)
+mostrar_resultados(nodos, barras, resultados)
+graficar_resultados(nodos, barras, resultados)
+\end{codigo}
+Si lo ejecutamos como programa, con \texttt{uv run python mi\_armadura.py} o
+\texttt{python mi\_armadura.py}, los resultados se imprimen en la terminal y
+los gráficos se abren en una ventana.
+
+\begin{parasabermas}
+Separar el motor en un módulo es el primer paso para convertir la calculadora
+en un programa más grande: leer los datos de una planilla, analizar muchas
+armaduras en un bucle o comparar alternativas de diseño. El motor no cambia;
+solo cambia el programa que lo usa.
+\end{parasabermas}

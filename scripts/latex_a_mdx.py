@@ -22,6 +22,7 @@ Uso: uv run python scripts/latex_a_mdx.py [capNN_nombre ...]
 import hashlib
 import re
 import sys
+import textwrap
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -298,6 +299,11 @@ class Convertidor:
             return self.tabla(contenido)
         if nombre == "center":
             return self.bloques(contenido)
+        if nombre in ("codigo", "consola"):
+            # Texto literal: se copia tal cual en un bloque de código.
+            lenguaje = "python" if nombre == "codigo" else "text"
+            literal = textwrap.dedent(contenido.strip("\n")).rstrip()
+            return self.bloque(f"```{lenguaje}\n{literal}\n```")
         if nombre == "ejercicio":
             clave, resto = leer_argumento(contenido, 0)
             if clave not in self.soluciones:

@@ -1,9 +1,136 @@
 export const metadatos = {
   numero: "C",
   titulo: "Trabajar en local",
-  sincronizado_con: "fb5a37d7c3",
+  sincronizado_con: "7cb0b39499",
 };
 
 {/* Generado por scripts/latex_a_mdx.py desde libro/anexos/anexoC_trabajar_en_local.tex. No editar a mano. */}
 
+Todo el libro puede seguirse con Google Colab, sin instalar nada. Este anexo es
+opcional: está pensado para quien quiera usar la calculadora en su propio
+computador, sin conexión a internet, o incorporarla en programas más grandes.
 
+## C.1 Qué necesitamos
+
+Para trabajar en local necesitamos tres cosas:
+
+- **Python**, la misma versión que usa Colab (3.12 al escribir este libro) o una más reciente.
+- **Los paquetes** que usa la calculadora: NumPy y Matplotlib, y Jupyter si queremos trabajar con notebooks.
+- **Un editor.** Recomendamos Visual Studio Code, gratuito, con las extensiones *Python* y *Jupyter*: abre los notebooks del libro igual que Colab.
+
+## C.2 El problema de los entornos
+
+Instalar Python es fácil; lo que suele complicarse es instalar los paquetes.
+Si instalamos todos los paquetes de todos nuestros proyectos en una misma
+instalación de Python, tarde o temprano dos proyectos necesitarán versiones
+distintas del mismo paquete, y uno de los dos dejará de funcionar. Además, es
+frecuente terminar con varias instalaciones de Python en el mismo computador
+sin saber cuál se está usando.
+
+La solución es un *entorno virtual* (*virtual environment*): una carpeta
+con su propia copia de Python y sus propios paquetes, separada del resto del
+sistema. Cada proyecto tiene su entorno, y lo que instalamos en uno no afecta
+a los demás. Hay tres caminos habituales para crearlos:
+
+- **Anaconda.** Una distribución que trae Python, cientos de paquetes y su propio gestor de entornos, `conda`. Es cómoda, pero ocupa varios gigabytes, y mezclar `conda` con `pip` en un mismo entorno es una fuente frecuente de conflictos. Sus condiciones de uso para organizaciones han cambiado en los últimos años; conviene revisarlas antes de usarla en una empresa.
+- **Python, `venv` y `pip`.** El camino clásico: Python descargado de [www.python.org](https://www.python.org), entornos con el módulo `venv` y paquetes con `pip`, que vienen incluidos.
+- **uv.** Una herramienta más reciente que instala Python, crea el entorno e instala los paquetes con un solo programa, y lo hace muy rápido. Es la que usamos para escribir este libro.
+
+Para un proyecto pequeño como la calculadora, que solo necesita NumPy y
+Matplotlib, recomendamos uv o el camino clásico.
+
+## C.3 Con uv
+
+Instalamos uv siguiendo las instrucciones de su sitio,
+[docs.astral.sh/uv](https://docs.astral.sh/uv). Después, en una terminal, creamos un
+proyecto para la calculadora e instalamos sus paquetes:
+
+```text
+uv init mi-calculadora
+cd mi-calculadora
+uv add numpy matplotlib jupyter
+```
+
+uv descarga la versión de Python que haga falta y crea el entorno dentro de la
+carpeta del proyecto. Para abrir Jupyter en el navegador, o para ejecutar un
+archivo de Python con el entorno del proyecto:
+
+```text
+uv run jupyter lab
+uv run python mi_armadura.py
+```
+
+## C.4 Con venv y pip
+
+Instalamos Python desde [www.python.org](https://www.python.org). En Windows, durante la
+instalación, marcamos la opción *Add python.exe to PATH*. Después, en una
+terminal abierta en la carpeta del proyecto, creamos el entorno y lo
+activamos. En Windows:
+
+```text
+python -m venv .venv
+.venv\Scripts\activate
+```
+
+En macOS o Linux:
+
+```text
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+Con el entorno activo, el nombre `(.venv)` aparece al comienzo de la
+línea de la terminal, e instalamos los paquetes:
+
+```text
+pip install numpy matplotlib jupyter
+```
+
+El entorno debe activarse de nuevo cada vez que abrimos una terminal. Visual
+Studio Code lo detecta solo si la carpeta `.venv` está en el proyecto.
+
+## C.5 La calculadora como módulo
+
+En Colab, el motor de la calculadora es la primera celda de nuestro notebook.
+En local podemos guardarlo en un archivo aparte y usarlo desde cualquier
+notebook o programa: un archivo `.py` con funciones que se importa
+desde otros archivos se llama *módulo* (*module*), como `math` o
+NumPy.
+
+El repositorio del libro incluye ese archivo, `calculadora.py`, en la
+carpeta `notebooks`. Contiene exactamente el mismo código que la
+sección Motor de `mi\_calculadora.ipynb` y se genera a partir de él, de
+modo que siempre coinciden. Lo copiamos en la carpeta de nuestro proyecto y,
+en un archivo o notebook de la misma carpeta, importamos las funciones que
+necesitamos:
+
+```python
+from calculadora import (analizar_armadura,
+                         mostrar_resultados,
+                         verificar_resultados,
+                         graficar_resultados)
+
+nodos = {1: {"x": 0.0, "y": 0.0},
+         2: {"x": 6.0, "y": 0.0},
+         3: {"x": 3.0, "y": 4.0}}
+# ... barras, apoyos y cargas, como en el capítulo 3
+
+resultados = analizar_armadura(nodos, barras,
+                               apoyos, cargas)
+verificar_resultados(nodos, barras, resultados)
+mostrar_resultados(nodos, barras, resultados)
+graficar_resultados(nodos, barras, resultados)
+```
+
+Si lo ejecutamos como programa, con `uv run python mi\_armadura.py` o
+`python mi\_armadura.py`, los resultados se imprimen en la terminal y
+los gráficos se abren en una ventana.
+
+<ParaSaberMas>
+
+Separar el motor en un módulo es el primer paso para convertir la calculadora
+en un programa más grande: leer los datos de una planilla, analizar muchas
+armaduras en un bucle o comparar alternativas de diseño. El motor no cambia;
+solo cambia el programa que lo usa.
+
+</ParaSaberMas>

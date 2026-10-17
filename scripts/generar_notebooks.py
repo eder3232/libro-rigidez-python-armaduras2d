@@ -8,7 +8,8 @@ Por cada capítulo capNN_nombre.py se generan:
 - soluciones_capNN.ipynb: si existe codigo/soluciones/capNN_nombre.py.
 
 Además, mi_calculadora.ipynb: el notebook final del estudiante, con el motor
-(las definiciones de todo el código acumulable) y las celdas "calculadora".
+(las definiciones de todo el código acumulable) y las celdas "calculadora";
+y calculadora.py: el mismo motor como módulo de Python.
 
 Uso: uv run python scripts/generar_notebooks.py
 """
@@ -45,6 +46,19 @@ del libro *Análisis matricial de armaduras con Python*.
 2. **Datos**: la armadura a analizar. Reemplace estos datos por los de su
    armadura (unidades: kN y m).
 3. **Resultados**: el análisis, su verificación, los gráficos y las tablas."""
+
+ENCABEZADO_MODULO = '''\
+"""Motor de la calculadora de armaduras planas por el método de rigidez.
+
+Construido a lo largo del libro *Análisis matricial de armaduras con Python*.
+Es el mismo código de la sección Motor de mi_calculadora.ipynb.
+
+Uso, desde un archivo o notebook en la misma carpeta:
+
+    from calculadora import analizar_armadura, mostrar_resultados
+"""
+
+'''
 
 METADATOS_NOTEBOOK = {
     "kernelspec": {"name": "python3", "display_name": "Python 3", "language": "python"},
@@ -198,6 +212,12 @@ def generar(codigo=CODIGO, destino=NOTEBOOKS):
     if celdas_calculadora:
         celdas = notebook_calculadora(acumuladas, celdas_calculadora)
         escritos.append(escribir(celdas, destino / "mi_calculadora.ipynb"))
+        # El mismo motor como módulo, para trabajar en local (anexo C).
+        modulo = destino / "calculadora.py"
+        modulo.write_text(
+            ENCABEZADO_MODULO + motor(acumuladas) + "\n", encoding="utf-8", newline="\n"
+        )
+        escritos.append(modulo)
     return escritos
 
 

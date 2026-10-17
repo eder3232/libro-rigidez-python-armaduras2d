@@ -21,6 +21,13 @@ def test_comandos_en_linea():
     assert convertir(r"\termino{bucle}{loop}") == "*bucle* (*loop*)"
 
 
+def test_consola_y_codigo_son_literales():
+    texto = "\\begin{consola}\n  pip install numpy\n\\end{consola}\n"
+    assert convertir(texto) == "```text\npip install numpy\n```"
+    texto = "\\begin{codigo}\nd = {1: {\"x\": 0.0}}\n\\end{codigo}\n"
+    assert convertir(texto) == '```python\nd = {1: {"x": 0.0}}\n```'
+
+
 def test_menus_en_negrita():
     assert convertir(r"el menú \textsf{Archivo > Guardar}") == "el menú **Archivo > Guardar**"
 
