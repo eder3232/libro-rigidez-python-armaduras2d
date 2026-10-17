@@ -72,13 +72,14 @@ Los enlaces "Abrir en Colab" apuntan a los notebooks publicados en el repositori
 1. El capítulo se escribe y revisa en LaTeX.
 2. Cuando se marca como **estable**, se adapta a MDX en `web/`.
 3. La adaptación puede **agregar** lo que el papel no puede dar (animaciones, código ejecutable, soluciones plegables) y **reformular** para pantalla, pero **no puede cambiar el contenido técnico**. Si al adaptar se descubre un error, se corrige primero en LaTeX.
-4. Cada archivo MDX registra en su cabecera el commit de LaTeX con el que se sincronizó:
+4. Cada archivo MDX exporta sus metadatos, incluido el commit de LaTeX con el que se sincronizó:
 
-   ```yaml
-   ---
-   capitulo: 7
-   sincronizado_con: a1b2c3d
-   ---
+   ```js
+   export const metadatos = {
+     numero: 7,
+     titulo: "Ensamblaje de la matriz global",
+     sincronizado_con: "a1b2c3d",
+   };
    ```
 
    Un script compara ese commit con el último cambio del `.tex` correspondiente y avisa si la web quedó atrás.
@@ -116,11 +117,24 @@ Un único comando (por definir en `scripts/`) ejecuta todas las verificaciones y
 
 Estados posibles: `pendiente` → `borrador` → `revisado` → `estable`.
 
-## Tecnologías (propuestas, a confirmar al armar el andamiaje)
+## Tecnologías
 
-| Pieza | Herramienta |
+| Pieza | Herramienta | Estado |
+|---|---|---|
+| Python del repositorio | `uv`, Python 3.12 (la versión de Colab), NumPy, Matplotlib, pytest, Jupytext, Ruff | Listo |
+| LaTeX | LuaLaTeX + KOMA-Script (`scrbook`) + `minted` + `tcolorbox` + TikZ; tipografías Libertinus y Source Code Pro | Listo (maqueta inicial) |
+| Web | Next.js 16 (exportación estática) + MDX + KaTeX, con las mismas tipografías del PDF | Listo (maqueta inicial) |
+| Python en la web | Pyodide en un *web worker* | Pendiente |
+| Publicación | GitHub Pages o Vercel para la web; el PDF en las *releases* de GitHub | Pendiente |
+
+## Comandos
+
+| Tarea | Comando (desde la raíz) |
 |---|---|
-| Python del repositorio | `uv`, Python ≥ 3.12, NumPy, Matplotlib, pytest, Jupytext |
-| LaTeX | LuaLaTeX + `minted` para el código |
-| Web | Next.js (exportación estática) + MDX + KaTeX + Pyodide en un *web worker* |
-| Publicación | GitHub Pages o Vercel para la web; el PDF en las *releases* de GitHub |
+| Tests y verificación del código | `uv run pytest` |
+| Generar los notebooks | `uv run python scripts/generar_notebooks.py` |
+| Extraer los fragmentos | `uv run python scripts/extraer_fragmentos.py` |
+| Compilar el libro | `cd libro && latexmk libro.tex` (PDF en `libro/build/`) |
+| Compilar la muestra tipográfica | `cd libro && latexmk muestra.tex` |
+| Web en desarrollo | `cd web && pnpm dev` |
+| Web estática | `cd web && pnpm build` (sitio en `web/out/`) |

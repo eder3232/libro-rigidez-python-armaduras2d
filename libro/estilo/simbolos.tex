@@ -35,7 +35,8 @@
     \draw[line width=0.9pt] (-0.34,-0.38) -- (0.34,-0.38);
   \end{scope}}
 
-% \cargapuntual{(x,y)}{(dx,dy)}{texto}: flecha que llega al punto (x,y)
+% \cargapuntual{(x,y)}{(dx,dy)}{texto}: flecha que llega al punto (x,y);
+% (dx,dy) indica la dirección y el sentido de la fuerza.
 \newcommand{\cargapuntual}[3]{%
   \draw[carga] ($#1 - #2$) -- #1 node[pos=0, anchor=center, font=\sffamily\small,
     color=acento, fill=white, inner sep=1.5pt] {#3};}

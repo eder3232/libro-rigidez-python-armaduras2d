@@ -1,0 +1,154 @@
+@import "tailwindcss";
+
+/* Colores: los mismos de libro/estilo/armaduras.sty */
+:root {
+  --principal: #1f4e79;
+  --acento: #c8641e;
+  --texto: #1d1d1d;
+  --texto-suave: #5a5a5a;
+  --fondo: #fdfcf9;
+  --fondo-codigo: #f6f4ef;
+  --traccion: #0072b2;
+  --compresion: #d55e00;
+  --neutro: #8c8c8c;
+}
+
+@theme inline {
+  --font-serif: var(--fuente-serif);
+  --font-sans: var(--fuente-sans);
+  --font-mono: var(--fuente-mono);
+}
+
+body {
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: var(--fuente-serif), Georgia, serif;
+  font-size: 1.125rem;
+  line-height: 1.65;
+}
+
+.cabecera {
+  border-bottom: 1px solid #e4e1da;
+  padding: 0.9rem 1.5rem;
+  font-family: var(--fuente-sans), sans-serif;
+  font-size: 0.95rem;
+  color: var(--principal);
+}
+
+main {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 6rem;
+}
+
+/* Prosa del libro */
+.prosa h1,
+.prosa h2,
+.prosa h3 {
+  font-family: var(--fuente-sans), sans-serif;
+  color: var(--principal);
+  line-height: 1.2;
+}
+.prosa h1 {
+  font-size: 2.6rem;
+  margin: 0.2rem 0 2rem;
+}
+.prosa h2 {
+  font-size: 1.6rem;
+  margin: 2.5rem 0 1rem;
+}
+.prosa h3 {
+  font-size: 1.25rem;
+  margin: 2rem 0 0.8rem;
+}
+.prosa p,
+.prosa ul,
+.prosa ol {
+  margin: 0 0 1rem;
+}
+.prosa ul {
+  list-style: square;
+  padding-left: 1.5rem;
+}
+.prosa a {
+  color: var(--principal);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.capitulo-numero {
+  font-family: var(--fuente-sans), sans-serif;
+  color: var(--acento);
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* Código */
+.prosa pre {
+  background: var(--fondo-codigo);
+  padding: 1rem 1.2rem;
+  margin: 0 0 1.2rem;
+  overflow-x: auto;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.prosa code {
+  font-family: var(--fuente-mono), monospace;
+}
+
+/* Ecuaciones */
+.katex-display {
+  margin: 1.4rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* Cajas: equivalen a las de libro/estilo/armaduras.sty */
+.caja {
+  margin: 1.5rem 0;
+  padding: 0.8rem 1.1rem;
+  border-left: 3px solid var(--color-caja);
+  background: color-mix(in srgb, var(--color-caja) 6%, white);
+  font-size: 1rem;
+}
+.caja > :last-child {
+  margin-bottom: 0;
+}
+.caja-titulo {
+  font-family: var(--fuente-sans), sans-serif;
+  font-weight: 700;
+  color: var(--color-caja);
+  margin-bottom: 0.4rem !important;
+}
+.caja-acciones {
+  display: flex;
+  gap: 1.2rem;
+  font-family: var(--fuente-sans), sans-serif;
+}
+.caja-principal {
+  --color-caja: var(--principal);
+}
+.caja-traccion {
+  --color-caja: var(--traccion);
+}
+.caja-acento {
+  --color-caja: var(--acento);
+}
+.caja-neutro {
+  --color-caja: var(--neutro);
+}
+
+/* Índice de la portada */
+.indice {
+  list-style: none;
+  padding: 0;
+  font-family: var(--fuente-sans), sans-serif;
+}
+.indice li {
+  padding: 0.45rem 0;
+  border-bottom: 1px solid #ebe8e1;
+}
+.indice span {
+  display: inline-block;
+  width: 2.2rem;
+  color: var(--acento);
+}
