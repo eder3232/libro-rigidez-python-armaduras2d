@@ -128,7 +128,8 @@ Un único comando (por definir en `scripts/`) ejecuta todas las verificaciones y
 | 5. La rigidez de una barra | estable | listo | generado | — |
 | 6. Los grados de libertad | estable | listo | generado | — |
 | 7. Ensamblaje de la matriz global | estable | listo | generado | — |
-| 8. Cargas y partición del sistema | borrador | listo | generado | — |
+| 8. Cargas y partición del sistema | estable | listo | generado | — |
+| 9. Desplazamientos y reacciones | borrador | listo | generado | — |
 
 Estados posibles: `pendiente` → `borrador` → `revisado` → `estable`.
 

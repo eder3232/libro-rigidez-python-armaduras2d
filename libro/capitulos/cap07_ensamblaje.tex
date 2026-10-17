@@ -115,6 +115,10 @@ para las filas, que es el caso de las matrices cuadradas como $\mK$. En el
 \begin{python}
 \py{None} es el valor \enquote{nada} de Python: lo usamos como valor por
 omisión de \py{columnas} para saber si quien llama a la función la indicó.
+Antes de mostrar cada valor lo redondeamos con \py{round}; un número
+negativo muy pequeño, como $-10^{-15}$, se redondea a \py{-0.0}, y sumarle
+\py{0.0} lo convierte en \py{0.0}, para que la tabla no muestre ceros con
+signo.
 El operador \py{+=} también funciona con textos: los \emph{concatena}, es
 decir, los une uno tras otro. Así construimos cada línea de la tabla antes de
 imprimirla. En el formato \py{{valor:>{ancho}.{decimales}f}}, el ancho y los

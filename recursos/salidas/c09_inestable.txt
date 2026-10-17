@@ -1,0 +1,1 @@
+No se puede resolver. La armadura es inestable: K_ll es singular.

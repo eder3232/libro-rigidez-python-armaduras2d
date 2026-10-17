@@ -1,7 +1,7 @@
 export const metadatos = {
   numero: 7,
   titulo: "Ensamblaje de la matriz global",
-  sincronizado_con: "dacb634f63",
+  sincronizado_con: "39469c0323",
 };
 
 {/* Generado por scripts/latex_a_mdx.py desde libro/capitulos/cap07_ensamblaje.tex. No editar a mano. */}
@@ -135,6 +135,10 @@ para las filas, que es el caso de las matrices cuadradas como $\mK$. En el
 
 `None` es el valor «nada» de Python: lo usamos como valor por
 omisión de `columnas` para saber si quien llama a la función la indicó.
+Antes de mostrar cada valor lo redondeamos con `round`; un número
+negativo muy pequeño, como $-10^{-15}$, se redondea a `-0.0`, y sumarle
+`0.0` lo convierte en `0.0`, para que la tabla no muestre ceros con
+signo.
 El operador `+=` también funciona con textos: los *concatena*, es
 decir, los une uno tras otro. Así construimos cada línea de la tabla antes de
 imprimirla. En el formato `{valor:>{ancho}.{decimales}f}`, el ancho y los
@@ -192,8 +196,7 @@ En consecuencia, una traslación de toda la armadura no produce fuerzas:
 <Salida nombre="c07_cuerpo_rigido" />
 
 Comprobemos también dos términos a mano. Al grado de libertad 5 (nodo 3,
-dirección $x$) llegan las barras 2 y 3, cada una con $EA/L\,c^2 =
-80 \cdot 0.36 = 28.8\,\mathrm{kN/mm}$: su suma,
+dirección $x$) llegan las barras 2 y 3, cada una con $EA/L\,c^2 = 80 \cdot 0.36 = 28.8\,\mathrm{kN/mm}$: su suma,
 57.6 kN/mm, es el término de la fila y columna 5.
 Al grado de libertad 3 (nodo 2, dirección $x$) llegan las barras 1 y 2:
 $66.7 + 28.8 = 95.5\,\mathrm{kN/mm}$.
@@ -242,8 +245,7 @@ barras que llegan al nodo 3. Comprobarlo con el programa.
 <SolucionDelEjercicio>
 
 Al nodo 3 llegan las barras 2 y 3. En ambas, el grado de libertad 6 es el
-cuarto ($u_4$), y su término es $EA/L\,s^2 = 80 \cdot 0.64 =
-51.2\,\mathrm{kN/mm}$:
+cuarto ($u_4$), y su término es $EA/L\,s^2 = 80 \cdot 0.64 = 51.2\,\mathrm{kN/mm}$:
 
 <Fragmento nombre="s07_ejercicio_1" />
 

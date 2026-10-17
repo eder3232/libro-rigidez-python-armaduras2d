@@ -63,6 +63,8 @@ def mostrar_matriz(matriz, filas, columnas=None,
     for i, g in enumerate(filas):
         linea = f"{g:>4}"
         for valor in matriz[i]:
+            # Sumar 0.0 evita mostrar -0.0
+            valor = round(valor, decimales) + 0.0
             linea += f"{valor:>{ancho}.{decimales}f}"
         print(linea)
 # [fin: c07_mostrar_matriz]

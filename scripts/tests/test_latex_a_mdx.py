@@ -68,3 +68,8 @@ def test_align_numera_cada_linea():
     )
     assert r"x = 1 \tag{8.1}" in resultado
     assert r"y = 2 \tag{8.2}" in resultado
+
+
+def test_formula_en_linea_queda_en_una_sola_linea():
+    resultado = convertir("es $a\n- b$ y sigue")
+    assert resultado == "es $a - b$ y sigue"

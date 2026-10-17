@@ -1,11 +1,298 @@
 export const metadatos = {
   numero: 9,
   titulo: "Desplazamientos y reacciones",
-  sincronizado_con: "da9485375e",
+  sincronizado_con: "a909bfd107",
 };
 
 {/* Generado por scripts/latex_a_mdx.py desde libro/capitulos/cap09_desplazamientos_reacciones.tex. No editar a mano. */}
 
 <NotebooksDelCapitulo id="cap09_desplazamientos_reacciones" capitulo="09" />
 
+Llegamos al momento que justifica todo el trabajo anterior: resolver el
+sistema. Con los bloques del [capítulo 8](/capitulos/cap08_particion), la primera ecuación nos da
+los desplazamientos de los nodos libres y la segunda, las reacciones en los
+apoyos. NumPy resuelve el sistema en una línea; nuestro trabajo está en
+hacerlo bien, en detectar a tiempo una armadura inestable y en comprobar que
+el resultado respeta el equilibrio.
 
+<Objetivos>
+
+- Resolver el sistema de ecuaciones con `np.linalg.solve` y explicar por qué no conviene invertir la matriz.
+- Detectar una armadura inestable y comunicarlo con una excepción.
+- Calcular las reacciones en los apoyos.
+- Verificar el equilibrio global de la armadura, admitiendo los errores de redondeo.
+
+</Objetivos>
+
+## 9.1 La solución del sistema
+
+La ecuación (8.1) tiene una sola incógnita, $\vU_l$.
+Pasando al lado izquierdo el término conocido obtenemos un sistema de
+ecuaciones lineales:
+
+<EcuacionClave>
+
+$$
+\begin{aligned}
+\mK_{ll}\,\vU_l = \vF_l - \mK_{lr}\,\vU_r
+\end{aligned}
+$$
+
+</EcuacionClave>
+
+Con los desplazamientos de los nodos libres conocidos, la
+ecuación (8.2) da las fuerzas en los grados de
+libertad restringidos. Como esas fuerzas incluyen las cargas aplicadas
+directamente sobre los apoyos, las reacciones son
+
+$$
+\vect{R} = \mK_{rl}\,\vU_l + \mK_{rr}\,\vU_r - \vF_r, \tag{9.1}
+$$
+
+donde $\vF_r$ contiene solo esas cargas aplicadas, casi siempre nulas.
+Mientras los apoyos no se desplacen, $\vU_r = \vect{0}$; en el
+[capítulo 8](/capitulos/cap08_particion) dejamos el término $\mK_{lr}\vU_r$ para poder
+incorporar más adelante los asentamientos de apoyo.
+
+## 9.2 Resolver un sistema de ecuaciones con NumPy
+
+La función `np.linalg.solve(A, b)` resuelve el sistema $\vect{A}\vect{x} = \vect{b}$. Los desplazamientos resultan en metros, porque usamos
+kN y m; los mostramos en milímetros:
+
+<Fragmento nombre="c09_solve" />
+
+<Salida nombre="c09_solve" />
+
+Siempre conviene comprobar que la solución satisface el sistema. El
+*residuo* (*residual*) $\mK_{ll}\vU_l - (\vF_l - \mK_{lr}\vU_r)$ debe
+ser nulo:
+
+<Fragmento nombre="c09_residuo" />
+
+<Salida nombre="c09_residuo" />
+
+El residuo no es exactamente cero sino del orden de $10^{-15}$. Las
+computadoras guardan los números reales con unas 16 cifras significativas, y
+cada operación redondea la última. Por eso los resultados numéricos se
+comparan con una *tolerancia* (*tolerance*), como hace
+`np.allclose`, y nunca exigiendo igualdad exacta.
+
+<Cuidado>
+
+En los libros de texto la solución se escribe $\vU_l = \mK_{ll}^{-1}(\vF_l - \mK_{lr}\vU_r)$, y NumPy tiene la función `np.linalg.inv` para invertir
+una matriz. El resultado es el mismo:
+
+<Fragmento nombre="c09_inv" />
+
+<Salida nombre="c09_inv" />
+
+Pero calcular la inversa para después multiplicarla es más lento y acumula
+más errores de redondeo que resolver el sistema directamente, porque
+`solve` hace solo las operaciones necesarias para esa $\vect{b}$. En una
+armadura de pocas barras la diferencia no se nota; en una de miles de grados
+de libertad, sí. La regla es simple: para resolver un sistema, `solve`;
+la inversa, solo si de verdad se necesita la matriz inversa.
+
+</Cuidado>
+
+## 9.3 Armaduras inestables: `raise`, `try` y `except`
+
+En el [capítulo 8](/capitulos/cap08_particion) vimos que si la armadura es inestable, $\mK_{ll}$
+es singular. Resolver un sistema singular no tiene sentido, y no podemos
+confiar en que NumPy siempre lo detecte: por el redondeo, una matriz singular
+puede parecer «casi» invertible y producir desplazamientos enormes y
+sin significado. Por eso nuestra función comprueba el rango antes de resolver
+y, si es insuficiente, se detiene con un mensaje claro:
+
+<Fragmento nombre="c09_resolver" />
+
+La instrucción `raise` produce una *excepción* (*exception*): detiene
+la función y comunica qué salió mal. `ValueError` es el tipo de excepción
+que Python usa para «un dato con un valor inadecuado». Quien llama a
+la función puede *atrapar* la excepción con `try` y `except` y
+decidir qué hacer, en lugar de que el programa se detenga. Probemos con el
+ejemplo A sin su barra 1, el mecanismo de los ejercicios
+6.3 y 8.3:
+
+<Fragmento nombre="c09_inestable" />
+
+<Salida nombre="c09_inestable" />
+
+<Python>
+
+El bloque de `try` se ejecuta normalmente; si en él se produce una
+excepción del tipo indicado en `except`, Python salta al bloque de
+`except`, y `as error` guarda el mensaje. Si no hay excepción, el bloque
+de `except` no se ejecuta. El guion bajo `_` es un nombre convencional
+para los valores que se reciben pero no se van a usar.
+
+</Python>
+
+## 9.4 Desplazamientos y reacciones del ejemplo A
+
+Resolvemos ahora el ejemplo A con la función, y armamos el vector completo de
+desplazamientos, con los valores calculados en los grados de libertad libres
+y los impuestos en los restringidos. La asignación con una lista de índices
+coloca cada valor en su lugar:
+
+<Fragmento nombre="c09_desplazamientos" />
+
+<Fragmento nombre="c09_mostrar_u" />
+
+<Salida nombre="c09_mostrar_u" />
+
+Los resultados tienen sentido físico: el nodo 3 se desplaza
+0.563 mm hacia la derecha y 0.650 mm hacia
+abajo, en la dirección de la carga; el rodillo del nodo 2 se desliza
+0.431 mm hacia la derecha, porque la barra 1 se alarga; y el
+nodo 1 no se mueve. Son desplazamientos pequeños, del orden de los que
+esperamos en una armadura de acero de estas dimensiones.
+
+Las reacciones se calculan con la ecuación (9.1):
+
+<Fragmento nombre="c09_reacciones" />
+
+<Fragmento nombre="c09_mostrar_r" />
+
+<Salida nombre="c09_mostrar_r" />
+
+Como el ejemplo A es isostático, podemos comprobarlas con la estática: la
+reacción horizontal del nodo 1 equilibra la carga de 20 kN, y
+tomando momentos respecto del nodo 1, $6 R_{2y} = 20 \cdot 4 + 50 \cdot 3$, de
+donde $R_{2y} = 38.33\,\mathrm{kN}$ (ejercicio 9.1).
+
+## 9.5 Verificación del equilibrio
+
+Una armadura en equilibrio cumple, en conjunto, las tres ecuaciones de la
+estática: la suma de las fuerzas en $x$, la suma en $y$ y la suma de momentos
+de las cargas y las reacciones deben ser nulas. Es la verificación más
+importante del método de rigidez, porque no depende de cómo calculamos los
+resultados. El método `copy` crea una copia del vector de cargas, para
+sumarle las reacciones sin modificar el original:
+
+<Fragmento nombre="c09_equilibrio" />
+
+<Fragmento nombre="c09_comprobar" />
+
+<Salida nombre="c09_comprobar" />
+
+Las tres sumas son del orden de $10^{-14}$, es decir, nulas dentro del
+redondeo: la armadura está en equilibrio.
+
+<ProblemaResuelto numero="9.1" titulo="El ejemplo B">
+
+Calcular los desplazamientos y las reacciones del ejemplo B y verificar el
+equilibrio global.
+
+<Solucion />
+
+Encadenamos todas las funciones de la calculadora:
+
+<Fragmento nombre="c09_problema_resuelto" />
+
+<Salida nombre="c09_problema_resuelto" />
+
+<Fragmento nombre="c09_problema_resuelto_equilibrio" />
+
+<Salida nombre="c09_problema_resuelto_equilibrio" />
+
+**Verificación.** Las sumas son nulas dentro del redondeo. Llama la
+atención que las reacciones puedan comprobarse con la estática, aunque la
+armadura sea hiperestática: con un apoyo articulado y un rodillo hay solo tres
+reacciones, de modo que la armadura es isostática *externamente*. La
+hiperestaticidad es *interna*: sobra una barra, y la estática no basta
+para repartir las fuerzas entre las barras. Eso lo resolverá el
+[capítulo 10](/capitulos/cap10_fuerzas_internas).
+
+</ProblemaResuelto>
+
+## Repaso y resumen del capítulo
+
+- Los desplazamientos libres se obtienen de $\mK_{ll}\vU_l = \vF_l - \mK_{lr}\vU_r$, y las reacciones, de $\vect{R} = \mK_{rl}\vU_l + \mK_{rr}\vU_r - \vF_r$.
+- `np.linalg.solve` resuelve un sistema lineal; invertir la matriz es más lento y menos preciso.
+- Los resultados numéricos se comparan con tolerancias: el redondeo deja residuos del orden de $10^{-15}$.
+- `raise` produce una excepción; `try` y `except` la atrapan. La calculadora rechaza las armaduras inestables antes de resolver.
+- El equilibrio global (fuerzas en $x$ e $y$ y momentos) es la verificación más importante de los resultados.
+
+## Ejercicios
+
+<Ejercicio numero="9.1">
+
+Calcular a mano, con las ecuaciones de la estática, las reacciones del
+ejemplo A, y compararlas con las del programa.
+
+<SolucionDelEjercicio>
+
+La suma de fuerzas horizontales da $R_{1x} = -20\,\mathrm{kN}$. Con los
+momentos respecto del nodo 1 obtenemos $R_{2y}$, y con la suma de fuerzas
+verticales, $R_{1y}$:
+
+<Fragmento nombre="s09_ejercicio_1" />
+
+<Salida nombre="s09_ejercicio_1" />
+
+Los valores coinciden con los del programa.
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<Ejercicio numero="9.2">
+
+Resolver el ejemplo A con dos apoyos articulados (como en el
+ejercicio 6.2). ¿Pueden comprobarse ahora las reacciones con la
+estática? ¿Por qué?
+
+<SolucionDelEjercicio>
+
+<Fragmento nombre="s09_ejercicio_2" />
+
+<Salida nombre="s09_ejercicio_2" />
+
+Con dos apoyos articulados hay cuatro reacciones y solo tres ecuaciones de
+equilibrio: la armadura es hiperestática externamente, y las reacciones
+horizontales no pueden obtenerse con la estática. Su suma sí:
+$8.75 - 28.75 = -20\,\mathrm{kN}$, que equilibra la carga horizontal.
+Las reacciones verticales no cambian, porque los momentos respecto del nodo 1
+no dependen de las reacciones horizontales.
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<Ejercicio numero="9.3">
+
+Duplicar las cargas del ejemplo A y comprobar que los desplazamientos se
+duplican. ¿Qué hipótesis del método garantiza este resultado?
+
+<SolucionDelEjercicio>
+
+<Fragmento nombre="s09_ejercicio_3" />
+
+<Salida nombre="s09_ejercicio_3" />
+
+La hipótesis de comportamiento elástico lineal con desplazamientos pequeños:
+$\mK$ no depende de las cargas, de modo que los desplazamientos son
+proporcionales a ellas.
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<Ejercicio numero="9.4">
+
+Calcular el mayor desplazamiento, en valor absoluto, de los nodos del
+ejemplo B. La función `np.abs` da el valor absoluto de cada elemento de un
+arreglo, y el método `max`, el mayor de ellos.
+
+<SolucionDelEjercicio>
+
+<Fragmento nombre="s09_ejercicio_4" />
+
+<Salida nombre="s09_ejercicio_4" />
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<PuntoDeControl capitulo="09" />

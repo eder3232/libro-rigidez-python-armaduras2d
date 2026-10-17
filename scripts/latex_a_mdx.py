@@ -378,6 +378,9 @@ class Convertidor:
                         "\n\n$$\n" + self.matematica(pieza[2:-2]).strip() + "\n$$\n\n"
                     )
                 else:
+                    # En una sola línea: un salto seguido de "- " o "1. "
+                    # se leería en Markdown como el inicio de una lista.
+                    pieza = re.sub(r"\s*\n\s*", " ", pieza)
                     salida.append(self.matematica(pieza))
             else:
                 salida.append(self.texto(pieza))
@@ -508,6 +511,8 @@ class Convertidor:
             return self.numero_de(argumento()), pos
         if nombre == "cref":
             return self.referencia(argumento()), pos
+        if nombre == "eqref":
+            return f"({self.numero_de(argumento())})", pos
         if nombre in SIMBOLOS:
             return SIMBOLOS[nombre], pos
         if nombre == "textcite":

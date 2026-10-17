@@ -1,0 +1,3 @@
+Suma de fuerzas en x: 3.55e-15 kN
+Suma de fuerzas en y: 1.42e-14 kN
+Suma de momentos:     5.68e-14 kN·m
