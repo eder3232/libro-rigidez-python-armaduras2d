@@ -185,6 +185,8 @@ CAJAS = {
     "estrategia": "Estrategia",
 }
 
+SIMBOLOS = {"dots": "…", "ldots": "…", "textendash": "–", "textemdash": "—"}
+
 COMANDOS_IGNORADOS = {
     "label",
     "centering",
@@ -256,6 +258,19 @@ class Convertidor:
                 + self.matematica(contenido).strip()
                 + "\n\\end{aligned}\n$$\n\n</EcuacionClave>"
             )
+        if nombre == "align":
+            # Cada línea numerada se convierte en una ecuación con su número
+            ecuaciones = []
+            for linea in re.split(r"\\\\", contenido):
+                if not linea.strip():
+                    continue
+                etiqueta = re.search(r"\\label\{([^}]+)\}", linea)
+                formula = re.sub(r"\\label\{[^}]+\}", "", linea).replace("&", "")
+                formula = self.matematica(formula).strip()
+                if etiqueta:
+                    formula += rf" \tag{{{self.numero_de(etiqueta.group(1))}}}"
+                ecuaciones.append(f"$$\n{formula}\n$$")
+            return self.bloque("\n\n".join(ecuaciones))
         if nombre == "equation":
             etiqueta = re.search(r"\\label\{([^}]+)\}", contenido)
             formula = self.matematica(
@@ -493,6 +508,8 @@ class Convertidor:
             return self.numero_de(argumento()), pos
         if nombre == "cref":
             return self.referencia(argumento()), pos
+        if nombre in SIMBOLOS:
+            return SIMBOLOS[nombre], pos
         if nombre == "textcite":
             detalle, pos = leer_opcional(texto, pos)
             return cita_textual(argumento(), detalle), pos

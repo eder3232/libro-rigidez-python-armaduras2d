@@ -1,4 +1,195 @@
 % capitulos/cap08_particion.tex
 \chapter{Cargas y partición del sistema}\label{cap:particion}
 
-\pendiente{ver docs/01-indice.md}
+La matriz global $\mK$ relaciona todas las fuerzas nodales con todos los
+desplazamientos, $\vF = \mK\,\vU$. Pero no podemos resolver ese sistema tal
+como está: $\mK$ es singular, y en cada grado de libertad conocemos o la
+fuerza o el desplazamiento, nunca ambos. Antes de resolver debemos ordenar
+lo que sabemos y lo que no. En este capítulo ensamblamos el vector de
+cargas y dividimos el sistema en bloques de grados de libertad libres y
+restringidos. Al hacerlo, veremos cómo los apoyos eliminan la singularidad.
+
+\begin{objetivos}
+  \item Ensamblar el vector de cargas nodales de la armadura.
+  \item Seleccionar partes de un arreglo con rebanadas y sumar sus
+    elementos.
+  \item Dividir la matriz global en los bloques $\mK_{ll}$, $\mK_{lr}$,
+    $\mK_{rl}$ y $\mK_{rr}$.
+  \item Comprobar que $\mK_{ll}$ ya no es singular cuando la armadura es
+    estable.
+\end{objetivos}
+
+% ---------------------------------------------------------------------------
+\section{Lo conocido y lo desconocido}\label{sec:conocido}
+
+Ordenemos los grados de libertad en dos grupos, los libres ($l$) y los
+restringidos ($r$), y escribamos el sistema por bloques:
+
+\begin{ecuacionclave}
+  \begin{bmatrix} \vF_l \\ \vF_r \end{bmatrix} =
+  \begin{bmatrix} \mK_{ll} & \mK_{lr} \\ \mK_{rl} & \mK_{rr} \end{bmatrix}
+  \begin{bmatrix} \vU_l \\ \vU_r \end{bmatrix}
+\end{ecuacionclave}
+
+En los grados de libertad libres conocemos las cargas $\vF_l$ y buscamos los
+desplazamientos $\vU_l$. En los restringidos conocemos los desplazamientos
+$\vU_r$, que son nulos salvo que haya asentamientos, y buscamos las fuerzas
+$\vF_r$, que contienen las reacciones. El sistema por bloques equivale a dos
+ecuaciones:
+\begin{align}
+  \vF_l &= \mK_{ll}\,\vU_l + \mK_{lr}\,\vU_r, \label{eq:particion_libres}\\
+  \vF_r &= \mK_{rl}\,\vU_l + \mK_{rr}\,\vU_r. \label{eq:particion_restringidos}
+\end{align}
+La primera tiene una sola incógnita, $\vU_l$: la resolveremos en el
+\cref{cap:desplazamientos_reacciones}. Con $\vU_l$ conocido, la segunda da
+directamente las reacciones.
+
+La \cref{fig:particion} muestra los cuatro bloques para el ejemplo A. El
+dibujo ordena los grados de libertad poniendo primero los libres para que los
+bloques se vean contiguos; en el programa no hace falta reordenar nada,
+porque cada bloque se selecciona con las listas \py{libres} y
+\py{restringidos}.
+
+\begin{figure}[ht]
+  \centering
+  \figura{particion}
+  \caption{Partición de la matriz global del ejemplo A en bloques de grados
+    de libertad libres (3, 5, 6) y restringidos (1, 2, 4).}
+  \label{fig:particion}
+\end{figure}
+
+% ---------------------------------------------------------------------------
+\section{El vector de cargas}\label{sec:vector_cargas}
+
+El vector de cargas $\vF$ tiene un término por cada grado de libertad. Se
+ensambla como la matriz: empieza en ceros y cada carga se suma en los grados
+de libertad de su nodo. Usamos \py{+=} para que, si un mismo nodo recibiera
+varias cargas, se acumulen.
+\fragmento{c08_ensamblar_cargas}
+
+Como con las matrices, escribimos una función para mostrar un vector junto
+con sus grados de libertad:
+\fragmento{c08_mostrar_vector}
+\fragmento{c08_mostrar_vector_f}
+\salida{c08_mostrar_vector_f}
+
+\begin{cuidado}
+Las cargas que actúan directamente sobre un grado de libertad restringido
+quedan en $\vF_r$ y no producen desplazamientos: las toma el apoyo. En ese
+caso, la reacción es la fuerza total en el apoyo menos la carga aplicada.
+Lo tendremos en cuenta al calcular las reacciones en el
+\cref{cap:desplazamientos_reacciones}.
+\end{cuidado}
+
+% ---------------------------------------------------------------------------
+\section{Rebanadas}\label{sec:rebanadas}
+
+Además de seleccionar elementos con una lista de índices, NumPy permite
+tomar \termino{rebanadas}{slices}: tramos regulares de un arreglo. La
+notación es \py{[inicio:fin:paso]}, donde el fin no se incluye y cualquiera
+de los tres valores puede omitirse. Como los grados de libertad en $x$
+ocupan las posiciones pares (0, 2, 4, \dots) y los de $y$ las impares, las
+rebanadas \py{[0::2]} y \py{[1::2]} separan las componentes:
+\fragmento{c08_rebanadas}
+\salida{c08_rebanadas}
+
+Con el método \py{sum} obtenemos la resultante de las cargas en cada
+dirección, una verificación rápida de que el vector se ensambló bien:
+\fragmento{c08_suma_cargas}
+\salida{c08_suma_cargas}
+
+% ---------------------------------------------------------------------------
+\section{La partición del sistema}\label{sec:particion}
+
+Los cuatro bloques se obtienen con \py{np.ix_}, combinando los índices de los
+grados de libertad libres y restringidos. Una función los devuelve juntos, y
+quien la llama los recibe en cuatro variables, en el mismo orden:
+\fragmento{c08_particionar}
+
+La selección de $\vF_l$ es la misma que hicimos en el
+\cref{cap:grados_de_libertad} con un vector de prueba. Veamos los bloques del
+ejemplo A; para $\mK_{lr}$, cuyas filas y columnas son distintas, indicamos
+ambas listas a \py{mostrar_matriz}:
+\fragmento{c08_mostrar_bloques}
+\salida{c08_mostrar_bloques}
+
+% ---------------------------------------------------------------------------
+\section{Verificación}\label{sec:verificacion_particion}
+
+La matriz global era singular porque la armadura podía moverse como cuerpo
+rígido. Al separar los grados de libertad restringidos, impedimos esos
+movimientos: si la armadura está bien apoyada, $\mK_{ll}$ tiene rango
+completo y puede resolverse. Además, como $\mK$ es simétrica,
+$\mK_{lr} = \mK_{rl}\transp$.
+\fragmento{c08_verificacion}
+\salida{c08_verificacion}
+
+\begin{recuerda}
+El rango completo de $\mK_{ll}$ es la verificación definitiva de la
+estabilidad. A diferencia de la cuenta $g = b + r - 2n$ del
+\cref{cap:grados_de_libertad}, detecta también las armaduras con barras o
+apoyos mal dispuestos, porque refleja si existe algún movimiento posible sin
+deformar las barras.
+\end{recuerda}
+
+\begin{problemaresuelto}[El ejemplo B]
+Ensamblar el vector de cargas del ejemplo B, particionar su sistema y
+comprobar que $\mK_{ll}$ tiene rango completo.
+
+\solucion
+Calculamos primero la matriz global del ejemplo B con las funciones de los
+capítulos anteriores, y después aplicamos las de este capítulo:
+\fragmento{c08_problema_resuelto}
+\salida{c08_problema_resuelto}
+
+\textbf{Verificación.} $\mK_{ll}$ es de $5\times5$ y su rango es 5: la
+armadura está bien apoyada. En $\vF_l$ aparecen las cargas de los nodos 3 y 4
+en sus grados de libertad (5 y 6 para el nodo~3, 8 para el nodo~4), y ceros en
+los demás.
+\end{problemaresuelto}
+
+% ---------------------------------------------------------------------------
+\repasoyresumen
+
+\begin{itemize}
+  \item El sistema $\vF = \mK\,\vU$ se divide en bloques de grados de
+    libertad libres y restringidos. En los libres se conocen las cargas; en
+    los restringidos, los desplazamientos.
+  \item $\vF_l = \mK_{ll}\vU_l + \mK_{lr}\vU_r$ da los desplazamientos, y
+    $\vF_r = \mK_{rl}\vU_l + \mK_{rr}\vU_r$, las reacciones.
+  \item El vector de cargas se ensambla sumando cada carga en los grados de
+    libertad de su nodo.
+  \item Las rebanadas \py{[inicio:fin:paso]} seleccionan tramos regulares de
+    un arreglo; \py{sum} suma sus elementos.
+  \item \py{particionar} devuelve los cuatro bloques de $\mK$ seleccionados
+    con \py{np.ix_}.
+  \item Si la armadura es estable, $\mK_{ll}$ tiene rango completo.
+\end{itemize}
+
+% ---------------------------------------------------------------------------
+\ejercicios
+
+\begin{ejercicio}{8.1}
+Calcular la resultante de las cargas del ejemplo B en cada dirección y
+compararla con la \cref{fig:ejemplo_b}.
+\end{ejercicio}
+
+\begin{ejercicio}{8.2}
+Agregar al ejemplo A una carga horizontal de \SI{15}{\kilo\newton} en el
+nodo~2, sin modificar el diccionario \py{cargas} original. Mostrar los
+vectores $\vF$ y $\vF_l$.
+\end{ejercicio}
+
+\begin{ejercicio}{8.3}
+Ensamblar la matriz global del ejemplo A sin la barra~1, particionarla con
+los mismos grados de libertad y calcular el rango de $\mK_{ll}$. Relacionar el
+resultado con el ejercicio~\ref{ej:6.3}.
+\end{ejercicio}
+
+\begin{ejercicio}{8.4}
+Construir la matriz global del ejemplo A ordenada como en la
+\cref{fig:particion}, con los grados de libertad libres primero, y mostrarla.
+Dos listas se unen en una sola con el operador \py{+}.
+\end{ejercicio}
+
+\puntodecontrol{08}

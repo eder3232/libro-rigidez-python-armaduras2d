@@ -1,0 +1,2 @@
+Suma de cargas en x:   20.00 kN
+Suma de cargas en y:  -50.00 kN

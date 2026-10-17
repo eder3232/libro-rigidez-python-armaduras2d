@@ -1,0 +1,6 @@
+print("K_ll en kN/mm:")
+mostrar_matriz(K_ll / 1000, libres)
+print("K_lr en kN/mm:")
+mostrar_matriz(K_lr / 1000, libres, restringidos)
+print(" gdl  F_l (kN)")
+mostrar_vector(F_l, libres)

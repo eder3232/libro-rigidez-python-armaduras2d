@@ -1,7 +1,7 @@
 export const metadatos = {
   numero: 7,
   titulo: "Ensamblaje de la matriz global",
-  sincronizado_con: "405d886f2a",
+  sincronizado_con: "dacb634f63",
 };
 
 {/* Generado por scripts/latex_a_mdx.py desde libro/capitulos/cap07_ensamblaje.tex. No editar a mano. */}
@@ -127,8 +127,14 @@ como encabezados de filas y columnas:
 
 <Fragmento nombre="c07_mostrar_matriz" />
 
+Si no se indican las `columnas`, se usan los mismos grados de libertad que
+para las filas, que es el caso de las matrices cuadradas como $\mK$. En el
+[capítulo 8](/capitulos/cap08_particion) mostraremos también bloques no cuadrados.
+
 <Python>
 
+`None` es el valor «nada» de Python: lo usamos como valor por
+omisión de `columnas` para saber si quien llama a la función la indicó.
 El operador `+=` también funciona con textos: los *concatena*, es
 decir, los une uno tras otro. Así construimos cada línea de la tabla antes de
 imprimirla. En el formato `{valor:>{ancho}.{decimales}f}`, el ancho y los

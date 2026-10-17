@@ -1,0 +1,2 @@
+Ejemplo B, en x:   30.00 kN
+Ejemplo B, en y:  -80.00 kN

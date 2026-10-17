@@ -58,3 +58,13 @@ def test_cita_textual_usa_la_bibliografia():
         "Kassimali (2012, cap.\u00a03)"
     )
     assert convertir(r"\textcite{mcguire2000}") == "McGuire et al. (2000)"
+
+
+def test_align_numera_cada_linea():
+    etiquetas = {"eq:a": "8.1", "eq:b": "8.2"}
+    convertidor = Convertidor("8", etiquetas, {}, {})
+    resultado = convertidor.bloques(
+        r"\begin{align} x &= 1 \label{eq:a}\\ y &= 2 \label{eq:b} \end{align}"
+    )
+    assert r"x = 1 \tag{8.1}" in resultado
+    assert r"y = 2 \tag{8.2}" in resultado

@@ -1,0 +1,2 @@
+K_ll: (3, 3), rango 3
+K_lr es la transpuesta de K_rl: True

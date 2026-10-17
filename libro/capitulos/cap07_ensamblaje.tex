@@ -108,7 +108,13 @@ función que imprime la matriz con los grados de libertad, numerados desde 1,
 como encabezados de filas y columnas:
 \fragmento{c07_mostrar_matriz}
 
+Si no se indican las \py{columnas}, se usan los mismos grados de libertad que
+para las filas, que es el caso de las matrices cuadradas como $\mK$. En el
+\cref{cap:particion} mostraremos también bloques no cuadrados.
+
 \begin{python}
+\py{None} es el valor \enquote{nada} de Python: lo usamos como valor por
+omisión de \py{columnas} para saber si quien llama a la función la indicó.
 El operador \py{+=} también funciona con textos: los \emph{concatena}, es
 decir, los une uno tras otro. Así construimos cada línea de la tabla antes de
 imprimirla. En el formato \py{{valor:>{ancho}.{decimales}f}}, el ancho y los

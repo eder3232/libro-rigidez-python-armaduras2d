@@ -1,0 +1,31 @@
+% Partición de K en bloques libres (l) y restringidos (r), ejemplo A (capítulo 8)
+\begin{tikzpicture}[scale=0.6,
+    etiqueta/.style={font=\scriptsize\sffamily},
+    bloque/.style={font=\small}]
+  % Bloques: libres 3, 5, 6 y restringidos 1, 2, 4
+  \fill[principal!25] (0,0) rectangle (3,-3);
+  \fill[principal!10] (3,0) rectangle (6,-3);
+  \fill[principal!10] (0,-3) rectangle (3,-6);
+  \fill[acento!15] (3,-3) rectangle (6,-6);
+  \draw[step=1, color=neutro, line width=0.3pt] (0,0) grid (6,-6);
+  \draw[line width=1pt, color=principal] (0,0) rectangle (6,-6);
+  \draw[line width=1pt, color=principal] (3,0) -- (3,-6);
+  \draw[line width=1pt, color=principal] (0,-3) -- (6,-3);
+  \foreach \g [count=\k from 0] in {3,5,6} {
+    \node[etiqueta, color=principal] at (\k+0.5, 0.45) {\g};
+    \node[etiqueta, color=principal] at (-0.45, -\k-0.5) {\g};
+  }
+  \foreach \g [count=\k from 3] in {1,2,4} {
+    \node[etiqueta, color=acento] at (\k+0.5, 0.45) {\g};
+    \node[etiqueta, color=acento] at (-0.45, -\k-0.5) {\g};
+  }
+  \node[bloque] at (1.5,-1.5) {$\mK_{ll}$};
+  \node[bloque] at (4.5,-1.5) {$\mK_{lr}$};
+  \node[bloque] at (1.5,-4.5) {$\mK_{rl}$};
+  \node[bloque] at (4.5,-4.5) {$\mK_{rr}$};
+  % Llaves
+  \draw[decorate, decoration={brace, amplitude=5pt}, color=texto-suave]
+    (0,1) -- node[above=5pt, font=\scriptsize] {libres} (3,1);
+  \draw[decorate, decoration={brace, amplitude=5pt}, color=texto-suave]
+    (3,1) -- node[above=5pt, font=\scriptsize] {restringidos} (6,1);
+\end{tikzpicture}
