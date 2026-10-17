@@ -1,4 +1,142 @@
 % anexos/anexoB_leer_errores.tex
 \chapter{Leer un error de Python}\label{cap:leer_errores}
 
-\pendiente{ver docs/01-indice.md}
+Cometer errores al programar es inevitable, y no es una mala señal: es parte
+del trabajo. Lo que distingue a quien programa con soltura no es que no se
+equivoque, sino que sabe leer lo que Python le dice cuando algo falla. Este
+anexo enseña a leer esos mensajes con los errores más frecuentes al construir
+la calculadora. Todos los mensajes que se muestran son reales: los produjo el
+código del libro.
+
+% ---------------------------------------------------------------------------
+\section{Cómo se lee un mensaje de error}\label{sec:b_leer}
+
+Supongamos que, al describir una armadura, escribimos por descuido un nodo que
+no existe: la barra 2 del ejemplo A va al nodo 4, pero la armadura solo tiene
+tres nodos.
+\fragmento{b_clave}
+Python se detiene y muestra este mensaje:
+\salida{b_clave}
+
+El mensaje se llama \termino{traza}{traceback} y se lee \emph{de abajo hacia
+arriba}:
+\begin{enumerate}
+  \item \textbf{La última línea dice qué pasó.} Primero el tipo de error,
+    \py{KeyError}, y después el detalle: la clave \py{4} no existe en el
+    diccionario.
+  \item \textbf{Las líneas anteriores dicen dónde pasó.} Cada bloque que
+    empieza con \py{File} es un paso. El primero es nuestra celda; el
+    segundo, la línea 10 de la función que llamamos,
+    \py{calcular_geometria}, que busca el nodo final de cada barra. Los
+    signos \py{~}
+    y \py{^} subrayan la parte exacta de la línea que
+    falló.
+  \item \textbf{El primer bloque es nuestra celda.} Ahí está la línea que
+    escribimos nosotros y que desencadenó el error.
+\end{enumerate}
+
+Que el error aparezca dentro de una función no significa que la función esté
+mal: casi siempre el problema está en los datos que le dimos. Aquí,
+\py{calcular_geometria} buscó el nodo final de una barra y no lo encontró,
+porque nuestro diccionario \py{barras_mal} usa un nodo inexistente.
+
+\begin{parasabermas}
+Colab muestra la misma información con otro formato: agrega colores, marca la
+línea que falló con una flecha \py{---->} y nombra las celdas de otra
+manera. Se lee igual, de abajo hacia arriba. Colab también puede ofrecer un
+botón para que una inteligencia artificial explique el error; es una ayuda
+útil, pero conviene aprender a leer el mensaje por nuestra cuenta.
+\end{parasabermas}
+
+% ---------------------------------------------------------------------------
+\section{Un nombre mal escrito}\label{sec:b_nombre}
+
+El error más frecuente de todos es escribir mal un nombre:
+\fragmento{b_nombre}
+\salida{b_nombre}
+Python no conoce \py{geometira} y, como el nombre se parece a uno que sí
+existe, nos sugiere el correcto (\emph{Did you mean}, ¿quisiste decir?).
+
+Un \py{NameError} aparece también cuando usamos una variable o una función
+cuya celda no hemos ejecutado: por ejemplo, al abrir de nuevo un notebook,
+porque Colab no recuerda nada de la sesión anterior. La solución es ejecutar
+las celdas anteriores, o todas con \textsf{Entorno de ejecución > Ejecutar
+todas}.
+
+% ---------------------------------------------------------------------------
+\section{Errores de escritura}\label{sec:b_escritura}
+
+Algunos errores impiden que Python entienda el código, y aparecen antes de que
+se ejecute una sola línea. El más común es olvidar los dos puntos al final de
+un \py{for}, un \py{if} o un \py{def}:
+\fragmento{b_sintaxis}
+\salida{b_sintaxis}
+El mensaje no empieza con \py{Traceback}, porque el código no llegó a
+ejecutarse: indica la línea y, con el signo \py{^}, el
+lugar donde Python esperaba los dos puntos.
+
+El otro error de escritura frecuente es olvidar la sangría del bloque que
+sigue a un \py{for}:
+\fragmento{b_sangria}
+\salida{b_sangria}
+
+% ---------------------------------------------------------------------------
+\section{Datos equivocados}\label{sec:b_datos}
+
+Si llamamos a una función con menos argumentos de los que necesita, el
+mensaje dice cuál falta. Aquí olvidamos la longitud de la barra:
+\fragmento{b_argumentos}
+\salida{b_argumentos}
+
+Un \py{IndexError} indica que pedimos una posición que no existe. En la
+calculadora casi siempre se debe a confundir la numeración desde 1 con los
+índices desde 0. Queremos el desplazamiento vertical del nodo 3, que es el
+grado de libertad 6, y lo pedimos con \py{U[6]}:
+\fragmento{b_indice}
+\salida{b_indice}
+\py{U} tiene seis elementos, con índices de 0 a 5. El grado de libertad 6
+está en la posición 5, y la forma segura de obtenerla es con la función
+\py{indices} del \cref{cap:grados_de_libertad}.
+
+Una división por cero suele indicar dos nodos con las mismas coordenadas: la
+barra que los une tiene longitud nula.
+\fragmento{b_division}
+\salida{b_division}
+
+% ---------------------------------------------------------------------------
+\section{Los errores de la calculadora}\label{sec:b_calculadora}
+
+Algunos errores los produce la propia calculadora, a propósito, cuando
+detecta datos que no tienen solución. Si a la armadura le falta un apoyo,
+$\mK_{ll}$ es singular y \py{resolver_desplazamientos} se detiene con un
+mensaje propio (\cref{cap:desplazamientos_reacciones}):
+\fragmento{b_inestable}
+\salida{b_inestable}
+La traza recorre tres pasos: nuestra celda llamó a \py{analizar_armadura},
+esta llamó a \py{resolver_desplazamientos}, y ahí se detectó el problema. El
+mensaje está en español porque lo escribimos nosotros.
+
+% ---------------------------------------------------------------------------
+\section{Los errores que no avisan}\label{sec:b_silenciosos}
+
+Los errores más peligrosos son los que no producen ningún mensaje: una carga
+en la unidad equivocada, una coordenada mal escrita o un apoyo en el nodo
+equivocado dan resultados, pero resultados falsos. Contra ellos solo sirve la
+verificación: comprobar el equilibrio, comparar el dibujo con la armadura y
+preguntarse si los números tienen sentido físico, como hicimos a lo largo
+del libro. La \cref{tab:errores_frecuentes} del \cref{cap:mi_calculadora}
+resume los síntomas más comunes.
+
+\begin{estrategia}
+Cuando aparece un error:
+\begin{enumerate}
+  \item Leer la última línea: el tipo de error y su detalle.
+  \item Subir hasta el primer bloque y buscar la línea de nuestra celda que
+    lo desencadenó.
+  \item Revisar los datos de esa línea: nombres, números de nodo y de barra,
+    cantidad de argumentos.
+  \item Si el mensaje no basta, imprimir con \py{print} los valores que usa
+    la línea, para ver cuál no es el que esperábamos.
+  \item Corregir, y ejecutar de nuevo la celda y las que dependen de ella.
+\end{enumerate}
+\end{estrategia}

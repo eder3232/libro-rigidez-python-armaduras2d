@@ -1,0 +1,4 @@
+  File "<celda 47>", line 2
+    print(numero)
+    ^^^^^
+IndentationError: expected an indented block after 'for' statement on line 1

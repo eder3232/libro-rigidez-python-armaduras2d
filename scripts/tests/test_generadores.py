@@ -145,6 +145,41 @@ def salidas_en(codigo, carpeta):
     )
 
 
+ANEXO_ERRORES = """\
+# %% tags=["error"]
+# [inicio: error_clave]
+nodos = {1: {"x": 0.0}}
+nodos[4]
+# [fin: error_clave]
+
+# %% tags=["error"]
+# [inicio: error_sintaxis]
+for numero in range(3)
+    print(numero)
+# [fin: error_sintaxis]
+"""
+
+
+def test_celda_error_guarda_el_mensaje_de_python(codigo, tmp_path):
+    (codigo / "anexoB_errores.py").write_text(ANEXO_ERRORES, encoding="utf-8")
+    salidas_en(codigo, tmp_path)
+    clave = (tmp_path / "salidas" / "error_clave.txt").read_text(encoding="utf-8")
+    assert clave.startswith("Traceback (most recent call last):")
+    assert "    nodos[4]" in clave
+    assert clave.endswith("KeyError: 4\n")
+    assert "generar_salidas" not in clave
+    sintaxis = (tmp_path / "salidas" / "error_sintaxis.txt").read_text(encoding="utf-8")
+    assert "SyntaxError: expected ':'" in sintaxis
+
+
+def test_celda_error_que_no_falla_es_un_error(codigo, tmp_path):
+    (codigo / "anexoB_errores.py").write_text(
+        '# %% tags=["error"]\nx = 1\n', encoding="utf-8"
+    )
+    with pytest.raises(ValueError, match="no falló"):
+        salidas_en(codigo, tmp_path)
+
+
 CELDA_LIBRO = (
     '# %% tags=["libro"]\nvalor_libro("area_cm2", area * 1e4, 1)\n'
     'valor_libro("negativo", -1e-15, 2)\n'

@@ -1,9 +1,152 @@
 export const metadatos = {
   numero: "B",
   titulo: "Leer un error de Python",
-  sincronizado_con: "4bfae0c0ba",
+  sincronizado_con: "52286efcfe",
 };
 
 {/* Generado por scripts/latex_a_mdx.py desde libro/anexos/anexoB_leer_errores.tex. No editar a mano. */}
 
+Cometer errores al programar es inevitable, y no es una mala señal: es parte
+del trabajo. Lo que distingue a quien programa con soltura no es que no se
+equivoque, sino que sabe leer lo que Python le dice cuando algo falla. Este
+anexo enseña a leer esos mensajes con los errores más frecuentes al construir
+la calculadora. Todos los mensajes que se muestran son reales: los produjo el
+código del libro.
 
+## B.1 Cómo se lee un mensaje de error
+
+Supongamos que, al describir una armadura, escribimos por descuido un nodo que
+no existe: la barra 2 del ejemplo A va al nodo 4, pero la armadura solo tiene
+tres nodos.
+
+<Fragmento nombre="b_clave" />
+
+Python se detiene y muestra este mensaje:
+
+<Salida nombre="b_clave" />
+
+El mensaje se llama *traza* (*traceback*) y se lee *de abajo hacia
+arriba*:
+
+1. **La última línea dice qué pasó.** Primero el tipo de error, `KeyError`, y después el detalle: la clave `4` no existe en el diccionario.
+2. **Las líneas anteriores dicen dónde pasó.** Cada bloque que empieza con `File` es un paso. El primero es nuestra celda; el segundo, la línea 10 de la función que llamamos, `calcular_geometria`, que busca el nodo final de cada barra. Los signos `~` y `^` subrayan la parte exacta de la línea que falló.
+3. **El primer bloque es nuestra celda.** Ahí está la línea que escribimos nosotros y que desencadenó el error.
+
+Que el error aparezca dentro de una función no significa que la función esté
+mal: casi siempre el problema está en los datos que le dimos. Aquí,
+`calcular_geometria` buscó el nodo final de una barra y no lo encontró,
+porque nuestro diccionario `barras_mal` usa un nodo inexistente.
+
+<ParaSaberMas>
+
+Colab muestra la misma información con otro formato: agrega colores, marca la
+línea que falló con una flecha `---->` y nombra las celdas de otra
+manera. Se lee igual, de abajo hacia arriba. Colab también puede ofrecer un
+botón para que una inteligencia artificial explique el error; es una ayuda
+útil, pero conviene aprender a leer el mensaje por nuestra cuenta.
+
+</ParaSaberMas>
+
+## B.2 Un nombre mal escrito
+
+El error más frecuente de todos es escribir mal un nombre:
+
+<Fragmento nombre="b_nombre" />
+
+<Salida nombre="b_nombre" />
+
+Python no conoce `geometira` y, como el nombre se parece a uno que sí
+existe, nos sugiere el correcto (*Did you mean*, ¿quisiste decir?).
+
+Un `NameError` aparece también cuando usamos una variable o una función
+cuya celda no hemos ejecutado: por ejemplo, al abrir de nuevo un notebook,
+porque Colab no recuerda nada de la sesión anterior. La solución es ejecutar
+las celdas anteriores, o todas con **Entorno de ejecución > Ejecutar
+todas**.
+
+## B.3 Errores de escritura
+
+Algunos errores impiden que Python entienda el código, y aparecen antes de que
+se ejecute una sola línea. El más común es olvidar los dos puntos al final de
+un `for`, un `if` o un `def`:
+
+<Fragmento nombre="b_sintaxis" />
+
+<Salida nombre="b_sintaxis" />
+
+El mensaje no empieza con `Traceback`, porque el código no llegó a
+ejecutarse: indica la línea y, con el signo `^`, el
+lugar donde Python esperaba los dos puntos.
+
+El otro error de escritura frecuente es olvidar la sangría del bloque que
+sigue a un `for`:
+
+<Fragmento nombre="b_sangria" />
+
+<Salida nombre="b_sangria" />
+
+## B.4 Datos equivocados
+
+Si llamamos a una función con menos argumentos de los que necesita, el
+mensaje dice cuál falta. Aquí olvidamos la longitud de la barra:
+
+<Fragmento nombre="b_argumentos" />
+
+<Salida nombre="b_argumentos" />
+
+Un `IndexError` indica que pedimos una posición que no existe. En la
+calculadora casi siempre se debe a confundir la numeración desde 1 con los
+índices desde 0. Queremos el desplazamiento vertical del nodo 3, que es el
+grado de libertad 6, y lo pedimos con `U[6]`:
+
+<Fragmento nombre="b_indice" />
+
+<Salida nombre="b_indice" />
+
+`U` tiene seis elementos, con índices de 0 a 5. El grado de libertad 6
+está en la posición 5, y la forma segura de obtenerla es con la función
+`indices` del [capítulo 6](/capitulos/cap06_grados_de_libertad).
+
+Una división por cero suele indicar dos nodos con las mismas coordenadas: la
+barra que los une tiene longitud nula.
+
+<Fragmento nombre="b_division" />
+
+<Salida nombre="b_division" />
+
+## B.5 Los errores de la calculadora
+
+Algunos errores los produce la propia calculadora, a propósito, cuando
+detecta datos que no tienen solución. Si a la armadura le falta un apoyo,
+$\mK_{ll}$ es singular y `resolver_desplazamientos` se detiene con un
+mensaje propio ([capítulo 9](/capitulos/cap09_desplazamientos_reacciones)):
+
+<Fragmento nombre="b_inestable" />
+
+<Salida nombre="b_inestable" />
+
+La traza recorre tres pasos: nuestra celda llamó a `analizar_armadura`,
+esta llamó a `resolver_desplazamientos`, y ahí se detectó el problema. El
+mensaje está en español porque lo escribimos nosotros.
+
+## B.6 Los errores que no avisan
+
+Los errores más peligrosos son los que no producen ningún mensaje: una carga
+en la unidad equivocada, una coordenada mal escrita o un apoyo en el nodo
+equivocado dan resultados, pero resultados falsos. Contra ellos solo sirve la
+verificación: comprobar el equilibrio, comparar el dibujo con la armadura y
+preguntarse si los números tienen sentido físico, como hicimos a lo largo
+del libro. La tabla 12.1 del [capítulo 12](/capitulos/cap12_mi_calculadora)
+resume los síntomas más comunes.
+
+<Estrategia>
+
+Cuando aparece un error:
+
+1. Leer la última línea: el tipo de error y su detalle.
+2. Subir hasta el primer bloque y buscar la línea de nuestra celda que lo desencadenó.
+3. Revisar los datos de esa línea: nombres, números de nodo y de barra, cantidad de argumentos.
+4. Si el mensaje no basta, imprimir con `print` los valores que usa la línea, para ver cuál no es el que esperábamos.
+5. Corregir, y ejecutar de nuevo la celda y las que dependen de ella.
+
+</Estrategia>

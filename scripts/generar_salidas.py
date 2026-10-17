@@ -9,6 +9,10 @@ del capítulo. Si una celda contiene el fragmento "nombre":
 - y dibuja un gráfico de Matplotlib, se guarda en recursos/graficos/nombre.pdf
   (para el libro) y en web/public/graficos/nombre.svg (para la web).
 
+Las celdas con la etiqueta "error" deben producir un error: su salida es el
+mensaje que mostraría Python (anexo B). Los anexos con código
+(codigo/anexoX_*.py) se ejecutan después de todos los capítulos.
+
 LaTeX las incluye con \\salida{nombre} y \\grafico{nombre}; la web con
 <Salida nombre="..." /> y <Grafico nombre="..." />.
 
@@ -18,9 +22,12 @@ Uso: uv run python scripts/generar_salidas.py
 import ast
 import contextlib
 import io
+import itertools
+import linecache
 import os
 import re
 import sys
+import traceback
 import warnings
 from pathlib import Path
 
@@ -32,7 +39,14 @@ import matplotlib.pyplot as plt
 from matplotlib import font_manager
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from comun import CODIGO, PATRON_INICIO, RAIZ, RECURSOS, archivos_de_capitulos
+from comun import (
+    CODIGO,
+    PATRON_INICIO,
+    RAIZ,
+    RECURSOS,
+    archivos_de_capitulos,
+    quitar_marcas_de_fragmentos,
+)
 
 FUENTES = RAIZ / "web" / "src" / "fuentes"
 
@@ -58,9 +72,18 @@ def configurar_graficos():
     )
 
 
-def ejecutar_celda(fuente, espacio):
-    """Ejecuta una celda en el espacio de nombres dado y devuelve lo que imprime."""
-    arbol = ast.parse(fuente)
+def ejecutar_celda(fuente, espacio, nombre="<celda>"):
+    """Ejecuta una celda en el espacio de nombres dado y devuelve lo que imprime.
+
+    nombre identifica la celda en los mensajes de error, que muestran sus
+    líneas gracias a linecache, como en Jupyter.
+    """
+    # Sin las marcas de fragmento, como en los notebooks: así los números de
+    # línea de los mensajes de error coinciden con lo que ve el lector.
+    # El salto final evita que Python desplace los ^^^ bajo la última línea.
+    fuente = quitar_marcas_de_fragmentos(fuente) + "\n"
+    linecache.cache[nombre] = (len(fuente), None, fuente.splitlines(True), nombre)
+    arbol = ast.parse(fuente, filename=nombre)
     ultima = None
     if arbol.body and isinstance(arbol.body[-1], ast.Expr):
         ultima = ast.Expression(arbol.body.pop().value)
@@ -69,12 +92,25 @@ def ejecutar_celda(fuente, espacio):
         # plt.show() avisa que el modo sin pantalla no muestra ventanas.
         warnings.filterwarnings("ignore", message=".*non-interactive.*")
         # Ejecutar el código del libro es justamente el propósito de este script.
-        exec(compile(arbol, "<celda>", "exec"), espacio)  # noqa: S102
+        exec(compile(arbol, nombre, "exec"), espacio)  # noqa: S102
         if ultima is not None:
-            valor = eval(compile(ultima, "<celda>", "eval"), espacio)
+            valor = eval(compile(ultima, nombre, "eval"), espacio)
             if valor is not None and not _es_objeto_grafico(valor):
                 print(repr(valor))
     return salida.getvalue()
+
+
+def ejecutar_celda_con_error(fuente, espacio, nombre):
+    """Ejecuta una celda que debe fallar y devuelve el mensaje de error."""
+    try:
+        ejecutar_celda(fuente, espacio, nombre)
+    except Exception as error:
+        # Solo los pasos por el código de las celdas, no por este script.
+        pasos = error.__traceback__
+        while pasos and not pasos.tb_frame.f_code.co_filename.startswith("<celda"):
+            pasos = pasos.tb_next
+        return "".join(traceback.format_exception(type(error), error, pasos))
+    raise ValueError(f"la celda {nombre} tiene la etiqueta 'error' y no falló")
 
 
 def _es_objeto_grafico(valor):
@@ -114,11 +150,17 @@ def ejecutar_archivo(archivo, codigo_previo, salidas, graficos, destinos, valore
         valores[nombre] = f"{round(float(numero), decimales) + 0.0:.{decimales}f}"
 
     espacio = {"__name__": "__main__", "valor_libro": valor_libro}
+    # Las celdas se numeran en orden de ejecución, como In [n] en Jupyter.
+    numeros = itertools.count(1)
     for fuente in codigo_previo:
-        ejecutar_celda(fuente, espacio)
+        ejecutar_celda(fuente, espacio, f"<celda {next(numeros)}>")
     plt.close("all")
     for celda in celdas_de_codigo(archivo):
-        texto = ejecutar_celda(celda.source, espacio)
+        nombre = f"<celda {next(numeros)}>"
+        if "error" in celda.metadata.get("tags", []):
+            texto = ejecutar_celda_con_error(celda.source, espacio, nombre)
+        else:
+            texto = ejecutar_celda(celda.source, espacio, nombre)
         figuras = plt.get_fignums()
         for nombre in fragmentos_de(celda.source):
             if texto:
@@ -160,6 +202,8 @@ def generar(
             ejecutar_archivo(
                 soluciones, acumulado, salidas, graficos, destinos, valores
             )
+    for archivo in sorted(codigo.glob("anexo*.py")):
+        ejecutar_archivo(archivo, acumulado, salidas, graficos, destinos, valores)
 
     escribir_valores(valores, destino_valores)
     _limpiar(destino, "txt", salidas)

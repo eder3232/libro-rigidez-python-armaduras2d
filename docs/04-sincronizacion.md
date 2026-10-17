@@ -39,11 +39,14 @@ for numero, barra in barras.items():
     print(numero, barra["nodo_inicial"])
 ```
 
-Cada celda de código lleva una de tres etiquetas:
+Cada celda de código de un capítulo lleva una de estas etiquetas:
 
 - **`acumulable`:** forma parte de la calculadora. Va a los puntos de control de este capítulo y de todos los siguientes.
+- **`calculadora`:** forma las secciones Datos y Resultados de `mi_calculadora.ipynb` (capítulo 12). También se acumula.
 - **`exploracion`:** ejemplo para aprender la herramienta de Python. Solo aparece en el notebook de su capítulo.
 - **`libro`:** registra con `valor_libro(...)` los números que citan el texto y las figuras del libro. No aparece en ningún notebook.
+
+Los anexos con código (`codigo/anexoX_*.py`) se ejecutan después de todos los capítulos, con la calculadora completa, y no generan notebooks. Sus celdas pueden llevar la etiqueta **`error`**: la celda debe fallar, y su salida es el mensaje real de Python (anexo B). Si no falla, la construcción se detiene.
 
 ### Fragmentos citados
 
@@ -136,7 +139,8 @@ Un único comando (por definir en `scripts/`) ejecuta todas las verificaciones y
 | 10. Fuerzas internas | estable (falta: comparación con software comercial) | listo | generado | — |
 | 11. Visualizar los resultados | estable | listo | generado | — |
 | 12. Mi calculadora de armaduras | estable | listo | generado | — |
-| Anexo A. Referencia rápida de Python y NumPy | borrador | — | generado | — |
+| Anexo A. Referencia rápida de Python y NumPy | estable | — | generado | — |
+| Anexo B. Leer un error de Python | borrador | listo (celdas "error") | generado | — |
 
 Estados posibles: `pendiente` → `borrador` → `revisado` → `estable`.
 

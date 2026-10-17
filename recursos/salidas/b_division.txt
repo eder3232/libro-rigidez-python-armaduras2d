@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "<celda 50>", line 6, in <module>
+    geometria_mal = calcular_geometria(nodos_mal, barras)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<celda 9>", line 15, in calcular_geometria
+    "c": dx / L, "s": dy / L}
+         ~~~^~~
+ZeroDivisionError: float division by zero

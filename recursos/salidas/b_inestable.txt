@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "<celda 51>", line 2, in <module>
+    resultados = analizar_armadura(nodos, barras,
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<celda 37>", line 13, in analizar_armadura
+    U_l = resolver_desplazamientos(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<celda 24>", line 4, in resolver_desplazamientos
+    raise ValueError("La armadura es inestable: "
+ValueError: La armadura es inestable: K_ll es singular.

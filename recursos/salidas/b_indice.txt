@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "<celda 49>", line 4, in <module>
+    uy_3 = U[6]
+           ~^^^
+IndexError: index 6 is out of bounds for axis 0 with size 6

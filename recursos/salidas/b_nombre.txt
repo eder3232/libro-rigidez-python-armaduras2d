@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "<celda 45>", line 2, in <module>
+    rigideces = calcular_rigideces(barras, geometira)
+                                           ^^^^^^^^^
+NameError: name 'geometira' is not defined. Did you mean: 'geometria'?

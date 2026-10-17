@@ -1,0 +1,4 @@
+  File "<celda 46>", line 1
+    for numero in barras
+                        ^
+SyntaxError: expected ':'

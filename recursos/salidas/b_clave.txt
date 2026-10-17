@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "<celda 44>", line 6, in <module>
+    geometria_mal = calcular_geometria(nodos, barras_mal)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<celda 9>", line 10, in calcular_geometria
+    final = nodos[barra["nodo_final"]]
+            ~~~~~^^^^^^^^^^^^^^^^^^^^^
+KeyError: 4
