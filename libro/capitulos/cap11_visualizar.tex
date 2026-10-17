@@ -1,4 +1,196 @@
 % capitulos/cap11_visualizar.tex
 \chapter{Visualizar los resultados}\label{cap:visualizar}
 
-\pendiente{ver docs/01-indice.md}
+Una tabla de desplazamientos y fuerzas contiene toda la información, pero no
+la muestra. Un dibujo de la armadura deformada, o de sus barras coloreadas
+según trabajen en tracción o en compresión, se entiende de un vistazo y
+revela errores que en una tabla pasarían inadvertidos: un apoyo que se
+mueve, una barra que debería estar comprimida y aparece traccionada. En este
+capítulo profundizamos en Matplotlib y escribimos las funciones que
+dibujarán los resultados de cualquier armadura.
+
+\begin{objetivos}
+  \item Controlar el color, el grosor, el estilo y las etiquetas de un
+    gráfico de Matplotlib.
+  \item Dibujar la deformada de una armadura con un factor de escala
+    adecuado.
+  \item Dibujar el diagrama de fuerzas axiales, con colores para la tracción
+    y la compresión.
+  \item Combinar varios gráficos en una misma figura.
+\end{objetivos}
+
+% ---------------------------------------------------------------------------
+\section{Dibujar para entender}\label{sec:dibujar_para_entender}
+
+Los desplazamientos de una armadura son muy pequeños comparados con sus
+dimensiones: en el ejemplo A, menos de un milímetro en una armadura de seis
+metros. Dibujados a escala real, la armadura deformada sería indistinguible
+de la original. Por eso la deformada se dibuja con los desplazamientos
+multiplicados por un \termino{factor de escala}{scale factor} $\lambda$:
+cada nodo de coordenadas $(x, y)$ se dibuja en
+
+\begin{ecuacionclave}
+  x_d = x + \lambda\,u_x, \qquad y_d = y + \lambda\,u_y.
+\end{ecuacionclave}
+
+Un buen factor hace que el mayor desplazamiento dibujado sea una fracción
+visible del tamaño de la armadura, por ejemplo el \SI{10}{\percent}. Si $D$
+es la mayor dimensión de la armadura y $u_{\max}$ el mayor desplazamiento,
+$\lambda = 0.1\,D / u_{\max}$.
+
+\begin{cuidado}
+La deformada exagerada sirve para ver \emph{cómo} se mueve la armadura, no
+cuánto. Con el factor de escala, las barras parecen cambiar mucho de
+longitud y los ángulos parecen deformarse; en la realidad, esos cambios son
+de milésimas. El título de cada deformada debe indicar siempre su factor de
+escala.
+\end{cuidado}
+
+% ---------------------------------------------------------------------------
+\section{Matplotlib con más detalle}\label{sec:matplotlib_detalle}
+
+En el \cref{cap:describir_armadura} usamos \py{ax.plot} con un texto corto,
+como \py{"k-o"}, para indicar el color, el estilo y el marcador. Para gráficos
+cuidados conviene indicarlos por separado, con
+\termino{argumentos con nombre}{keyword arguments}: \py{color} para el color,
+\py{linewidth} para el grosor, \py{linestyle} para el estilo (\py{"-"},
+\py{"--"}, \py{":"}), \py{marker} para el símbolo de los puntos y \py{label}
+para el texto de la leyenda. \py{ax.text} escribe un texto en una posición, y
+sus argumentos \py{ha} y \py{va} lo alinean horizontal y verticalmente.
+Primero definimos los colores del libro como constantes, escritas en
+mayúsculas por convención:
+\fragmento{c11_colores}
+\fragmento{c11_estilos}
+\grafico{c11_estilos}
+
+\begin{python}
+Los argumentos con nombre se escriben \py{nombre=valor} y pueden darse en
+cualquier orden. Nuestras propias funciones también los aceptan: es la forma
+de usar parámetros con valor por omisión, como \py{decimales=2} en
+\py{mostrar_vector}, sin tener que indicar todos los anteriores.
+\end{python}
+
+% ---------------------------------------------------------------------------
+\section{Una función para dibujar la armadura}\label{sec:dibujar_armadura}
+
+Todos los gráficos de este capítulo dibujan las barras de una armadura, a
+veces en su posición original y a veces en la deformada. Escribimos una sola
+función, que recibe los ejes \py{ax} donde dibujar. Así puede usarse varias
+veces en un mismo gráfico o en distintos paneles de una figura:
+\fragmento{c11_dibujar_armadura}
+
+El método \py{values} de un diccionario recorre solo sus valores, sin las
+claves, que aquí no necesitamos. La \py{etiqueta} de la leyenda se asigna a
+la primera barra y después se anula, para que la leyenda no repita el mismo
+texto una vez por barra.
+
+% ---------------------------------------------------------------------------
+\section{La deformada}\label{sec:deformada}
+
+Para dibujar la deformada no necesitamos una función nueva: basta con
+calcular las posiciones desplazadas de los nodos y dibujar la armadura con
+ellas. La función devuelve un diccionario con la misma forma que \py{nodos},
+de modo que \py{dibujar_armadura} lo acepta sin cambios:
+\fragmento{c11_nodos_desplazados}
+
+El factor de escala se calcula a partir de las coordenadas extremas de la
+armadura. Las funciones \py{max} y \py{min} de Python dan el mayor y el menor
+elemento de una lista:
+\fragmento{c11_escala_automatica}
+
+Dibujamos la armadura original con línea de trazos y, encima, la deformada:
+\fragmento{c11_deformada}
+\grafico{c11_deformada}
+
+\textbf{Verificación.} El dibujo debe respetar los apoyos y coincidir con
+los desplazamientos del \cref{cap:desplazamientos_reacciones}. El nodo~1,
+articulado, no se mueve. El nodo~2 se desplaza solo en horizontal, hacia la
+derecha, porque el rodillo impide el movimiento vertical. El nodo~3 se mueve
+hacia la derecha y hacia abajo, como indican sus desplazamientos
+($u_x = \SI{0.563}{\milli\metre}$, $u_y = \SI{-0.650}{\milli\metre}$). La
+barra~1 se alarga, en tracción, y las barras inclinadas se acortan, en
+compresión.
+
+% ---------------------------------------------------------------------------
+\section{El diagrama de fuerzas axiales}\label{sec:diagrama_fuerzas}
+
+El diagrama de fuerzas axiales colorea cada barra según su estado y escribe
+su fuerza. Reutilizamos \py{clasificar_fuerza} del \cref{cap:fuerzas_internas}
+para elegir el color. Los valores se escriben al \SI{40}{\percent} de cada
+barra, desde su nodo inicial, y no en su punto medio: así, como vimos en el
+ejercicio~\ref{ej:4.4}, no se tapan los valores de dos diagonales que se
+cruzan.
+\fragmento{c11_dibujar_fuerzas}
+
+Para la leyenda dibujamos dos líneas vacías, \py{ax.plot([], [], ...)}, que
+no aparecen en el gráfico pero sí en la leyenda con su color. La leyenda va
+debajo del dibujo y se quitan los ejes, porque en un esquema de la armadura
+las coordenadas no aportan información. El argumento \py{bbox} recibe un
+diccionario con las opciones del recuadro blanco que hay detrás de cada
+valor.
+\fragmento{c11_fuerzas}
+\grafico{c11_fuerzas}
+
+\begin{problemaresuelto}[Un informe gráfico]
+Preparar una figura con dos paneles para el ejemplo A: la deformada a la
+izquierda y el diagrama de fuerzas axiales a la derecha.
+
+\solucion
+\py{plt.subplots(1, 2)} crea una figura con una fila y dos columnas de ejes,
+que recibimos en dos variables. El argumento \py{figsize} fija el tamaño de
+la figura en pulgadas, y \py{tight_layout} ajusta los márgenes para que
+nada se superponga. Cada función dibuja en los ejes que le indicamos:
+\fragmento{c11_problema_resuelto}
+\grafico{c11_problema_resuelto}
+
+\textbf{Verificación.} Ambos paneles cuentan la misma historia: la barra que
+se alarga en la deformada, la~1, es la única en tracción, y las que se
+acortan están comprimidas.
+\end{problemaresuelto}
+
+% ---------------------------------------------------------------------------
+\repasoyresumen
+
+\begin{itemize}
+  \item La deformada se dibuja con los desplazamientos multiplicados por un
+    factor de escala, $\lambda = 0.1\,D/u_{\max}$, que siempre debe
+    indicarse.
+  \item Los argumentos con nombre de \py{ax.plot}, como \py{color},
+    \py{linewidth} o \py{label}, controlan el aspecto de cada línea;
+    \py{ax.text} escribe textos y \py{ax.legend} muestra la leyenda.
+  \item Las funciones de dibujo reciben los ejes \py{ax} como parámetro, para
+    poder combinarse en una misma figura.
+  \item Cuatro funciones nuevas de la calculadora dibujan los resultados de
+    cualquier armadura: la geometría, las posiciones deformadas, el factor
+    de escala y el diagrama de fuerzas.
+  \item \py{plt.subplots(1, 2)} crea una figura con dos paneles.
+  \item Un dibujo es también una verificación: la deformada debe respetar los
+    apoyos y los colores deben coincidir con el alargamiento de cada barra.
+\end{itemize}
+
+% ---------------------------------------------------------------------------
+\ejercicios
+
+\begin{ejercicio}{11.1}
+Dibujar la deformada del ejemplo A con factores de escala de 100 y de 2000,
+en dos paneles. ¿Cuál es más útil y por qué?
+\end{ejercicio}
+
+\begin{ejercicio}{11.2}
+Agregar al diagrama de fuerzas del ejemplo A un triángulo debajo de cada
+nodo apoyado. El argumento \py{marker="^"} de \py{ax.plot} dibuja un
+triángulo, y \py{markersize}, su tamaño.
+\end{ejercicio}
+
+\begin{ejercicio}{11.3}
+Preparar el informe gráfico del ejemplo B: su deformada y su diagrama de
+fuerzas en dos paneles.
+\end{ejercicio}
+
+\begin{ejercicio}{11.4}
+Dibujar el ejemplo A con el grosor de cada barra proporcional al valor
+absoluto de su fuerza axial, de modo que la barra más cargada se vea más
+gruesa.
+\end{ejercicio}
+
+\puntodecontrol{11}

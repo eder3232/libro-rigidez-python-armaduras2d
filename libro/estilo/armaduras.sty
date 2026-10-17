@@ -38,6 +38,7 @@
 % Figuras, tablas y referencias
 % ---------------------------------------------------------------------------
 \RequirePackage{graphicx}
+\RequirePackage[export]{adjustbox}  % max width: ningún gráfico supera la página
 \RequirePackage{booktabs}
 \setkomafont{caption}{\small}
 \setkomafont{captionlabel}{\small\sffamily\bfseries\color{principal}}
@@ -127,7 +128,8 @@
 \newcommand{\rutagraficos}{../recursos/graficos}
 \newcommand{\grafico}[1]{%
   \IfFileExists{\rutagraficos/#1.pdf}
-    {\par\smallskip{\centering\includegraphics{\rutagraficos/#1.pdf}\par}\smallskip}
+    {\par\smallskip{\centering
+       \includegraphics[max width=\linewidth]{\rutagraficos/#1.pdf}\par}\smallskip}
     {\PackageError{armaduras}{No existe el gráfico '#1'}
       {Ejecute scripts/generar_salidas.py o revise el nombre.}}%
 }

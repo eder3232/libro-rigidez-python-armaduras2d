@@ -265,3 +265,37 @@ Los desplazamientos se reducen a la mitad, pero las fuerzas no cambian. En
 una armadura isostática, las fuerzas dependen solo del equilibrio y no de la
 rigidez de las barras; en una hiperestática, en cambio, cambiar la rigidez de
 una barra cambia el reparto de las fuerzas.
+
+% ---------------------------------------------------------------------------
+\section*{Capítulo \ref{cap:visualizar}}
+\addcontentsline{toc}{section}{Capítulo \ref{cap:visualizar}}
+
+\soluciondel{11.1}
+\fragmento{s11_ejercicio_1}
+\grafico{s11_ejercicio_1}
+Con un factor de 100, la deformada casi se confunde con la armadura original y
+no permite ver el movimiento. Con 2000, el movimiento es evidente, aunque la
+armadura parece muy distorsionada. Un factor intermedio, como el automático,
+muestra el movimiento sin exagerarlo.
+
+\soluciondel{11.2}
+\fragmento{s11_ejercicio_2}
+\grafico{s11_ejercicio_2}
+Los triángulos se dibujan un poco por debajo de cada nodo, y
+\py{ax.set_ylim} amplía el rango vertical para que entren en el gráfico.
+
+\soluciondel{11.3}
+Calculamos primero los resultados del ejemplo B con las funciones de los
+capítulos anteriores:
+\fragmento{s11_ejercicio_3}
+\grafico{s11_ejercicio_3}
+La deformada muestra el cuadro desplazándose hacia la derecha, empujado por la
+carga horizontal: la diagonal~6 se acorta y la~5 se alarga, como indican sus
+colores.
+
+\soluciondel{11.4}
+\fragmento{s11_ejercicio_4}
+\grafico{s11_ejercicio_4}
+El grosor va de 1 a 8 puntos, proporcional a $|N|$ respecto de la mayor
+fuerza. El argumento \py{solid_capstyle="round"} redondea los extremos de
+las líneas gruesas.
