@@ -32,6 +32,7 @@ CAPITULOS = LIBRO / "capitulos"
 SOLUCIONES = LIBRO / "anexos" / "anexoF_soluciones.tex"
 COMPILACION = LIBRO / "build"
 DESTINO = RAIZ / "web" / "contenido"
+NOTEBOOKS = RAIZ / "notebooks"
 
 NBSP = "\u00a0"
 ESPACIO_FINO = "\u202f"
@@ -654,6 +655,13 @@ def convertir(id_capitulo):
     cuerpo = re.sub(r"[ \t]+\n", "\n", cuerpo)
     cuerpo = re.sub(r"\n{3,}", "\n\n", cuerpo).strip()
     titulo = cabecera.group(1).replace('"', '\\"')
+    # Los capítulos sin código (como el 1) no tienen notebooks que enlazar.
+    notebooks = ""
+    if (NOTEBOOKS / f"{id_capitulo}.ipynb").exists():
+        notebooks = (
+            f'<NotebooksDelCapitulo id="{id_capitulo}"'
+            f' capitulo="{int(numero_capitulo):02d}" />\n\n'
+        )
     mdx = (
         "export const metadatos = {\n"
         f"  numero: {int(numero_capitulo)},\n"
@@ -662,8 +670,7 @@ def convertir(id_capitulo):
         "};\n\n"
         f"{{/* Generado por scripts/latex_a_mdx.py desde libro/capitulos/{archivo.name}."
         " No editar a mano. */}\n\n"
-        f'<NotebooksDelCapitulo id="{id_capitulo}" capitulo="{int(numero_capitulo):02d}" />'
-        f"\n\n{cuerpo}\n"
+        f"{notebooks}{cuerpo}\n"
     )
     destino = DESTINO / f"{id_capitulo}.mdx"
     destino.write_text(mdx, encoding="utf-8", newline="\n")

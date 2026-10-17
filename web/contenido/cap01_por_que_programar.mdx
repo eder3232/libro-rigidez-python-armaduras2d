@@ -1,11 +1,258 @@
 export const metadatos = {
   numero: 1,
   titulo: "Por qué programar el método de rigidez",
-  sincronizado_con: "119589f11c",
+  sincronizado_con: "3f41f544df",
 };
 
 {/* Generado por scripts/latex_a_mdx.py desde libro/capitulos/cap01_por_que_programar.tex. No editar a mano. */}
 
-<NotebooksDelCapitulo id="cap01_por_que_programar" capitulo="01" />
+Empecemos por el final. El gráfico siguiente muestra el análisis completo de
+un puente peatonal de 18 metros: arriba, cómo se deforma bajo su carga;
+abajo, la fuerza axial de cada una de sus 21 barras, en azul las que trabajan
+en tracción y en naranja las que trabajan en compresión.
 
+<Grafico nombre="c12_analisis_c" />
 
+No lo dibujó un programa comercial. Lo dibujó una calculadora de unas
+doscientas líneas de Python, escritas una por una a lo largo de este libro.
+Al terminarlo, esa calculadora será la nuestra: la habremos escrito, entendido
+y verificado paso a paso, y podremos usarla para analizar cualquier armadura
+plana.
+
+<Objetivos>
+
+- Reconocer los límites del cálculo a mano de armaduras.
+- Explicar qué hace por dentro un programa de análisis estructural.
+- Describir los pasos del método de rigidez y su orden.
+- Conocer los tres ejemplos que recorren el libro.
+
+</Objetivos>
+
+## 1.1 Los límites del cálculo a mano
+
+En los cursos de estática aprendimos a analizar armaduras con el método de
+los nudos y el método de las secciones. Son métodos elegantes y conviene
+dominarlos: con ellos verificaremos nuestra calculadora a lo largo del libro.
+Pero tienen dos límites.
+
+El primero es el *tamaño*. El puente del gráfico tiene 12 nodos; el
+equilibrio de cada nodo da dos ecuaciones, de modo que hay 24 ecuaciones con
+24 incógnitas: 21 fuerzas en las barras y 3 reacciones. Resolverlas a mano es
+posible, pero largo y propenso a errores, y un error en un nudo se arrastra a
+todos los siguientes. Una armadura de cubierta de una nave industrial puede
+tener cientos de barras.
+
+El segundo límite es más profundo. Una armadura de $b$ barras, $r$
+reacciones y $n$ nodos tiene $b + r$ fuerzas desconocidas y solo $2n$
+ecuaciones de equilibrio. Si $b + r > 2n$, la armadura es
+*hiperestática* (*statically indeterminate*): el equilibrio por sí solo
+no basta para obtener sus fuerzas, porque estas dependen además de la
+rigidez de las barras. Es el caso de un cuadro con sus dos diagonales, que
+estudiaremos como ejemplo B: 6 barras y 3 reacciones frente a 8 ecuaciones.
+Ningún método basado solo en el equilibrio puede resolverlo.
+
+El *método de rigidez* (*stiffness method*) supera ambos límites. Toma
+como incógnitas los desplazamientos de los nodos en lugar de las fuerzas,
+relaciona cada desplazamiento con las fuerzas que produce mediante la rigidez
+de las barras, y reúne todo en un sistema de ecuaciones lineales,
+
+<EcuacionClave>
+
+$$
+\begin{aligned}
+\mK\,\vU = \vF,
+\end{aligned}
+$$
+
+</EcuacionClave>
+
+donde $\mK$ es la *matriz de rigidez* (*stiffness matrix*) de la
+armadura, $\vU$ el vector de desplazamientos de los nodos y $\vF$ el de las
+fuerzas aplicadas sobre ellos. El método es el mismo para una armadura
+isostática o hiperestática, de tres barras o de trescientas. Y, sobre todo,
+es sistemático: cada paso se repite igual para cada barra y cada nodo, lo
+que lo hace ideal para un computador.
+
+## 1.2 Qué hay dentro de un programa comercial
+
+Los programas de análisis estructural que se usan en la práctica, como
+SAP2000, ETABS o Ftool, resuelven las estructuras con el método de rigidez,
+generalizado a barras que además se flexionan. Cuando dibujamos una armadura
+en uno de ellos, el programa hace lo mismo que haremos en este libro: calcula
+la rigidez de cada barra, ensambla la matriz de la estructura, resuelve el
+sistema y obtiene las fuerzas de cada barra.
+
+Usar un programa sin entender lo que hace por dentro es riesgoso. El programa
+siempre da un resultado, también cuando los datos están mal: un apoyo
+olvidado, una carga en la unidad equivocada o un nodo desplazado. Reconocer
+que un resultado no tiene sentido exige saber de dónde sale. Por eso este
+libro no enseña a usar un programa, sino a construirlo: al escribir cada paso
+del método, sabremos qué esperar de él y cómo verificarlo.
+
+<ParaSaberMas>
+
+El método de rigidez se desarrolló en la industria aeronáutica en la década
+de 1950, junto con los primeros computadores, y está en la base del método
+de los elementos finitos. Su desarrollo completo para armaduras, vigas y
+pórticos está en Kassimali (2012) y en McGuire et al. (2000).
+
+</ParaSaberMas>
+
+## 1.3 El mapa del método
+
+La figura 1.1 resume el método de rigidez para armaduras planas
+y es, a la vez, el mapa de este libro: cada paso es una parte de nuestra
+calculadora, y cada capítulo construye uno o dos pasos.
+
+<Figura nombre="mapa_metodo" numero="1.1">
+Los pasos del método de rigidez, con la ecuación principal de cada uno y el capítulo donde lo programamos.
+</Figura>
+
+En palabras:
+
+1. Describimos la armadura con datos: las coordenadas de sus nodos, las barras que los unen, los apoyos y las cargas.
+2. Calculamos la longitud y la orientación de cada barra.
+3. Con ellas obtenemos la matriz de rigidez de cada barra, que relaciona los desplazamientos de sus extremos con las fuerzas en ellos.
+4. Numeramos los desplazamientos posibles de los nodos, sus *grados de libertad* (*degrees of freedom*).
+5. Ensamblamos las matrices de las barras en la matriz de la armadura, y las cargas en el vector de fuerzas.
+6. Separamos los grados de libertad libres de los restringidos por los apoyos.
+7. Resolvemos el sistema: obtenemos los desplazamientos de los nodos y, con ellos, las reacciones.
+8. De los desplazamientos obtenemos la fuerza axial de cada barra.
+9. Presentamos, verificamos y dibujamos los resultados.
+
+<Recuerda>
+
+Todo el método se basa en tres principios que ya conocemos: el
+*equilibrio* de cada nodo, la *compatibilidad* (las barras unidas
+en un nodo se desplazan con él) y la *ley de Hooke* (cada barra se
+alarga en proporción a su fuerza). Supondremos, como en resistencia de
+materiales, que el material es elástico lineal y que los desplazamientos son
+pequeños.
+
+</Recuerda>
+
+## 1.4 Tres armaduras para aprender
+
+A lo largo del libro usaremos tres armaduras de acero, con datos realistas
+($E = 200\,\mathrm{GPa}$), que se resumen en la
+tabla 1.1. La columna $g$ es el grado de indeterminación,
+$g = b + r - 2n$: es cero en una armadura isostática y positivo en una
+hiperestática.
+
+**Tabla 1.1:** Los ejemplos del libro.
+
+| Ejemplo | Nodos | Barras | $g$ | Para qué sirve |
+| :--- | :---: | :---: | :---: | :--- |
+| A. Triángulo | 3 | 3 | 0 | Verificar cada paso a mano |
+| B. Cuadro arriostrado | 4 | 6 | 1 | Un caso hiperestático |
+| C. Puente Pratt | 12 | 21 | 0 | Una armadura de verdad |
+
+El *ejemplo A* es un triángulo de 6 m de base y
+4 m de altura, lo bastante pequeño para comprobar a mano cada
+número que produzca la calculadora. El *ejemplo B* es el cuadro con dos
+diagonales del que hablamos antes: nos recordará que el método resuelve lo
+que el equilibrio por sí solo no puede. Y el *ejemplo C* es el puente
+del comienzo del capítulo, la prueba final de la calculadora.
+
+Que haya tres ejemplos distintos no es un capricho. Un programa puede dar el
+resultado correcto con un ejemplo por casualidad, por ejemplo si confunde dos
+números que en ese ejemplo resultan iguales. Probarlo con armaduras de
+tamaños y formas distintas hace que esos errores salgan a la luz.
+
+## 1.5 Lo que necesitamos para empezar
+
+Este libro supone que conocemos la estática de armaduras, las nociones de
+esfuerzo y deformación de resistencia de materiales, y el álgebra de
+matrices: producto, transpuesta e inversa. No supone ningún conocimiento de
+programación. Aprenderemos Python a medida que lo necesitemos, siempre con
+ejemplos de armaduras, y cada herramienta nueva aparecerá en una caja como
+esta:
+
+<Python>
+
+Las cajas de Python explican las herramientas del lenguaje que usamos por
+primera vez. El anexo A las reúne todas para consultarlas rápidamente.
+
+</Python>
+
+Tampoco necesitamos instalar nada: escribiremos nuestro código en notebooks de
+Google Colab, que funcionan en el navegador. En el [capítulo 2](/capitulos/cap02_primer_notebook)
+creamos el primero.
+
+## Repaso y resumen del capítulo
+
+- El cálculo a mano es largo para armaduras grandes e insuficiente para las hiperestáticas, cuyo grado de indeterminación $g = b + r - 2n$ es positivo.
+- El método de rigidez toma como incógnitas los desplazamientos de los nodos y resuelve el sistema $\mK\,\vU = \vF$. Es el mismo para cualquier armadura y es el que usan los programas comerciales.
+- El método tiene nueve pasos (figura 1.1), que programaremos en los capítulos 2 a 12.
+- Los ejemplos A, B y C, de tamaños y propiedades distintos, nos permitirán verificar la calculadora.
+
+## Ejercicios
+
+<Ejercicio numero="1.1">
+
+Calcular el grado de indeterminación de los ejemplos A, B y C, sabiendo que
+los tres tienen un apoyo articulado y uno de rodillo. ¿Cuáles pueden
+resolverse con el método de los nudos?
+
+<SolucionDelEjercicio>
+
+Con un apoyo articulado (2 reacciones) y uno de rodillo (1 reacción), los
+tres ejemplos tienen $r = 3$:
+
+$$
+g_A = 3 + 3 - 2 \cdot 3 = 0, \qquad
+  g_B = 6 + 3 - 2 \cdot 4 = 1, \qquad
+  g_C = 21 + 3 - 2 \cdot 12 = 0.
+$$
+
+Los ejemplos A y C son isostáticos y pueden resolverse con el método de los
+nudos; el B es hiperestático de grado 1 y no.
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<Ejercicio numero="1.2">
+
+Cada nodo de una armadura plana puede desplazarse en dos direcciones.
+¿Cuántas filas y columnas tiene la matriz $\mK$ de cada ejemplo? ¿Cuántos
+números tiene la del ejemplo C?
+
+<SolucionDelEjercicio>
+
+La matriz $\mK$ tiene una fila y una columna por cada grado de libertad, es
+decir, $2n$: es de $6 \times 6$ en el ejemplo A, de $8 \times 8$ en el B y de
+$24 \times 24$ en el C. La del ejemplo C tiene $24^2 = 576$ números, aunque,
+como veremos, la mayoría son ceros.
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<Ejercicio numero="1.3">
+
+El puente del ejemplo C tiene seis paneles. Para un puente del mismo tipo
+con $p$ paneles, deducir cuántos nodos y barras tiene, y comprobar que sigue
+siendo isostático. ¿De qué tamaño sería la matriz $\mK$ de un puente de 20
+paneles?
+
+<SolucionDelEjercicio>
+
+Un puente de $p$ paneles tiene $p + 1$ nodos en el cordón inferior y
+$p - 1$ en el superior, es decir, $n = 2p$. Sus barras son $p$ del cordón
+inferior, $p - 2$ del superior, $p - 1$ montantes y $p$ diagonales (dos
+extremas y $p - 2$ interiores):
+
+$$
+b = p + (p - 2) + (p - 1) + p = 4p - 3.
+$$
+
+Para $p = 6$ resultan 12 nodos y 21 barras, como en el ejemplo C. Con
+$r = 3$, el grado de indeterminación es
+$g = (4p - 3) + 3 - 2 \cdot 2p = 0$: el puente es isostático para cualquier
+cantidad de paneles. Con 20 paneles tiene 40 nodos y 80 grados de libertad,
+y su matriz $\mK$ es de $80 \times 80$, con 6400 números.
+
+</SolucionDelEjercicio>
+
+</Ejercicio>

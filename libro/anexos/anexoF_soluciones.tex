@@ -5,6 +5,41 @@ Cada solución se presenta con el código que la resuelve y su resultado. El
 mismo código está en el notebook de soluciones de cada capítulo.
 
 % ---------------------------------------------------------------------------
+\section*{Capítulo \ref{cap:por_que_programar}}
+\addcontentsline{toc}{section}{Capítulo \ref{cap:por_que_programar}}
+
+\soluciondel{1.1}
+Con un apoyo articulado (2 reacciones) y uno de rodillo (1 reacción), los
+tres ejemplos tienen $r = 3$:
+\[
+  g_A = 3 + 3 - 2 \cdot 3 = 0, \qquad
+  g_B = 6 + 3 - 2 \cdot 4 = 1, \qquad
+  g_C = 21 + 3 - 2 \cdot 12 = 0.
+\]
+Los ejemplos A y C son isostáticos y pueden resolverse con el método de los
+nudos; el B es hiperestático de grado 1 y no.
+
+\soluciondel{1.2}
+La matriz $\mK$ tiene una fila y una columna por cada grado de libertad, es
+decir, $2n$: es de $6 \times 6$ en el ejemplo A, de $8 \times 8$ en el B y de
+$24 \times 24$ en el C. La del ejemplo C tiene $24^2 = 576$ números, aunque,
+como veremos, la mayoría son ceros.
+
+\soluciondel{1.3}
+Un puente de $p$ paneles tiene $p + 1$ nodos en el cordón inferior y
+$p - 1$ en el superior, es decir, $n = 2p$. Sus barras son $p$ del cordón
+inferior, $p - 2$ del superior, $p - 1$ montantes y $p$ diagonales (dos
+extremas y $p - 2$ interiores):
+\[
+  b = p + (p - 2) + (p - 1) + p = 4p - 3.
+\]
+Para $p = 6$ resultan 12 nodos y 21 barras, como en el ejemplo C. Con
+$r = 3$, el grado de indeterminación es
+$g = (4p - 3) + 3 - 2 \cdot 2p = 0$: el puente es isostático para cualquier
+cantidad de paneles. Con 20 paneles tiene 40 nodos y 80 grados de libertad,
+y su matriz $\mK$ es de $80 \times 80$, con 6400 números.
+
+% ---------------------------------------------------------------------------
 \section*{Capítulo \ref{cap:primer_notebook}}
 \addcontentsline{toc}{section}{Capítulo \ref{cap:primer_notebook}}
 

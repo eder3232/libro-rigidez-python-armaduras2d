@@ -1,0 +1,33 @@
+% Mapa del método de rigidez: cada paso, su ecuación y su capítulo (capítulo 1)
+\begin{tikzpicture}[
+    paso/.style={draw=principal, fill=principal!6, rounded corners=2pt,
+      minimum width=5.3cm, minimum height=0.66cm, font=\small, inner sep=3pt},
+    extremo/.style={paso, draw=acento, fill=acento!10},
+    flecha/.style={-{Stealth[length=5pt]}, line width=0.8pt, color=principal},
+    ecuacion/.style={font=\small, anchor=west, color=black!85},
+    capitulo/.style={font=\scriptsize\sffamily, color=texto-suave,
+      anchor=west}]
+  \node[extremo] (m) at (0,0) {Modelo: nodos, barras, apoyos, cargas};
+  \node[paso, below=0.32cm of m] (g) {Geometría de cada barra};
+  \node[paso, below=0.32cm of g] (k) {Rigidez de cada barra};
+  \node[paso, below=0.32cm of k] (d) {Grados de libertad};
+  \node[paso, below=0.32cm of d] (e) {Ensamblaje del sistema};
+  \node[paso, below=0.32cm of e] (p) {Partición del sistema};
+  \node[paso, below=0.32cm of p] (u) {Desplazamientos y reacciones};
+  \node[paso, below=0.32cm of u] (n) {Fuerzas axiales};
+  \node[extremo, below=0.32cm of n] (r) {Informe y gráficos};
+  \foreach \a/\b in {m/g, g/k, k/d, d/e, e/p, p/u, u/n, n/r}
+    \draw[flecha] (\a) -- (\b);
+  % Ecuación de cada paso
+  \node[ecuacion] at ($(g.east)+(0.3,0)$) {$L,\ c,\ s$};
+  \node[ecuacion] at ($(k.east)+(0.3,0)$) {$\mk = \mT\transp\,\mkl\,\mT$};
+  \node[ecuacion] at ($(d.east)+(0.3,0)$) {$2i-1,\ 2i$};
+  \node[ecuacion] at ($(e.east)+(0.3,0)$) {$\mK\,\vU = \vF$};
+  \node[ecuacion] at ($(p.east)+(0.3,0)$) {$\mK_{ll},\ \mK_{lr},\ \mK_{rl},\ \mK_{rr}$};
+  \node[ecuacion] at ($(u.east)+(0.3,0)$) {$\vU_l,\ \vF_r$};
+  \node[ecuacion] at ($(n.east)+(0.3,0)$) {$N = \EAL\,(u'_2 - u'_1)$};
+  % Capítulo de cada paso, alineados en una columna
+  \foreach \nodo/\texto in {m/cap. 3, g/cap. 2 y 4, k/cap. 5, d/cap. 6,
+      e/cap. 7 y 8, p/cap. 8, u/cap. 9, n/cap. 10, r/cap. 11 y 12}
+    \node[capitulo] at ($(\nodo.center)+(6.7,0)$) {\texto};
+\end{tikzpicture}
