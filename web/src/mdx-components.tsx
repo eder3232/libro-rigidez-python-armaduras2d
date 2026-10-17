@@ -3,6 +3,7 @@ import {
   Cuidado,
   EcuacionClave,
   Estrategia,
+  NotebooksDelCapitulo,
   Objetivos,
   ParaSaberMas,
   ProblemaResuelto,
@@ -11,6 +12,8 @@ import {
   Recuerda,
   Solucion,
 } from "@/components/cajas";
+import { Ejercicio, SolucionDelEjercicio } from "@/components/ejercicios";
+import { Figura } from "@/components/Figura";
 import { Fragmento } from "@/components/Fragmento";
 import { Salida } from "@/components/Salida";
 
@@ -22,12 +25,16 @@ const componentes: MDXComponents = {
   ParaSaberMas,
   Objetivos,
   PuntoDeControl,
+  NotebooksDelCapitulo,
   Estrategia,
   ProblemaResuelto,
   Solucion,
   EcuacionClave,
+  Figura,
   Fragmento,
   Salida,
+  Ejercicio,
+  SolucionDelEjercicio,
 };
 
 export function useMDXComponents(): MDXComponents {

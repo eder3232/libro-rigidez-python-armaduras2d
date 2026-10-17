@@ -2,7 +2,7 @@
 import type { ReactNode } from "react";
 
 const URL_NOTEBOOKS =
-  "https://github.com/USUARIO/libro-rigidez-python-armaduras2d/blob/main/notebooks";
+  "https://github.com/eder3232/libro-rigidez-python-armaduras2d/blob/main/notebooks";
 
 type Tono = "principal" | "traccion" | "acento" | "neutro";
 
@@ -84,4 +84,21 @@ export function Solucion() {
 // Ecuación clave: resaltada con fondo de color.
 export function EcuacionClave({ children }: { children: ReactNode }) {
   return <div className="ecuacion-clave">{children}</div>;
+}
+
+// Enlaces a los notebooks del capítulo, al inicio de cada capítulo de la web.
+export function NotebooksDelCapitulo({ id, capitulo }: { id: string; capitulo: string }) {
+  const colab = (archivo: string) =>
+    `${URL_NOTEBOOKS}/${archivo}`.replace(
+      "https://github.com/",
+      "https://colab.research.google.com/github/",
+    );
+  return (
+    <aside className="notebooks-capitulo">
+      <span>Notebooks de este capítulo:</span>
+      <a href={colab(`${id}.ipynb`)}>Lección</a>
+      <a href={colab(`soluciones_cap${capitulo}.ipynb`)}>Soluciones</a>
+      <a href={colab(`control_cap${capitulo}.ipynb`)}>Punto de control</a>
+    </aside>
+  );
 }

@@ -5,17 +5,9 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{estilo/armaduras}[2026/10/17 Maqueta del libro]
 
-% ---------------------------------------------------------------------------
-% Idioma y tipografía
-% ---------------------------------------------------------------------------
-\RequirePackage[spanish, es-nodecimaldot, es-tabla, es-noshorthands]{babel}
+% Idioma, tipografía, colores, unidades, TikZ, notación y símbolos
+\RequirePackage{estilo/base}
 \addto\captionsspanish{\renewcommand{\appendixname}{Anexo}}
-\RequirePackage{amsmath, amssymb}
-\RequirePackage{unicode-math}
-\setmainfont{Libertinus Serif}
-\setsansfont{Libertinus Sans}
-\setmonofont{Source Code Pro}[Scale=MatchLowercase]
-\setmathfont{Libertinus Math}
 \RequirePackage[final]{microtype}
 
 % ---------------------------------------------------------------------------
@@ -28,19 +20,6 @@
 ]{geometry}
 \RequirePackage{marginnote}
 \renewcommand*{\marginfont}{\footnotesize\sffamily\color{texto-suave}}
-
-% ---------------------------------------------------------------------------
-% Colores (un principal y un acento; tracción y compresión de Okabe-Ito,
-% distinguibles con daltonismo)
-% ---------------------------------------------------------------------------
-\RequirePackage{xcolor}
-\definecolor{principal}{HTML}{1F4E79}
-\definecolor{acento}{HTML}{C8641E}
-\definecolor{texto-suave}{HTML}{5A5A5A}
-\definecolor{fondo-codigo}{HTML}{F6F4EF}
-\definecolor{traccion}{HTML}{0072B2}
-\definecolor{compresion}{HTML}{D55E00}
-\definecolor{neutro}{HTML}{8C8C8C}
 
 % ---------------------------------------------------------------------------
 % Títulos
@@ -60,10 +39,6 @@
 % ---------------------------------------------------------------------------
 \RequirePackage{graphicx}
 \RequirePackage{booktabs}
-\RequirePackage{siunitx}
-\sisetup{output-decimal-marker={.}, group-separator={\,}, per-mode=symbol}
-\RequirePackage{tikz}
-\usetikzlibrary{arrows.meta, calc, patterns, decorations.pathmorphing}
 \setkomafont{caption}{\small}
 \setkomafont{captionlabel}{\small\sffamily\bfseries\color{principal}}
 \numberwithin{equation}{chapter}
@@ -105,8 +80,6 @@
   },
 }
 
-\input{estilo/notacion.tex}
-\input{estilo/simbolos.tex}
 
 % ===========================================================================
 % Comandos semánticos: lo único que usan los capítulos
@@ -157,7 +130,7 @@
 \newcommand{\concepto}[1]{\emph{#1}\index{#1}}
 
 % Punto de control al final de cada capítulo
-\newcommand{\urlnotebooks}{https://github.com/USUARIO/libro-rigidez-python-armaduras2d/blob/main/notebooks}
+\newcommand{\urlnotebooks}{https://github.com/eder3232/libro-rigidez-python-armaduras2d/blob/main/notebooks}
 \newcommand{\puntodecontrol}[1]{%
   \begin{tcolorbox}[caja=acento, title={Punto de control}]
   Si algo no funcionó o se omitió una parte, el notebook con todo el código

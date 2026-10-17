@@ -1,0 +1,40 @@
+% Base común del libro y de las figuras independientes: idioma, tipografía,
+% colores, unidades, TikZ, notación y símbolos. La maqueta del libro
+% (armaduras.sty) y las figuras para la web (scripts/generar_figuras.py)
+% cargan este archivo, para que ambos se vean idénticos.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{estilo/base}[2026/10/17 Base del libro]
+
+% Idioma y tipografía
+\RequirePackage[spanish, es-nodecimaldot, es-tabla, es-noshorthands]{babel}
+\RequirePackage{amsmath, amssymb}
+\RequirePackage{unicode-math}
+\setmainfont{Libertinus Serif}
+\setsansfont{Libertinus Sans}
+\setmonofont{Source Code Pro}[Scale=MatchLowercase]
+\setmathfont{Libertinus Math}
+
+% Colores (un principal y un acento; tracción y compresión de Okabe-Ito,
+% distinguibles con daltonismo)
+\RequirePackage{xcolor}
+\definecolor{principal}{HTML}{1F4E79}
+\definecolor{acento}{HTML}{C8641E}
+\definecolor{texto-suave}{HTML}{5A5A5A}
+\definecolor{fondo-codigo}{HTML}{F6F4EF}
+\definecolor{traccion}{HTML}{0072B2}
+\definecolor{compresion}{HTML}{D55E00}
+\definecolor{neutro}{HTML}{8C8C8C}
+
+% Unidades
+\RequirePackage{siunitx}
+\sisetup{output-decimal-marker={.}, group-separator={\,}, per-mode=symbol}
+
+% Esquemas
+\RequirePackage{tikz}
+\usetikzlibrary{arrows.meta, calc, patterns, decorations.pathmorphing}
+
+\input{estilo/notacion.tex}
+\input{estilo/simbolos.tex}
+
+% Figura con una sola fuente para el libro y la web: libro/figuras/<nombre>.tex
+\newcommand{\figura}[1]{\input{figuras/#1.tex}}

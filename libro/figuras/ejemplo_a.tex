@@ -1,0 +1,20 @@
+% Ejemplo A: armadura triangular isostática, con apoyos y cargas
+\begin{tikzpicture}[scale=0.85]
+  \coordinate (n1) at (0,0);
+  \coordinate (n2) at (6,0);
+  \coordinate (n3) at (3,4);
+  \draw[barra] (n1) -- node[etiqueta barra] {1} (n2);
+  \draw[barra] (n2) -- node[etiqueta barra] {2} (n3);
+  \draw[barra] (n1) -- node[etiqueta barra] {3} (n3);
+  \apoyoarticulado{(n1)}
+  \apoyorodillo{(n2)}
+  \cargapuntual{(n3)}{(1.4,0)}{\SI{20}{\kilo\newton}}
+  \cargapuntual{(n3)}{(0,-1.4)}{\SI{50}{\kilo\newton}}
+  \foreach \n in {n1, n2, n3}
+    \node[nodo] at (\n) {};
+  \node[etiqueta nodo, above left=2pt] at (n1) {1};
+  \node[etiqueta nodo, above right=2pt] at (n2) {2};
+  \node[etiqueta nodo, above right=4pt] at (n3) {3};
+  \draw[eje] (-1.4,-0.9) -- ++(0.8,0) node[right, font=\small] {$x$};
+  \draw[eje] (-1.4,-0.9) -- ++(0,0.8) node[above, font=\small] {$y$};
+\end{tikzpicture}

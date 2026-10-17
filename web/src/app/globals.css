@@ -190,3 +190,61 @@ main {
   padding: 0.1rem 0.8rem;
   margin: 1.4rem 0;
 }
+
+/* Figuras */
+.figura {
+  margin: 2rem 0;
+  text-align: center;
+}
+.figura img {
+  display: inline-block;
+  max-width: 100%;
+  height: auto;
+}
+.figura figcaption {
+  font-size: 0.95rem;
+  margin-top: 0.6rem;
+}
+.figura figcaption strong {
+  font-family: var(--fuente-sans), sans-serif;
+  color: var(--principal);
+}
+
+/* Ejercicios */
+.ejercicio {
+  margin: 1.5rem 0;
+}
+.ejercicio-numero {
+  font-family: var(--fuente-sans), sans-serif;
+  font-weight: 700;
+  color: var(--principal);
+  margin-bottom: 0.3rem !important;
+}
+.solucion-ejercicio {
+  border-left: 3px solid var(--acento);
+  padding: 0.3rem 1rem;
+  background: color-mix(in srgb, var(--acento) 5%, white);
+}
+.solucion-ejercicio summary {
+  cursor: pointer;
+  font-family: var(--fuente-sans), sans-serif;
+  color: var(--acento);
+}
+.solucion-ejercicio[open] summary {
+  margin-bottom: 0.8rem;
+}
+
+/* Enlaces a los notebooks del capítulo */
+.notebooks-capitulo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.2rem;
+  font-family: var(--fuente-sans), sans-serif;
+  font-size: 0.95rem;
+  padding: 0.7rem 1rem;
+  margin-bottom: 2rem;
+  background: var(--fondo-codigo);
+}
+.notebooks-capitulo span {
+  color: var(--texto-suave);
+}

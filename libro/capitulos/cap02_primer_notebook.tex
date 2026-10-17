@@ -43,24 +43,7 @@ el ángulo aumenta en \ang{180}.
 
 \begin{figure}[ht]
   \centering
-  \begin{tikzpicture}[scale=1.1]
-    \coordinate (i) at (0,0);
-    \coordinate (j) at (3,2.2);
-    \draw[eje] (-0.6,0) -- (4,0) node[right, font=\small] {$x$};
-    \draw[eje] (0,-0.5) -- (0,2.9) node[above, font=\small] {$y$};
-    \draw[barra] (i) -- (j);
-    \draw[densely dashed, color=neutro] (i) -- (3,0) -- (j);
-    \node[font=\small, below] at (1.5,0) {$\Delta x$};
-    \node[font=\small, right] at (3,1.1) {$\Delta y$};
-    \node[font=\small, above left] at (1.5,1.1) {$L$};
-    \draw[color=acento, line width=0.8pt, -{Stealth[length=4pt]}]
-      (0.9,0) arc[start angle=0, end angle=36.25, radius=0.9];
-    \node[font=\small, color=acento] at (1.15,0.35) {$\theta$};
-    \node[nodo] at (i) {};
-    \node[nodo] at (j) {};
-    \node[etiqueta nodo, below left=2pt] at (i) {$i$};
-    \node[etiqueta nodo, above right=2pt] at (j) {$j$};
-  \end{tikzpicture}
+  \figura{geometria_barra}
   \caption{Geometría de una barra: proyecciones, longitud y ángulo.}
   \label{fig:geometria_barra}
 \end{figure}
