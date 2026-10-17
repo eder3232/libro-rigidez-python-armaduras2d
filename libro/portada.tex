@@ -1,0 +1,86 @@
+% portada.tex: portada y página legal del libro.
+% La armadura es el puente Pratt del ejemplo C (capítulo 12), con cada barra en
+% el color de su fuerza axial: tracción, compresión o sin fuerza.
+
+\begin{titlepage}
+\begin{tikzpicture}[remember picture, overlay]
+  % Franja superior con el título
+  \fill[principal] (current page.north west) rectangle
+    ([yshift=-0.52\paperheight]current page.north east);
+  \fill[acento] ([yshift=-0.52\paperheight]current page.north west) rectangle
+    ([yshift=-0.535\paperheight]current page.north east);
+  \node[anchor=north west, text width=0.78\paperwidth, align=left,
+      text=white, font=\sffamily]
+    at ([xshift=0.11\paperwidth, yshift=-0.16\paperheight]current page.north west)
+    {{\fontsize{34}{40}\selectfont\bfseries\spaceskip=0.28em
+      Análisis matricial\\[2pt]
+      de armaduras\\[2pt] con Python\par}
+     \vspace{0.9cm}
+     {\Large Aprende el método de rigidez\\[2pt]
+      construyendo tu propia calculadora\par}};
+
+  % El puente del ejemplo C
+  % 9 unidades de luz con escala 1.3: centrado, 5.85 cm a cada lado del eje
+  \begin{scope}[shift={([xshift=-5.85cm, yshift=-0.79\paperheight]
+      current page.north)}, scale=1.3, line cap=round]
+    \foreach \k in {0,...,6}
+      \coordinate (p\the\numexpr\k+1\relax) at (1.5*\k, 0);
+    \foreach \k in {0,...,4}
+      \coordinate (p\the\numexpr\k+8\relax) at (1.5*\k+1.5, 1.5);
+    \foreach \i/\j/\tono in {
+        1/2/traccion, 2/3/traccion, 3/4/traccion, 4/5/traccion,
+        5/6/traccion, 6/7/traccion,
+        8/9/compresion, 9/10/compresion, 10/11/compresion, 11/12/compresion,
+        1/8/compresion, 12/7/compresion,
+        2/8/traccion, 3/9/compresion, 4/10/neutro, 5/11/compresion,
+        6/12/traccion,
+        8/3/traccion, 9/4/traccion, 11/4/traccion, 12/5/traccion}
+      \draw[\tono, line width=4.5pt] (p\i) -- (p\j);
+    \foreach \i in {1,...,12}
+      \fill[white] (p\i) circle (3.4pt);
+    \foreach \i in {1,...,12}
+      \draw[principal, line width=1.1pt] (p\i) circle (3.4pt);
+  \end{scope}
+
+  % Autor
+  \node[anchor=south west, font=\sffamily\Large, text=principal]
+    at ([xshift=0.11\paperwidth, yshift=0.08\paperheight]current page.south west)
+    {Eddy Eder Sucapuca Cruz};
+\end{tikzpicture}
+\end{titlepage}
+
+% ---------------------------------------------------------------------------
+% Página legal (reverso de la portada)
+\thispagestyle{empty}
+\null\vfill
+{\small\raggedright
+\textbf{Análisis matricial de armaduras con Python}\\
+Aprende el método de rigidez construyendo tu propia calculadora\par
+\medskip
+Eddy Eder Sucapuca Cruz\par
+Versión preliminar, \the\year.\par
+\bigskip
+© \the\year{} Eddy Eder Sucapuca Cruz.\par
+\medskip
+El texto y las figuras de este libro se distribuyen bajo la licencia Creative
+Commons Atribución-NoComercial-CompartirIgual 4.0 Internacional (CC BY-NC-SA
+4.0): \url{https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es}. Se
+permite copiarlos, distribuirlos y adaptarlos sin fines comerciales, citando
+al autor y compartiendo las obras derivadas con la misma licencia.\par
+\medskip
+El código de la calculadora y de los notebooks se distribuye bajo la licencia
+MIT: puede usarse, modificarse e incorporarse en otros programas, también
+comerciales, conservando el aviso de autoría.\par
+\medskip
+El código, los notebooks y la versión web del libro están en
+\url{https://\textorepositorio}.\par
+\bigskip
+\textbf{Cómo citar este libro:}\\
+Sucapuca Cruz, E. E. (\the\year). \emph{Análisis matricial de armaduras con
+Python: aprende el método de rigidez construyendo tu propia calculadora}.
+\url{https://\textorepositorio}\par
+\bigskip
+Compuesto con \LaTeX{} en las tipografías Libertinus y Source Code Pro. Todos
+los resultados numéricos y los gráficos del libro se generan ejecutando el
+código que se muestra.\par}
+\cleardoublepage

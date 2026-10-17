@@ -1,0 +1,9 @@
+% Estilo del índice alfabético para upmendex (ver latexmkrc).
+% Ordena con las reglas del español (índice va junto a ingeniería, no al final)
+% y separa las entradas por letra inicial.
+icu_locale "es"
+headings_flag 1
+heading_prefix "\\indicegrupo{"
+heading_suffix "}\n"
+symhead_positive "Símbolos"
+numhead_positive "Números"

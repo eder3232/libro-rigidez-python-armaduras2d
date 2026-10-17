@@ -19,7 +19,7 @@ en pocas líneas.
 \end{objetivos}
 
 % ---------------------------------------------------------------------------
-\section{La idea del ensamblaje}\label{sec:idea_ensamblaje}
+\section{La idea del ensamblaje}\label{sec:idea_ensamblaje}\index{ensamblaje}
 
 Pensemos en el equilibrio de un nodo en la dirección de uno de sus grados de
 libertad, digamos el $i$. La fuerza externa $F_i$ que actúa en esa dirección
@@ -62,7 +62,7 @@ nodos de $i$ y de $j$.
 \end{recuerda}
 
 % ---------------------------------------------------------------------------
-\section{Matrices de ceros e índices}\label{sec:zeros}
+\section{Matrices de ceros e índices}\label{sec:zeros}\index{np.zeros@\texttt{np.zeros}}
 
 La matriz global empieza llena de ceros, y las barras van sumando sus aportes.
 \py{np.zeros} crea un arreglo de ceros con las dimensiones que se indiquen
@@ -133,7 +133,7 @@ Las rigideces de una armadura de acero son del orden de decenas de miles de
 \salida{c07_mostrar_k_global}
 
 % ---------------------------------------------------------------------------
-\section{El ensamblaje con \texttt{np.ix\_}}\label{sec:ix}
+\section{El ensamblaje con \texttt{np.ix\_}}\label{sec:ix}\index{np.ix_@\texttt{np.ix\_}}
 
 NumPy permite seleccionar de una vez un bloque de filas y columnas de una
 matriz. La función \py{np.ix_(filas, columnas)} indica que queremos todas las

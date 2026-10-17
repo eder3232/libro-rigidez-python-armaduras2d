@@ -58,7 +58,7 @@ permitirá colocar cada matriz de $4\times4$ en el lugar correcto de la matriz
 de la armadura en el \cref{cap:ensamblaje}.
 
 % ---------------------------------------------------------------------------
-\section{Decisiones con \texttt{if}}\label{sec:if}
+\section{Decisiones con \texttt{if}}\label{sec:if}\index{if@\texttt{if}}
 
 Para clasificar un grado de libertad debemos preguntar si el nodo tiene un
 apoyo en esa dirección y actuar según la respuesta. Las preguntas se escriben
@@ -84,7 +84,7 @@ Cuando hay más de dos casos, \py{elif} (contracción de \emph{else if})
 agrega condiciones intermedias. Lo usaremos en el \cref{sec:estabilidad}.
 
 % ---------------------------------------------------------------------------
-\section{La numeración de los grados de libertad}\label{sec:numeracion}
+\section{La numeración de los grados de libertad}\label{sec:numeracion}\index{numeración desde 1}\index{grados de libertad!numeración de los}
 
 La ecuación clave se traduce en una función de una línea. Una función puede
 devolver varios valores separados por comas, y quien la llama los recibe en
@@ -112,7 +112,7 @@ siempre los nodos de forma consecutiva.
 \end{cuidado}
 
 % ---------------------------------------------------------------------------
-\section{Grados de libertad libres y restringidos}\label{sec:libres_restringidos}
+\section{Grados de libertad libres y restringidos}\label{sec:libres_restringidos}\index{grados de libertad!libres y restringidos}
 
 Para clasificar, recorremos los nodos y preguntamos, en cada dirección, si
 hay un apoyo. Un nodo sin apoyo no aparece en el diccionario \py{apoyos}:
@@ -130,7 +130,7 @@ horizontal del nodo~2 y los dos del nodo~3. La suma, $3 + 3 = 6 = 2n$, da
 todos los grados de libertad.
 
 % ---------------------------------------------------------------------------
-\section{De la numeración desde 1 a los índices de Python}\label{sec:indices}
+\section{De la numeración desde 1 a los índices de Python}\label{sec:indices}\index{indices@\texttt{indices}}\index{índices de NumPy}
 
 En el \cref{cap:describir_armadura} vimos que Python cuenta las posiciones
 desde cero. En los próximos capítulos guardaremos fuerzas, desplazamientos y
@@ -173,7 +173,7 @@ ejercicio~\ref{ej:6.4} muestra la correspondencia entre ambas convenciones.
 \end{parasabermas}
 
 % ---------------------------------------------------------------------------
-\section{Una revisión previa de la estabilidad}\label{sec:estabilidad}
+\section{Una revisión previa de la estabilidad}\label{sec:estabilidad}\index{estabilidad}
 
 Una armadura de $b$ barras y $r$ reacciones tiene $b + r$ fuerzas
 desconocidas, y el equilibrio de sus $n$ nodos aporta $2n$ ecuaciones. La

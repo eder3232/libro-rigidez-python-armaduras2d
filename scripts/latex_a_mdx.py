@@ -213,6 +213,7 @@ COMANDOS_IGNORADOS = {
     "pendiente",
     "sololibro",
     "avisovalidacion",
+    "index",
 }
 
 
@@ -497,7 +498,7 @@ class Convertidor:
             return valor
 
         if nombre in COMANDOS_IGNORADOS:
-            if nombre in ("label", "pendiente", "sololibro"):
+            if nombre in ("label", "pendiente", "sololibro", "index"):
                 argumento()
             return "", pos
         if nombre == "soloweb":

@@ -109,6 +109,14 @@ Separar apoyos y cargas de los nodos hace que cada diccionario tenga una sola re
 - **Esquemas estructurales** (barras, apoyos, cargas, ejes, grados de libertad): con TikZ, con una biblioteca propia de símbolos (apoyo articulado, rodillo, flecha de carga, numeración de nodos) para que todos los esquemas del libro sean idénticos en estilo.
 - **Gráficos de resultados**: Matplotlib con el *backend* PGF, para que usen exactamente la tipografía y los tamaños del libro.
 - Paleta única para todo el libro: tracción y compresión con colores distinguibles también para personas con daltonismo, más un color neutro para la geometría sin deformar.
+- Las únicas capturas de pantalla son de interfaces (Colab, SAP2000), con `\captura` (ver [validación](05-validacion-sap2000.md)).
+
+## Índice alfabético
+
+- `\termino` y `\concepto` agregan su término al índice automáticamente.
+- Los demás conceptos se indexan con `\index{...}` en la línea del `\label{sec:...}` de la sección donde se explican, para que la página sea la del comienzo de la sección. Subentradas con `!` (`\index{equilibrio!de los nodos}`).
+- Las palabras de Python se ordenan por su nombre y se muestran en letra de código: `\index{for@\texttt{for}}` (con `\_` en lugar de `_` en la parte visible).
+- El índice lo ordena `upmendex` con las reglas del español (`libro/estilo/indice.ist`), de modo que las palabras con tilde quedan en su lugar.
 
 ## Diseño editorial (maqueta propia)
 

@@ -60,8 +60,13 @@
 % ---------------------------------------------------------------------------
 \RequirePackage{csquotes}
 \RequirePackage[backend=biber, style=authoryear, maxcitenames=2]{biblatex}
-\RequirePackage{imakeidx}
-\makeindex[intoc, title={Índice alfabético}]
+% El índice lo ordena upmendex con las reglas del español (latexmkrc y
+% estilo/indice.ist); \indicegrupo es el encabezado de cada letra.
+\RequirePackage[noautomatic]{imakeidx}
+\makeindex[intoc, title={Índice alfabético}, columns=2]
+\newcommand{\indicegrupo}[1]{%
+  \pagebreak[2]\vskip 1.2ex plus 0.5ex
+  {\sffamily\bfseries\color{principal}#1}\par\nopagebreak\vskip 0.4ex}
 \PassOptionsToPackage{hyphens}{url}  % las direcciones largas se cortan en los guiones
 \RequirePackage[hidelinks]{hyperref}
 \expandafter\def\expandafter\UrlBreaks\expandafter{\UrlBreaks\do\_\do\.}\RequirePackage[spanish, noabbrev, nameinlink]{cleveref}

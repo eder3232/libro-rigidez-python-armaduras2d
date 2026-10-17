@@ -3,6 +3,11 @@ $pdf_mode = 4;            # LuaLaTeX
 $out_dir = 'build';
 $bibtex_use = 2;          # biber
 $lualatex = 'lualatex -interaction=nonstopmode -file-line-error -synctex=1 %O %S';
+# Índice alfabético ordenado con las reglas del español (ICU). latexmk lo
+# ejecuta dentro de build/, de modo que el estilo necesita su ruta absoluta.
+use Cwd qw(abs_path);
+my $estilo_indice = abs_path('estilo/indice.ist');
+$makeindex = "upmendex -s \"$estilo_indice\" -o %D %S";
 
 # \include escribe un .aux por capítulo: sus carpetas deben existir en build/
 use File::Path qw(make_path);

@@ -41,7 +41,7 @@ Mientras los apoyos no se desplacen, $\vU_r = \vect{0}$; en el
 incorporar más adelante los asentamientos de apoyo.
 
 % ---------------------------------------------------------------------------
-\section{Resolver un sistema de ecuaciones con NumPy}\label{sec:solve}
+\section{Resolver un sistema de ecuaciones con NumPy}\label{sec:solve}\index{np.linalg.solve@\texttt{np.linalg.solve}}
 
 La función \py{np.linalg.solve(A, b)} resuelve el sistema $\vect{A}\vect{x} =
 \vect{b}$. Los desplazamientos resultan en metros, porque usamos
@@ -76,7 +76,7 @@ la inversa, solo si de verdad se necesita la matriz inversa.
 \end{cuidado}
 
 % ---------------------------------------------------------------------------
-\section{Armaduras inestables: \texttt{raise}, \texttt{try} y \texttt{except}}\label{sec:excepciones}
+\section{Armaduras inestables: \texttt{raise}, \texttt{try} y \texttt{except}}\label{sec:excepciones}\index{inestabilidad}\index{try@\texttt{try}}\index{raise@\texttt{raise}}
 
 En el \cref{cap:particion} vimos que si la armadura es inestable, $\mK_{ll}$
 es singular. Resolver un sistema singular no tiene sentido, y no podemos
@@ -105,7 +105,7 @@ para los valores que se reciben pero no se van a usar.
 \end{python}
 
 % ---------------------------------------------------------------------------
-\section{Desplazamientos y reacciones del ejemplo A}\label{sec:resultados_a}
+\section{Desplazamientos y reacciones del ejemplo A}\label{sec:resultados_a}\index{desplazamientos de los nodos}\index{reacciones}
 
 Resolvemos ahora el ejemplo A con la función, y armamos el vector completo de
 desplazamientos, con los valores calculados en los grados de libertad libres
@@ -134,7 +134,7 @@ tomando momentos respecto del nodo~1, $6 R_{2y} = 20 \cdot 4 + 50 \cdot 3$, de
 donde $R_{2y} = \SI{38.33}{\kilo\newton}$ (ejercicio~\ref{ej:9.1}).
 
 % ---------------------------------------------------------------------------
-\section{Verificación del equilibrio}\label{sec:equilibrio}
+\section{Verificación del equilibrio}\label{sec:equilibrio}\index{equilibrio!global}
 
 Una armadura en equilibrio cumple, en conjunto, las tres ecuaciones de la
 estática: la suma de las fuerzas en $x$, la suma en $y$ y la suma de momentos

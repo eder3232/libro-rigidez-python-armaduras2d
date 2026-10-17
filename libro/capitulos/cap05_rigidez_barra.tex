@@ -21,7 +21,7 @@ cualquier armadura.
 \end{objetivos}
 
 % ---------------------------------------------------------------------------
-\section{La matriz de rigidez de una barra}\label{sec:teoria_rigidez}
+\section{La matriz de rigidez de una barra}\label{sec:teoria_rigidez}\index{rigidez axial}\index{matriz de rigidez!de una barra}
 
 Una barra de armadura solo trabaja a fuerza axial. En su propio eje $x'$,
 los desplazamientos de sus extremos $\vul = [u'_1,\ u'_2]\transp$ y las
@@ -77,7 +77,7 @@ las mismas matrices $\mT$ y $\mkl$ nos servirán para calcular las fuerzas
 internas.
 
 % ---------------------------------------------------------------------------
-\section{Funciones}\label{sec:funciones}
+\section{Funciones}\label{sec:funciones}\index{def@\texttt{def}}\index{return@\texttt{return}}
 
 Una \termino{función}{function} es un cálculo con nombre. Se define con
 \py{def}, seguido del nombre, de los \termino{parámetros}{parameters} entre
@@ -178,7 +178,7 @@ de una a otra: los diccionarios del modelo entran a la primera, y su
 resultado, junto con las barras, entra a la segunda.
 
 % ---------------------------------------------------------------------------
-\section{Verificación}\label{sec:verificacion_rigidez}
+\section{Verificación}\label{sec:verificacion_rigidez}\index{simetría}\index{movimiento de cuerpo rígido}
 
 Toda matriz de rigidez de una barra debe cumplir tres propiedades, que
 podemos comprobar con NumPy sin hacer ningún cálculo a mano:
