@@ -11,6 +11,7 @@ LaTeX lo incluye con \\fragmento{rigidez_barra} y la web lo importa por nombre.
 Uso: uv run python scripts/extraer_fragmentos.py
 """
 
+import re
 import sys
 import textwrap
 from pathlib import Path
@@ -42,6 +43,12 @@ def leer_fragmentos(archivo):
                 )
             fragmentos[abierto] = textwrap.dedent("\n".join(lineas)).strip("\n") + "\n"
             abierto = None
+        elif re.search(r"#\s*\[(inicio|fin)\s*:", linea):
+            raise ValueError(
+                f"{archivo}:{numero}: marca de fragmento mal escrita "
+                "(el nombre solo admite minúsculas, números y _): "
+                f"{linea.strip()}"
+            )
         elif abierto:
             if len(linea) > ANCHO_MAXIMO:
                 largas.append(f"  línea {numero}: {len(linea)} caracteres")

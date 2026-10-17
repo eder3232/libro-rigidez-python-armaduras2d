@@ -1,11 +1,301 @@
 export const metadatos = {
   numero: 7,
   titulo: "Ensamblaje de la matriz global",
-  sincronizado_con: "38d5706829",
+  sincronizado_con: "405d886f2a",
 };
 
 {/* Generado por scripts/latex_a_mdx.py desde libro/capitulos/cap07_ensamblaje.tex. No editar a mano. */}
 
 <NotebooksDelCapitulo id="cap07_ensamblaje" capitulo="07" />
 
+Tenemos la matriz de rigidez de cada barra y sabemos a qué grados de libertad
+de la armadura corresponde cada una de sus filas y columnas. Falta el paso
+que da nombre al método: *ensamblar*, es decir, sumar las rigideces de
+todas las barras en una sola matriz, la *matriz de rigidez
+global* (*global stiffness matrix*) de la armadura. Es una operación sencilla,
+que a mano resulta tediosa y propensa a errores, y que en Python se escribe
+en pocas líneas.
 
+<Objetivos>
+
+- Explicar por qué la matriz global es la suma de las matrices de las barras, colocadas según sus grados de libertad.
+- Crear matrices de ceros y acceder a sus elementos con índices.
+- Ensamblar la matriz global con un doble bucle y con `np.ix_`.
+- Mostrar una matriz con sus grados de libertad como encabezados.
+- Verificar que la matriz global es simétrica y singular.
+
+</Objetivos>
+
+## 7.1 La idea del ensamblaje
+
+Pensemos en el equilibrio de un nodo en la dirección de uno de sus grados de
+libertad, digamos el $i$. La fuerza externa $F_i$ que actúa en esa dirección
+debe ser igual a la suma de las fuerzas que ejercen sobre el nodo todas las
+barras que llegan a él. Y la fuerza de cada barra depende, a través de su
+matriz $\mk$, de los desplazamientos de sus extremos. Al escribir el
+equilibrio de todos los grados de libertad obtenemos el sistema
+
+$$
+\vF = \mK\,\vU,
+$$
+
+en el que cada término de $\mK$ es la suma de los aportes de las barras que
+conectan esos grados de libertad. Si $g_1, g_2, g_3, g_4$ es el vector de
+correspondencia de una barra, su término $k_{ab}$ se suma en la fila $g_a$ y
+la columna $g_b$ de la matriz global:
+
+<EcuacionClave>
+
+$$
+\begin{aligned}
+K_{g_a g_b} \leftarrow K_{g_a g_b} + k_{ab}, \qquad a, b = 1, \dots, 4.
+\end{aligned}
+$$
+
+</EcuacionClave>
+
+La figura 7.1 muestra la idea para la barra 2 del ejemplo A, cuyo
+vector de correspondencia es $[3, 4, 5, 6]$: su matriz de $4\times4$ se suma
+en el bloque de filas y columnas 3 a 6 de la matriz de $6\times6$. Las demás
+barras se suman de la misma forma, cada una en sus propias filas y columnas,
+y los términos que comparten se acumulan.
+
+<Figura nombre="ensamblaje" numero="7.1">
+Ensamblaje de la barra 2 del ejemplo A: cada término de su matriz se suma en la fila y la columna de la matriz global que indica su vector de correspondencia.
+</Figura>
+
+<Recuerda>
+
+El término $K_{ij}$ es la fuerza que aparece en el grado de libertad $i$
+cuando el grado de libertad $j$ se desplaza una unidad y todos los demás se
+mantienen fijos. Por eso solo es distinto de cero si alguna barra une los
+nodos de $i$ y de $j$.
+
+</Recuerda>
+
+## 7.2 Matrices de ceros e índices
+
+La matriz global empieza llena de ceros, y las barras van sumando sus aportes.
+`np.zeros` crea un arreglo de ceros con las dimensiones que se indiquen
+entre paréntesis:
+
+<Fragmento nombre="c07_zeros" />
+
+<Salida nombre="c07_zeros" />
+
+Para leer o modificar un término de una matriz se indican su fila y su
+columna, separadas por una coma. Los obtenemos siempre con la función
+`indices` del [capítulo 6](/capitulos/cap06_grados_de_libertad), a partir de los grados de
+libertad. El operador `+=` acumula: cada suma se agrega a lo que el término
+ya tenía.
+
+<Fragmento nombre="c07_indexar" />
+
+<Salida nombre="c07_indexar" />
+
+Para recorrer los cuatro grados de libertad de una barra usamos
+`range(4)`, que produce los números 0, 1, 2 y 3. En este caso los
+necesitamos desde cero, porque son posiciones dentro de la matriz $\mk$ de
+NumPy:
+
+<Fragmento nombre="c07_range" />
+
+<Salida nombre="c07_range" />
+
+## 7.3 El ensamblaje, término a término
+
+La ecuación clave se traduce de forma literal con dos bucles, uno dentro del
+otro: para cada barra, recorremos sus filas $a$ y, para cada fila, sus
+columnas $b$. En total, 16 sumas por barra.
+
+<Fragmento nombre="c07_doble_bucle" />
+
+<Python>
+
+Un bucle dentro de otro se llama *anidado*. El bucle interior se
+ejecuta completo en cada repetición del exterior: por cada valor de `a`,
+`b` toma los valores 0, 1, 2 y 3. Cada nivel agrega un nivel de sangría.
+
+</Python>
+
+## 7.4 Mostrar una matriz con sus grados de libertad
+
+Al imprimir un arreglo de NumPy, sus filas y columnas no tienen rótulos, y no
+es fácil saber qué término corresponde a qué grado de libertad. Escribimos una
+función que imprime la matriz con los grados de libertad, numerados desde 1,
+como encabezados de filas y columnas:
+
+<Fragmento nombre="c07_mostrar_matriz" />
+
+<Python>
+
+El operador `+=` también funciona con textos: los *concatena*, es
+decir, los une uno tras otro. Así construimos cada línea de la tabla antes de
+imprimirla. En el formato `{valor:>{ancho}.{decimales}f}`, el ancho y los
+decimales se toman de las variables `ancho` y `decimales`: un formato
+puede contener, a su vez, valores entre llaves.
+
+</Python>
+
+Las rigideces de una armadura de acero son del orden de decenas de miles de
+kN/m. Para leerlas con comodidad las mostramos en
+kN/mm, dividiendo por 1000:
+
+<Fragmento nombre="c07_mostrar_k_global" />
+
+<Salida nombre="c07_mostrar_k_global" />
+
+## 7.5 El ensamblaje con `np.ix\_`
+
+NumPy permite seleccionar de una vez un bloque de filas y columnas de una
+matriz. La función `np.ix_(filas, columnas)` indica que queremos todas las
+combinaciones de esas filas y esas columnas: con los cuatro índices de una
+barra, el bloque de $4\times4$ que le corresponde en la matriz global.
+
+<Fragmento nombre="c07_ix" />
+
+<Salida nombre="c07_ix" />
+
+Con esta selección, las 16 sumas del doble bucle se escriben en una sola
+línea, y el ensamblaje completo cabe en una función corta. Es la versión que
+usará nuestra calculadora:
+
+<Fragmento nombre="c07_ensamblar" />
+
+Ambas versiones deben dar el mismo resultado:
+
+<Fragmento nombre="c07_comparar" />
+
+<Salida nombre="c07_comparar" />
+
+## 7.6 Verificación
+
+La matriz global hereda las propiedades de las matrices de las barras. Debe
+ser simétrica y, como la armadura todavía no tiene apoyos, singular: puede
+trasladarse en $x$, en $y$ y girar sin deformarse. Esos tres movimientos de
+cuerpo rígido hacen que su rango sea $2n - 3$:
+
+<Fragmento nombre="c07_verificacion" />
+
+<Salida nombre="c07_verificacion" />
+
+En consecuencia, una traslación de toda la armadura no produce fuerzas:
+
+<Fragmento nombre="c07_cuerpo_rigido" />
+
+<Salida nombre="c07_cuerpo_rigido" />
+
+Comprobemos también dos términos a mano. Al grado de libertad 5 (nodo 3,
+dirección $x$) llegan las barras 2 y 3, cada una con $EA/L\,c^2 =
+80 \cdot 0.36 = 28.8\,\mathrm{kN/mm}$: su suma,
+57.6 kN/mm, es el término de la fila y columna 5.
+Al grado de libertad 3 (nodo 2, dirección $x$) llegan las barras 1 y 2:
+$66.7 + 28.8 = 95.5\,\mathrm{kN/mm}$.
+
+<ProblemaResuelto numero="7.1" titulo="La matriz global del ejemplo B">
+
+Ensamblar la matriz de rigidez global del ejemplo B y verificar sus
+propiedades.
+
+<Solucion />
+
+Encadenamos las funciones de los capítulos anteriores. Como la matriz es de
+$8\times8$, la mostramos sin decimales y con columnas más angostas:
+
+<Fragmento nombre="c07_problema_resuelto" />
+
+<Salida nombre="c07_problema_resuelto" />
+
+**Verificación.** La matriz es simétrica y su rango es
+$5 = 2 \cdot 4 - 3$, como corresponde a una armadura libre en el plano. En el
+término de la fila y columna 1 (nodo 1, dirección $x$) se suman la barra 1,
+horizontal, con $EA/L = 133.3\,\mathrm{kN/mm}$, y la
+diagonal 5, con $80 \cdot 0.36 = 28.8\,\mathrm{kN/mm}$:
+162 kN/mm. La barra vertical 4 no aporta nada en
+$x$.
+
+</ProblemaResuelto>
+
+## Repaso y resumen del capítulo
+
+- La matriz de rigidez global es la suma de las matrices de las barras: el término $k_{ab}$ de una barra se suma en la fila $g_a$ y la columna $g_b$ de $\mK$.
+- `np.zeros` crea una matriz de ceros; sus términos se leen y se modifican con `matriz[fila, columna]`, y `+=` acumula.
+- `range(4)` produce 0, 1, 2 y 3; los bucles pueden anidarse.
+- `np.ix_(filas, columnas)` selecciona un bloque de una matriz y permite ensamblar cada barra en una línea.
+- `mostrar_matriz` imprime una matriz con sus grados de libertad numerados desde 1.
+- La matriz global es simétrica y, sin apoyos, singular: su rango es $2n - 3$.
+
+## Ejercicios
+
+<Ejercicio numero="7.1">
+
+Calcular a mano el término de la fila y columna 6 de la matriz global del
+ejemplo A, en kN/mm, sumando los aportes de las
+barras que llegan al nodo 3. Comprobarlo con el programa.
+
+<SolucionDelEjercicio>
+
+Al nodo 3 llegan las barras 2 y 3. En ambas, el grado de libertad 6 es el
+cuarto ($u_4$), y su término es $EA/L\,s^2 = 80 \cdot 0.64 =
+51.2\,\mathrm{kN/mm}$:
+
+<Fragmento nombre="s07_ejercicio_1" />
+
+<Salida nombre="s07_ejercicio_1" />
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<Ejercicio numero="7.2">
+
+Ensamblar una matriz global del ejemplo A que contenga solo la barra 2 y
+mostrarla. Comparar el resultado con la figura 7.1.
+
+<SolucionDelEjercicio>
+
+<Fragmento nombre="s07_ejercicio_2" />
+
+<Salida nombre="s07_ejercicio_2" />
+
+Solo el bloque de filas y columnas 3 a 6 es distinto de cero, como en la
+figura 7.1.
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<Ejercicio numero="7.3">
+
+Verificar que una traslación vertical de toda la armadura del ejemplo A
+tampoco produce fuerzas.
+
+<SolucionDelEjercicio>
+
+<Fragmento nombre="s07_ejercicio_3" />
+
+<Salida nombre="s07_ejercicio_3" />
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<Ejercicio numero="7.4">
+
+Ensamblar la matriz global del ejemplo A recorriendo las barras en orden
+inverso (3, 2, 1) y comprobar que el resultado no cambia. ¿Por qué?
+
+<SolucionDelEjercicio>
+
+<Fragmento nombre="s07_ejercicio_4" />
+
+<Salida nombre="s07_ejercicio_4" />
+
+La suma es conmutativa: el orden en que las barras aportan sus términos no
+cambia el resultado.
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<PuntoDeControl capitulo="07" />

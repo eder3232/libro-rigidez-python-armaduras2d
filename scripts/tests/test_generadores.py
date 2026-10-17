@@ -148,3 +148,11 @@ def test_linea_demasiado_larga_en_un_fragmento_es_un_error(codigo, tmp_path):
     )
     with pytest.raises(ValueError, match="caracteres"):
         extraer(codigo, tmp_path / "fragmentos")
+
+
+def test_marca_mal_escrita_es_un_error(codigo, tmp_path):
+    (codigo / "cap03_tres.py").write_text(
+        "# [inicio: Mayuscula]\nx = 1\n# [fin: Mayuscula]\n", encoding="utf-8"
+    )
+    with pytest.raises(ValueError, match="mal escrita"):
+        extraer(codigo, tmp_path / "fragmentos")

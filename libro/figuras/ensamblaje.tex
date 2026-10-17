@@ -1,0 +1,25 @@
+% Ensamblaje: la matriz 4 x 4 de la barra 2 se suma en la matriz 6 x 6 (capítulo 7)
+\begin{tikzpicture}[scale=0.55,
+    etiqueta/.style={font=\scriptsize\sffamily, color=principal}]
+  % Matriz de la barra 2, con su vector de correspondencia [3, 4, 5, 6]
+  \fill[principal!20] (0,0) rectangle (4,-4);
+  \draw[step=1, color=principal!60, line width=0.4pt] (0,0) grid (4,-4);
+  \foreach \g [count=\k from 0] in {3,4,5,6} {
+    \node[etiqueta] at (\k+0.5, 0.45) {\g};
+    \node[etiqueta] at (-0.45, -\k-0.5) {\g};
+  }
+  \node[font=\small, anchor=north] at (2,-4.4) {$\mk$ de la barra 2};
+  % Matriz de la armadura
+  \begin{scope}[shift={(8,1)}]
+    \fill[principal!20] (2,-2) rectangle (6,-6);
+    \draw[step=1, color=neutro, line width=0.4pt] (0,0) grid (6,-6);
+    \draw[color=principal, line width=0.8pt] (2,-2) rectangle (6,-6);
+    \foreach \g [count=\k from 0] in {1,...,6} {
+      \node[etiqueta, color=texto-suave] at (\k+0.5, 0.45) {\g};
+      \node[etiqueta, color=texto-suave] at (-0.45, -\k-0.5) {\g};
+    }
+    \node[font=\small, anchor=north] at (3,-6.4) {$\mK$ de la armadura};
+  \end{scope}
+  \draw[-{Stealth[length=6pt]}, line width=1pt, color=acento]
+    (4.7,-2) -- (7.0,-2) node[midway, above, font=\small\ttfamily] {+=};
+\end{tikzpicture}

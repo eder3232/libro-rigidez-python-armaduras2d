@@ -126,7 +126,8 @@ Un único comando (por definir en `scripts/`) ejecuta todas las verificaciones y
 | 3. Describir una armadura | estable | listo | generado | — |
 | 4. La geometría de todas las barras | estable | listo | generado | — |
 | 5. La rigidez de una barra | estable | listo | generado | — |
-| 6. Los grados de libertad | borrador | listo | generado | — |
+| 6. Los grados de libertad | estable | listo | generado | — |
+| 7. Ensamblaje de la matriz global | borrador | listo | generado | — |
 
 Estados posibles: `pendiente` → `borrador` → `revisado` → `estable`.
 

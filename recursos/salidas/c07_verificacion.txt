@@ -1,0 +1,2 @@
+Simétrica: True
+Rango: 3 de 6

@@ -1,0 +1,4 @@
+Barra 2: 51.2 kN/mm
+Barra 3: 51.2 kN/mm
+Suma:    102.4 kN/mm
+K:       102.4 kN/mm
