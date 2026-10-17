@@ -1,0 +1,33 @@
+% Ejemplo A: grados de libertad numerados desde 1, libres y restringidos (capítulo 6)
+\begin{tikzpicture}[scale=0.85,
+    libre/.style={-{Stealth[length=5pt]}, line width=1pt, color=principal},
+    restringido/.style={-{Stealth[length=5pt]}, line width=1pt, color=acento,
+      densely dashed},
+    numero gdl/.style={font=\sffamily\small\bfseries}]
+  \coordinate (n1) at (0,0);
+  \coordinate (n2) at (6,0);
+  \coordinate (n3) at (3,4);
+  \draw[barra] (n1) -- (n2) -- (n3) -- cycle;
+  \apoyoarticulado{(n1)}
+  \apoyorodillo{(n2)}
+  % Nodo 1: ambos restringidos
+  % La flecha de 1 llega al nodo desde la izquierda para no tapar la barra 1
+  \draw[restringido] ($(n1)+(-1,0)$) node[left, numero gdl, color=acento] {1}
+    -- (n1);
+  \draw[restringido] (n1) -- ++(0,1) node[above, numero gdl, color=acento] {2};
+  % Nodo 2: x libre, y restringido
+  \draw[libre] (n2) -- ++(1,0) node[right, numero gdl, color=principal] {3};
+  \draw[restringido] (n2) -- ++(0,1) node[above, numero gdl, color=acento] {4};
+  % Nodo 3: ambos libres
+  \draw[libre] (n3) -- ++(1,0) node[right, numero gdl, color=principal] {5};
+  \draw[libre] (n3) -- ++(0,1) node[above, numero gdl, color=principal] {6};
+  \foreach \n in {n1, n2, n3}
+    \node[nodo] at (\n) {};
+  \node[etiqueta nodo, below=14pt] at (n1) {N1};
+  \node[etiqueta nodo, below=14pt] at (n2) {N2};
+  \node[etiqueta nodo, left=3pt] at (n3) {N3};
+  % Leyenda
+  \draw[libre] (7.6,3.4) -- ++(0.8,0) node[right, font=\small, color=black] {libre};
+  \draw[restringido] (7.6,2.8) -- ++(0.8,0)
+    node[right, font=\small, color=black] {restringido};
+\end{tikzpicture}

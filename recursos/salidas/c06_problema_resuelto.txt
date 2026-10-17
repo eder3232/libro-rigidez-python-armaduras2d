@@ -1,0 +1,9 @@
+Barra 1: [1, 2, 3, 4]
+Barra 2: [3, 4, 7, 8]
+Barra 3: [5, 6, 7, 8]
+Barra 4: [1, 2, 5, 6]
+Barra 5: [1, 2, 7, 8]
+Barra 6: [3, 4, 5, 6]
+Libres:       [3, 5, 6, 7, 8]
+Restringidos: [1, 2, 4]
+Grado de indeterminación: 1

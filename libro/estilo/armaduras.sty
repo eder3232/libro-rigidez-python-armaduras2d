@@ -210,9 +210,12 @@
   {\def\claveejercicio{#1}%
    \refstepcounter{ejercicio}\label{ej:#1}\par\medskip\noindent
    {\sffamily\bfseries\color{principal}Ejercicio \theejercicio}\quad}
-  {\hfill{\sffamily\footnotesize\color{texto-suave}%
+  {% Referencia alineada a la derecha, en la última línea o en una nueva si no
+   % cabe (el truco del TeXbook para los finales de párrafo)
+   \unskip\nobreak\hfil\penalty50\hskip1em\null\nobreak\hfil
+   {\sffamily\footnotesize\color{texto-suave}%
      \hyperref[sol:\claveejercicio]{Solución: p.~\pageref*{sol:\claveejercicio}}}%
-   \par\medskip}
+   {\parfillskip=0pt\finalhyphendemerits=0\par}\medskip}
 
 % Encabezado de la solución de un ejercicio, en el anexo de soluciones
 \newcommand{\soluciondel}[1]{%

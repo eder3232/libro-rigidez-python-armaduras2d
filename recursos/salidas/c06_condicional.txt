@@ -1,0 +1,1 @@
+El nodo 2 puede moverse en x

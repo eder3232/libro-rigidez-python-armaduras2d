@@ -1,11 +1,340 @@
 export const metadatos = {
   numero: 6,
   titulo: "Los grados de libertad",
-  sincronizado_con: "2756ac9e86",
+  sincronizado_con: "e64a1e7ac6",
 };
 
 {/* Generado por scripts/latex_a_mdx.py desde libro/capitulos/cap06_grados_de_libertad.tex. No editar a mano. */}
 
 <NotebooksDelCapitulo id="cap06_grados_de_libertad" capitulo="06" />
 
+Cada barra tiene ya su matriz de rigidez de $4\times4$, escrita en función de
+los desplazamientos de sus dos nodos. Para unirlas en una sola matriz de la
+armadura necesitamos un sistema de referencia común: una numeración de todos
+los desplazamientos posibles de la estructura, sus *grados de
+libertad*. En este capítulo los numeramos, los separamos en libres y
+restringidos según los apoyos y hacemos una primera revisión de la
+estabilidad. Por el camino, enfrentamos una diferencia incómoda entre la
+ingeniería y Python: nosotros contamos desde 1, y Python, desde 0.
 
+<Objetivos>
+
+- Numerar los grados de libertad de una armadura desde 1, nodo por nodo.
+- Tomar decisiones en el código con `if`, `elif` y `else`.
+- Clasificar los grados de libertad en libres y restringidos.
+- Traducir la numeración desde 1 a los índices de NumPy en un único lugar del código.
+- Calcular el grado de indeterminación de una armadura.
+
+</Objetivos>
+
+## 6.1 Los grados de libertad de la armadura
+
+En una armadura plana, cada nodo puede desplazarse en dos direcciones, $x$ e
+$y$. Una armadura de $n$ nodos tiene, por lo tanto, $2n$ grados de libertad.
+Los numeramos nodo por nodo, siempre en el mismo orden: primero $x$ y después
+$y$. Así, el nodo $i$ tiene los grados de libertad
+
+<EcuacionClave>
+
+$$
+\begin{aligned}
+\text{gdl}_x = 2i - 1, \qquad \text{gdl}_y = 2i.
+\end{aligned}
+$$
+
+</EcuacionClave>
+
+Cada grado de libertad es de uno de dos tipos (figura 6.1):
+
+- **Libre.** El nodo puede desplazarse en esa dirección. El desplazamiento es una incógnita y la fuerza, la carga aplicada, es un dato.
+- **Restringido.** Un apoyo impide el desplazamiento. El desplazamiento es un dato (nulo, salvo asentamientos) y la fuerza, la reacción, es una incógnita.
+
+<Figura nombre="ejemplo_a_gdl" numero="6.1">
+Grados de libertad del ejemplo A. El nodo 1 (articulado) tiene ambos restringidos; el nodo 2 (rodillo), solo el vertical.
+</Figura>
+
+Para cada barra necesitamos además saber a qué grados de libertad de la
+armadura corresponden sus cuatro grados de libertad locales: los dos de su
+nodo inicial y los dos de su nodo final. Esta lista, que algunos textos
+llaman *vector de correspondencia* (*code numbers*), es la que nos
+permitirá colocar cada matriz de $4\times4$ en el lugar correcto de la matriz
+de la armadura en el [capítulo 7](/capitulos/cap07_ensamblaje).
+
+## 6.2 Decisiones con `if`
+
+Para clasificar un grado de libertad debemos preguntar si el nodo tiene un
+apoyo en esa dirección y actuar según la respuesta. Las preguntas se escriben
+con *comparaciones* (*comparisons*): `>` y `<`, `>=` y `<=`,
+`==` (igual a, con dos signos) y `!=` (distinto de). Su resultado es un
+booleano:
+
+<Fragmento nombre="c06_comparaciones" />
+
+<Salida nombre="c06_comparaciones" />
+
+<Cuidado>
+
+Un solo signo igual asigna un valor; dos signos iguales comparan. Escribir
+`if grado = 0:` en lugar de `if grado == 0:` es un error de sintaxis
+frecuente al empezar.
+
+</Cuidado>
+
+La instrucción `if` ejecuta un bloque solo si la condición es verdadera,
+y `else`, el bloque alternativo. Como en los bucles y las funciones, los
+bloques van sangrados debajo de una línea que termina en dos puntos:
+
+<Fragmento nombre="c06_condicional" />
+
+<Salida nombre="c06_condicional" />
+
+Cuando hay más de dos casos, `elif` (contracción de *else if*)
+agrega condiciones intermedias. Lo usaremos en el apartado 6.6.
+
+## 6.3 La numeración de los grados de libertad
+
+La ecuación clave se traduce en una función de una línea. Una función puede
+devolver varios valores separados por comas, y quien la llama los recibe en
+varias variables:
+
+<Fragmento nombre="c06_gdl_del_nodo" />
+
+<Fragmento nombre="c06_gdl_del_nodo_uso" />
+
+<Salida nombre="c06_gdl_del_nodo_uso" />
+
+Con ella obtenemos el vector de correspondencia de una barra: los grados de
+libertad de su nodo inicial seguidos de los de su nodo final, en el mismo
+orden que $u_1, \dots, u_4$ en la figura 5.1.
+
+<Fragmento nombre="c06_gdl_de_barra" />
+
+<Fragmento nombre="c06_tabla_gdl" />
+
+<Salida nombre="c06_tabla_gdl" />
+
+**Verificación.** La barra 2 va del nodo 2 al nodo 3, cuyos grados de
+libertad son $(3, 4)$ y $(5, 6)$, como se ve en la figura 6.1.
+
+<Cuidado>
+
+La fórmula $2i-1$, $2i$ supone que los nodos están numerados de forma
+consecutiva desde 1, sin saltos. Si un modelo tuviera los nodos 1, 2 y 5, el
+nodo 5 recibiría los grados de libertad 9 y 10, y la armadura parecería
+tener más grados de libertad de los que tiene. En este libro numeramos
+siempre los nodos de forma consecutiva.
+
+</Cuidado>
+
+## 6.4 Grados de libertad libres y restringidos
+
+Para clasificar, recorremos los nodos y preguntamos, en cada dirección, si
+hay un apoyo. Un nodo sin apoyo no aparece en el diccionario `apoyos`:
+el método `get`, que vimos en el [capítulo 3](/capitulos/cap03_describir_armadura), nos
+permite tratarlo como un nodo «sin restricciones». Cada grado de
+libertad se agrega con `append` a la lista que le corresponde:
+
+<Fragmento nombre="c06_clasificar" />
+
+<Fragmento nombre="c06_clasificar_uso" />
+
+<Fragmento nombre="c06_clasificar_resultado" />
+
+<Salida nombre="c06_clasificar_resultado" />
+
+**Verificación.** El nodo 1 aporta sus dos grados de libertad, 1 y 2, a
+los restringidos, y el rodillo del nodo 2, el vertical (4). Los libres son el
+horizontal del nodo 2 y los dos del nodo 3. La suma, $3 + 3 = 6 = 2n$, da
+todos los grados de libertad.
+
+## 6.5 De la numeración desde 1 a los índices de Python
+
+En el [capítulo 3](/capitulos/cap03_describir_armadura) vimos que Python cuenta las posiciones
+desde cero. En los próximos capítulos guardaremos fuerzas, desplazamientos y
+rigideces en arreglos de NumPy, cuya primera posición es la 0: el grado de
+libertad 1 estará en la posición 0, el 2 en la posición 1, y así
+sucesivamente.
+
+Podríamos restar 1 cada vez que accedemos a un arreglo, pero sería
+peligroso: bastaría con olvidarlo una vez para que el programa use el grado
+de libertad equivocado, sin dar ningún error. Por eso concentramos la
+traducción en *una sola función*, que convierte una lista de grados de
+libertad en la lista de índices correspondiente:
+
+<Fragmento nombre="c06_indices" />
+
+<Recuerda>
+
+En todo el libro, los números que lee una persona (nodos, barras y grados de
+libertad) empiezan en 1. La función `indices` es el único lugar donde se
+traduce a la numeración de Python: en ningún otro lugar del código aparece un
+`- 1` con ese propósito.
+
+</Recuerda>
+
+NumPy permite además seleccionar varios elementos de un arreglo a la vez,
+indicando la lista de sus índices entre corchetes. Por ejemplo, los valores
+que ocupan los grados de libertad libres:
+
+<Fragmento nombre="c06_indices_uso" />
+
+<Salida nombre="c06_indices_uso" />
+
+Los grados de libertad libres 3, 5 y 6 ocupan las posiciones 2, 4 y 5, y
+seleccionan los valores 30, 50 y 60. Este mecanismo es la base del
+ensamblaje y de la partición de los próximos capítulos.
+
+<ParaSaberMas>
+
+Varios textos, como Kassimali (2012), *renumeran* los grados de
+libertad para que los libres ocupen los primeros números y los restringidos,
+los últimos. Así, la matriz de la armadura queda ordenada en bloques. Con las
+listas `libres` y `restringidos` y la selección por índices de NumPy, no
+necesitamos renumerar: obtenemos los mismos bloques sin cambiar la
+numeración natural, que es más fácil de seguir en los dibujos. El
+ejercicio 6.4 muestra la correspondencia entre ambas convenciones.
+
+</ParaSaberMas>
+
+## 6.6 Una revisión previa de la estabilidad
+
+Una armadura de $b$ barras y $r$ reacciones tiene $b + r$ fuerzas
+desconocidas, y el equilibrio de sus $n$ nodos aporta $2n$ ecuaciones. La
+diferencia es el *grado de indeterminación* (*degree of indeterminacy*):
+
+$$
+g = b + r - 2n.
+$$
+
+Si $g < 0$, faltan barras o apoyos y la armadura es inestable; si $g = 0$, es
+estáticamente determinada (isostática); si $g > 0$, es hiperestática de grado
+$g$. Como cada grado de libertad restringido corresponde a una reacción,
+$r$ es la cantidad de grados de libertad restringidos:
+
+<Fragmento nombre="c06_indeterminacion" />
+
+Para interpretar el resultado usamos `if`, `elif` y `else`:
+
+<Fragmento nombre="c06_clasificacion" />
+
+<Salida nombre="c06_clasificacion" />
+
+<Cuidado>
+
+La condición $g \geq 0$ es *necesaria* pero no suficiente: una armadura
+puede tener suficientes barras y apoyos, pero mal dispuestos, como tres
+reacciones paralelas o un tramo sin diagonales. El método de rigidez detecta
+esos casos de forma automática, porque la matriz del sistema resulta singular;
+lo veremos en el [capítulo 9](/capitulos/cap09_desplazamientos_reacciones).
+
+</Cuidado>
+
+<ProblemaResuelto numero="6.1" titulo="Los grados de libertad del ejemplo B">
+
+Obtener los vectores de correspondencia de las barras del ejemplo B
+(figura 3.2), clasificar sus grados de libertad y calcular su
+grado de indeterminación.
+
+<Solucion />
+
+Las funciones del capítulo sirven sin cambios para cualquier armadura:
+
+<Fragmento nombre="c06_problema_resuelto" />
+
+<Salida nombre="c06_problema_resuelto" />
+
+**Verificación.** El ejemplo B tiene 4 nodos y 8 grados de libertad: 3
+restringidos (el apoyo articulado del nodo 1 y el rodillo del nodo 2) y 5
+libres. Con 6 barras, $g = 6 + 3 - 8 = 1$: una barra más de las necesarias,
+la segunda diagonal. Por eso el método de los nudos no basta para resolverlo,
+y el método de rigidez sí.
+
+</ProblemaResuelto>
+
+## Repaso y resumen del capítulo
+
+- Una armadura plana de $n$ nodos tiene $2n$ grados de libertad; el nodo $i$ tiene los grados de libertad $2i-1$ ($x$) y $2i$ ($y$).
+- En un grado de libertad libre, el desplazamiento es la incógnita; en uno restringido, la incógnita es la reacción.
+- El vector de correspondencia de una barra son los grados de libertad de sus dos nodos, en el orden $u_1, \dots, u_4$.
+- `if`, `elif` y `else` ejecutan un bloque u otro según una condición; las comparaciones usan `==`, `!=`, `<`, `>`, `<=` y `>=`.
+- La función `indices` es el único lugar donde la numeración desde 1 se traduce a los índices de NumPy, que empiezan en 0.
+- El grado de indeterminación $g = b + r - 2n$ clasifica la armadura; $g \geq 0$ es necesario, pero no suficiente, para la estabilidad.
+
+## Ejercicios
+
+<Ejercicio numero="6.1">
+
+Obtener el vector de correspondencia de la barra 6 del ejemplo B y
+comprobarlo en la figura 3.2.
+
+<SolucionDelEjercicio>
+
+<Fragmento nombre="s06_ejercicio_1" />
+
+<Salida nombre="s06_ejercicio_1" />
+
+Los grados de libertad del nodo 2 son 3 y 4, y los del nodo 3, 5 y 6.
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<Ejercicio numero="6.2">
+
+Si el rodillo del nodo 2 del ejemplo A se reemplaza por un apoyo articulado,
+¿cuáles son los grados de libertad libres y restringidos? Calcular el nuevo
+grado de indeterminación.
+
+<SolucionDelEjercicio>
+
+<Fragmento nombre="s06_ejercicio_2" />
+
+<Salida nombre="s06_ejercicio_2" />
+
+Con dos apoyos articulados hay 4 reacciones, y $g = 3 + 4 - 6 = 1$: la
+armadura pasa a ser hiperestática. Solo el nodo 3 puede desplazarse.
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<Ejercicio numero="6.3">
+
+Calcular el grado de indeterminación del ejemplo A sin su barra 1 e
+interpretar el resultado. ¿Qué movimiento puede hacer la armadura?
+
+<SolucionDelEjercicio>
+
+<Fragmento nombre="s06_ejercicio_3" />
+
+<Salida nombre="s06_ejercicio_3" />
+
+Con $g = -1$ la armadura es inestable: sin la barra 1, nada impide que el
+rodillo del nodo 2 se deslice horizontalmente y que las barras 2 y 3 giren
+como un mecanismo.
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<Ejercicio numero="6.4">
+
+Construir la correspondencia entre la numeración natural del ejemplo A y la
+de los textos que renumeran primero los grados de libertad libres. La función
+`enumerate(lista, 1)` recorre una lista y entrega, además de cada elemento,
+su posición contando desde 1.
+
+<SolucionDelEjercicio>
+
+<Fragmento nombre="s06_ejercicio_4" />
+
+<Salida nombre="s06_ejercicio_4" />
+
+Los grados de libertad libres 3, 5 y 6 pasan a ser los primeros (1, 2 y 3),
+y los restringidos 1, 2 y 4, los últimos (4, 5 y 6).
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<PuntoDeControl capitulo="06" />

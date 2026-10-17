@@ -1,0 +1,2 @@
+Libres:       [3, 5, 6]
+Restringidos: [1, 2, 4]

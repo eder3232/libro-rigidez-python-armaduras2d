@@ -1,4 +1,265 @@
 % capitulos/cap06_grados_de_libertad.tex
 \chapter{Los grados de libertad}\label{cap:grados_de_libertad}
 
-\pendiente{ver docs/01-indice.md}
+Cada barra tiene ya su matriz de rigidez de $4\times4$, escrita en función de
+los desplazamientos de sus dos nodos. Para unirlas en una sola matriz de la
+armadura necesitamos un sistema de referencia común: una numeración de todos
+los desplazamientos posibles de la estructura, sus \emph{grados de
+libertad}. En este capítulo los numeramos, los separamos en libres y
+restringidos según los apoyos y hacemos una primera revisión de la
+estabilidad. Por el camino, enfrentamos una diferencia incómoda entre la
+ingeniería y Python: nosotros contamos desde 1, y Python, desde 0.
+
+\begin{objetivos}
+  \item Numerar los grados de libertad de una armadura desde 1, nodo por
+    nodo.
+  \item Tomar decisiones en el código con \py{if}, \py{elif} y \py{else}.
+  \item Clasificar los grados de libertad en libres y restringidos.
+  \item Traducir la numeración desde 1 a los índices de NumPy en un único
+    lugar del código.
+  \item Calcular el grado de indeterminación de una armadura.
+\end{objetivos}
+
+% ---------------------------------------------------------------------------
+\section{Los grados de libertad de la armadura}\label{sec:gdl_teoria}
+
+En una armadura plana, cada nodo puede desplazarse en dos direcciones, $x$ e
+$y$. Una armadura de $n$ nodos tiene, por lo tanto, $2n$ grados de libertad.
+Los numeramos nodo por nodo, siempre en el mismo orden: primero $x$ y después
+$y$. Así, el nodo $i$ tiene los grados de libertad
+
+\begin{ecuacionclave}
+  \text{gdl}_x = 2i - 1, \qquad \text{gdl}_y = 2i.
+\end{ecuacionclave}
+
+Cada grado de libertad es de uno de dos tipos (\cref{fig:ejemplo_a_gdl}):
+
+\begin{description}
+  \item[Libre.] El nodo puede desplazarse en esa dirección. El desplazamiento
+    es una incógnita y la fuerza, la carga aplicada, es un dato.
+  \item[Restringido.] Un apoyo impide el desplazamiento. El desplazamiento es
+    un dato (nulo, salvo asentamientos) y la fuerza, la reacción, es una
+    incógnita.
+\end{description}
+
+\begin{figure}[ht]
+  \centering
+  \figura{ejemplo_a_gdl}
+  \caption{Grados de libertad del ejemplo A. El nodo~1 (articulado) tiene
+    ambos restringidos; el nodo~2 (rodillo), solo el vertical.}
+  \label{fig:ejemplo_a_gdl}
+\end{figure}
+
+Para cada barra necesitamos además saber a qué grados de libertad de la
+armadura corresponden sus cuatro grados de libertad locales: los dos de su
+nodo inicial y los dos de su nodo final. Esta lista, que algunos textos
+llaman \termino{vector de correspondencia}{code numbers}, es la que nos
+permitirá colocar cada matriz de $4\times4$ en el lugar correcto de la matriz
+de la armadura en el \cref{cap:ensamblaje}.
+
+% ---------------------------------------------------------------------------
+\section{Decisiones con \texttt{if}}\label{sec:if}
+
+Para clasificar un grado de libertad debemos preguntar si el nodo tiene un
+apoyo en esa dirección y actuar según la respuesta. Las preguntas se escriben
+con \termino{comparaciones}{comparisons}: \py{>} y \py{<}, \py{>=} y \py{<=},
+\py{==} (igual a, con dos signos) y \py{!=} (distinto de). Su resultado es un
+booleano:
+\fragmento{c06_comparaciones}
+\salida{c06_comparaciones}
+
+\begin{cuidado}
+Un solo signo igual asigna un valor; dos signos iguales comparan. Escribir
+\py{if grado = 0:} en lugar de \py{if grado == 0:} es un error de sintaxis
+frecuente al empezar.
+\end{cuidado}
+
+La instrucción \py{if} ejecuta un bloque solo si la condición es verdadera,
+y \py{else}, el bloque alternativo. Como en los bucles y las funciones, los
+bloques van sangrados debajo de una línea que termina en dos puntos:
+\fragmento{c06_condicional}
+\salida{c06_condicional}
+
+Cuando hay más de dos casos, \py{elif} (contracción de \emph{else if})
+agrega condiciones intermedias. Lo usaremos en el \cref{sec:estabilidad}.
+
+% ---------------------------------------------------------------------------
+\section{La numeración de los grados de libertad}\label{sec:numeracion}
+
+La ecuación clave se traduce en una función de una línea. Una función puede
+devolver varios valores separados por comas, y quien la llama los recibe en
+varias variables:
+\fragmento{c06_gdl_del_nodo}
+\fragmento{c06_gdl_del_nodo_uso}
+\salida{c06_gdl_del_nodo_uso}
+
+Con ella obtenemos el vector de correspondencia de una barra: los grados de
+libertad de su nodo inicial seguidos de los de su nodo final, en el mismo
+orden que $u_1, \dots, u_4$ en la \cref{fig:barra_gdl}.
+\fragmento{c06_gdl_de_barra}
+\fragmento{c06_tabla_gdl}
+\salida{c06_tabla_gdl}
+
+\textbf{Verificación.} La barra~2 va del nodo~2 al nodo~3, cuyos grados de
+libertad son $(3, 4)$ y $(5, 6)$, como se ve en la \cref{fig:ejemplo_a_gdl}.
+
+\begin{cuidado}
+La fórmula $2i-1$, $2i$ supone que los nodos están numerados de forma
+consecutiva desde 1, sin saltos. Si un modelo tuviera los nodos 1, 2 y 5, el
+nodo~5 recibiría los grados de libertad 9 y 10, y la armadura parecería
+tener más grados de libertad de los que tiene. En este libro numeramos
+siempre los nodos de forma consecutiva.
+\end{cuidado}
+
+% ---------------------------------------------------------------------------
+\section{Grados de libertad libres y restringidos}\label{sec:libres_restringidos}
+
+Para clasificar, recorremos los nodos y preguntamos, en cada dirección, si
+hay un apoyo. Un nodo sin apoyo no aparece en el diccionario \py{apoyos}:
+el método \py{get}, que vimos en el \cref{cap:describir_armadura}, nos
+permite tratarlo como un nodo \enquote{sin restricciones}. Cada grado de
+libertad se agrega con \py{append} a la lista que le corresponde:
+\fragmento{c06_clasificar}
+\fragmento{c06_clasificar_uso}
+\fragmento{c06_clasificar_resultado}
+\salida{c06_clasificar_resultado}
+
+\textbf{Verificación.} El nodo~1 aporta sus dos grados de libertad, 1 y 2, a
+los restringidos, y el rodillo del nodo~2, el vertical (4). Los libres son el
+horizontal del nodo~2 y los dos del nodo~3. La suma, $3 + 3 = 6 = 2n$, da
+todos los grados de libertad.
+
+% ---------------------------------------------------------------------------
+\section{De la numeración desde 1 a los índices de Python}\label{sec:indices}
+
+En el \cref{cap:describir_armadura} vimos que Python cuenta las posiciones
+desde cero. En los próximos capítulos guardaremos fuerzas, desplazamientos y
+rigideces en arreglos de NumPy, cuya primera posición es la 0: el grado de
+libertad 1 estará en la posición 0, el 2 en la posición 1, y así
+sucesivamente.
+
+Podríamos restar 1 cada vez que accedemos a un arreglo, pero sería
+peligroso: bastaría con olvidarlo una vez para que el programa use el grado
+de libertad equivocado, sin dar ningún error. Por eso concentramos la
+traducción en \emph{una sola función}, que convierte una lista de grados de
+libertad en la lista de índices correspondiente:
+\fragmento{c06_indices}
+
+\begin{recuerda}
+En todo el libro, los números que lee una persona (nodos, barras y grados de
+libertad) empiezan en 1. La función \py{indices} es el único lugar donde se
+traduce a la numeración de Python: en ningún otro lugar del código aparece un
+\py{- 1} con ese propósito.
+\end{recuerda}
+
+NumPy permite además seleccionar varios elementos de un arreglo a la vez,
+indicando la lista de sus índices entre corchetes. Por ejemplo, los valores
+que ocupan los grados de libertad libres:
+\fragmento{c06_indices_uso}
+\salida{c06_indices_uso}
+
+Los grados de libertad libres 3, 5 y 6 ocupan las posiciones 2, 4 y 5, y
+seleccionan los valores 30, 50 y 60. Este mecanismo es la base del
+ensamblaje y de la partición de los próximos capítulos.
+
+\begin{parasabermas}
+Varios textos, como \textcite{kassimali2012}, \emph{renumeran} los grados de
+libertad para que los libres ocupen los primeros números y los restringidos,
+los últimos. Así, la matriz de la armadura queda ordenada en bloques. Con las
+listas \py{libres} y \py{restringidos} y la selección por índices de NumPy, no
+necesitamos renumerar: obtenemos los mismos bloques sin cambiar la
+numeración natural, que es más fácil de seguir en los dibujos. El
+ejercicio~\ref{ej:6.4} muestra la correspondencia entre ambas convenciones.
+\end{parasabermas}
+
+% ---------------------------------------------------------------------------
+\section{Una revisión previa de la estabilidad}\label{sec:estabilidad}
+
+Una armadura de $b$ barras y $r$ reacciones tiene $b + r$ fuerzas
+desconocidas, y el equilibrio de sus $n$ nodos aporta $2n$ ecuaciones. La
+diferencia es el \termino{grado de indeterminación}{degree of
+indeterminacy}:
+\[
+  g = b + r - 2n.
+\]
+Si $g < 0$, faltan barras o apoyos y la armadura es inestable; si $g = 0$, es
+estáticamente determinada (isostática); si $g > 0$, es hiperestática de grado
+$g$. Como cada grado de libertad restringido corresponde a una reacción,
+$r$ es la cantidad de grados de libertad restringidos:
+\fragmento{c06_indeterminacion}
+
+Para interpretar el resultado usamos \py{if}, \py{elif} y \py{else}:
+\fragmento{c06_clasificacion}
+\salida{c06_clasificacion}
+
+\begin{cuidado}
+La condición $g \geq 0$ es \emph{necesaria} pero no suficiente: una armadura
+puede tener suficientes barras y apoyos, pero mal dispuestos, como tres
+reacciones paralelas o un tramo sin diagonales. El método de rigidez detecta
+esos casos de forma automática, porque la matriz del sistema resulta singular;
+lo veremos en el \cref{cap:desplazamientos_reacciones}.
+\end{cuidado}
+
+\begin{problemaresuelto}[Los grados de libertad del ejemplo B]
+Obtener los vectores de correspondencia de las barras del ejemplo B
+(\cref{fig:ejemplo_b}), clasificar sus grados de libertad y calcular su
+grado de indeterminación.
+
+\solucion
+Las funciones del capítulo sirven sin cambios para cualquier armadura:
+\fragmento{c06_problema_resuelto}
+\salida{c06_problema_resuelto}
+
+\textbf{Verificación.} El ejemplo B tiene 4 nodos y 8 grados de libertad: 3
+restringidos (el apoyo articulado del nodo~1 y el rodillo del nodo~2) y 5
+libres. Con 6 barras, $g = 6 + 3 - 8 = 1$: una barra más de las necesarias,
+la segunda diagonal. Por eso el método de los nudos no basta para resolverlo,
+y el método de rigidez sí.
+\end{problemaresuelto}
+
+% ---------------------------------------------------------------------------
+\repasoyresumen
+
+\begin{itemize}
+  \item Una armadura plana de $n$ nodos tiene $2n$ grados de libertad; el
+    nodo $i$ tiene los grados de libertad $2i-1$ ($x$) y $2i$ ($y$).
+  \item En un grado de libertad libre, el desplazamiento es la incógnita; en
+    uno restringido, la incógnita es la reacción.
+  \item El vector de correspondencia de una barra son los grados de libertad
+    de sus dos nodos, en el orden $u_1, \dots, u_4$.
+  \item \py{if}, \py{elif} y \py{else} ejecutan un bloque u otro según una
+    condición; las comparaciones usan \py{==}, \py{!=}, \py{<}, \py{>},
+    \py{<=} y \py{>=}.
+  \item La función \py{indices} es el único lugar donde la numeración desde 1
+    se traduce a los índices de NumPy, que empiezan en 0.
+  \item El grado de indeterminación $g = b + r - 2n$ clasifica la armadura;
+    $g \geq 0$ es necesario, pero no suficiente, para la estabilidad.
+\end{itemize}
+
+% ---------------------------------------------------------------------------
+\ejercicios
+
+\begin{ejercicio}{6.1}
+Obtener el vector de correspondencia de la barra~6 del ejemplo B y
+comprobarlo en la \cref{fig:ejemplo_b}.
+\end{ejercicio}
+
+\begin{ejercicio}{6.2}
+Si el rodillo del nodo~2 del ejemplo A se reemplaza por un apoyo articulado,
+¿cuáles son los grados de libertad libres y restringidos? Calcular el nuevo
+grado de indeterminación.
+\end{ejercicio}
+
+\begin{ejercicio}{6.3}
+Calcular el grado de indeterminación del ejemplo A sin su barra~1 e
+interpretar el resultado. ¿Qué movimiento puede hacer la armadura?
+\end{ejercicio}
+
+\begin{ejercicio}{6.4}
+Construir la correspondencia entre la numeración natural del ejemplo A y la
+de los textos que renumeran primero los grados de libertad libres. La función
+\py{enumerate(lista, 1)} recorre una lista y entrega, además de cada elemento,
+su posición contando desde 1.
+\end{ejercicio}
+
+\puntodecontrol{06}

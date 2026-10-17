@@ -27,6 +27,7 @@ def leer_fragmentos(archivo):
     fragmentos = {}
     abierto = None
     lineas = []
+    largas = []
     for numero, linea in enumerate(
         Path(archivo).read_text(encoding="utf-8").splitlines(), 1
     ):
@@ -43,13 +44,15 @@ def leer_fragmentos(archivo):
             abierto = None
         elif abierto:
             if len(linea) > ANCHO_MAXIMO:
-                raise ValueError(
-                    f"{archivo}:{numero}: la línea tiene {len(linea)} caracteres; "
-                    f"el máximo para que quepa en la página es {ANCHO_MAXIMO}"
-                )
+                largas.append(f"  línea {numero}: {len(linea)} caracteres")
             lineas.append(linea)
     if abierto:
         raise ValueError(f"{archivo}: '{abierto}' no se cerró")
+    if largas:
+        raise ValueError(
+            f"{archivo}: líneas con más de {ANCHO_MAXIMO} caracteres, "
+            "que no caben en la página:\n" + "\n".join(largas)
+        )
     return fragmentos
 
 
