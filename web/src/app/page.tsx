@@ -15,7 +15,7 @@ export default async function Portada() {
       <ol className="indice">
         {capitulos.map((capitulo) => (
           <li key={capitulo.id}>
-            <span>{capitulo.numero > 0 ? capitulo.numero : ""}</span>
+            <span>{capitulo.numero === 0 ? "" : capitulo.numero}</span>
             <Link href={`/capitulos/${capitulo.id}`}>{capitulo.titulo}</Link>
           </li>
         ))}

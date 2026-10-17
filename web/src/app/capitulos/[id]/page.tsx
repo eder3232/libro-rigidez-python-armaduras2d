@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { cargarCapitulo, idsDeCapitulos } from "@/lib/capitulos";
+import { cargarCapitulo, idsDeCapitulos, rotulo } from "@/lib/capitulos";
 
 export const dynamicParams = false;
 
@@ -22,7 +22,7 @@ export default async function Capitulo({ params }: PageProps<"/capitulos/[id]">)
   const { Contenido, metadatos } = await cargarCapitulo(id);
   return (
     <article className="prosa">
-      {metadatos.numero > 0 && <p className="capitulo-numero">Capítulo {metadatos.numero}</p>}
+      {rotulo(metadatos.numero) && <p className="capitulo-numero">{rotulo(metadatos.numero)}</p>}
       <h1>{metadatos.titulo}</h1>
       <Contenido />
     </article>

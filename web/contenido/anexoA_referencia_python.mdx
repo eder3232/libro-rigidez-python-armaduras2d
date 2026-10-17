@@ -1,0 +1,169 @@
+export const metadatos = {
+  numero: "A",
+  titulo: "Referencia rápida de Python y NumPy",
+  sincronizado_con: "76994fbd75",
+};
+
+{/* Generado por scripts/latex_a_mdx.py desde libro/anexos/anexoA_referencia_python.tex. No editar a mano. */}
+
+Este anexo reúne, para consultarlas rápidamente, todas las herramientas de
+Python que usamos en el libro. No está pensado para leerse de corrido: cada
+tabla indica el capítulo donde la herramienta se explica con detalle, y los
+ejemplos usan los mismos nombres que la calculadora.
+
+## A.1 Notebooks en Google Colab
+
+- Un notebook se compone de *celdas* de código y de texto. Una celda de código se ejecuta con **Mayús + Enter**.
+- Las variables y funciones definidas en una celda existen para todas las celdas que se ejecuten después, en el orden en que se ejecutan, no en el que aparecen.
+- Si el notebook se comporta de forma extraña, el menú **Entorno de ejecución > Reiniciar sesión y ejecutar todo** lo ejecuta de nuevo desde el principio y en orden.
+- Un notebook propio se guarda en nuestro Google Drive; uno abierto desde un enlace debe copiarse con **Archivo > Guardar una copia en Drive** para conservar nuestros cambios.
+
+## A.2 Números, texto y resultados
+
+Las operaciones aritméticas siguen las prioridades habituales: primero las
+potencias, después productos y divisiones, y por último sumas y restas. El
+operador `%`, que da el resto de una división, se usa en el
+[capítulo 12](/capitulos/cap12_mi_calculadora).
+
+**Tabla A.1:** Variables, operaciones y resultados.
+
+| Código | Qué hace | Cap. |
+| :--- | :--- | :---: |
+| `area = 0.0020` | Crea o cambia una variable | 2 |
+| `E = 2.0e8` | Notación científica: $2.0 \times 10^{8}$ | 2 |
+| `dx**2` | Potencia | 2 |
+| `7 // 2` | División entera: 3 | 12 |
+| `import math` | Carga el módulo de matemática | 2 |
+| `math.sqrt(x)` | Raíz cuadrada | 2 |
+| `math.atan2(dy, dx)` | Ángulo en radianes, en su cuadrante | 2 |
+| `math.degrees(a)` | Convierte radianes a grados | 2 |
+| `abs(x)` | Valor absoluto | 3 |
+| `round(x, 2)` | Redondea a 2 decimales | 7 |
+| `print("L =", L)` | Muestra valores | 2 |
+| `f"{L:.2f} m"` | Texto con un número de 2 decimales | 2 |
+| `f"{g:>4}"` | Número alineado a la derecha en 4 espacios | 4 |
+| `str(3)` | Convierte un número en texto | 10 |
+
+## A.3 Listas y diccionarios
+
+Una *lista* guarda valores en orden y se consulta por posición, desde 0.
+Un *diccionario* guarda valores con nombre y se consulta por clave. En
+la calculadora, los nodos, las barras, los apoyos y las cargas son
+diccionarios cuyas claves son los números de nodo o de barra, desde 1, y
+cuyos valores son a su vez diccionarios.
+
+**Tabla A.2:** Listas y diccionarios.
+
+| Código | Qué hace | Cap. |
+| :--- | :--- | :---: |
+| `libres = [3, 5, 6]` | Crea una lista | 3 |
+| `libres[0]` | Primer elemento (posición 0) | 3 |
+| `len(libres)` | Cantidad de elementos | 3 |
+| `libres.append(7)` | Agrega un elemento al final | 3 |
+| `list(range(1, 9))` | Lista de 1 a 8 | 7 |
+| `nodos = {1: {"x": 0.0}}` | Crea un diccionario anidado | 3 |
+| `nodos[1]["x"]` | Valor de una clave | 3 |
+| `cargas[3] = {"x": 20.0}` | Agrega o cambia una clave | 3 |
+| `3 in cargas` | ¿Existe la clave 3? | 3 |
+| `nodos.items()` | Pares de clave y valor | 4 |
+| `nodos.values()` | Solo los valores | 11 |
+| `resultados.keys()` | Solo las claves | 12 |
+| `dict(barra)` | Copia un diccionario | 10 |
+
+## A.4 Bucles y decisiones
+
+Las instrucciones que se repiten o que dependen de una condición forman un
+*bloque*: van sangradas cuatro espacios debajo de una línea que termina
+en dos puntos.
+
+**Tabla A.3:** Bucles, decisiones y comparaciones.
+
+| Código | Qué hace | Cap. |
+| :--- | :--- | :---: |
+| `for n, b in barras.items():` | Recorre un diccionario | 4 |
+| `for g in range(4):` | Repite para 0, 1, 2 y 3 | 7 |
+| `for i, g in enumerate(gdl):` | Recorre con la posición | 7 |
+| `total += L` | Igual que `total = total + L` | 4 |
+| `if apoyo["x"]:` | Ejecuta si se cumple | 6 |
+| `else:` | Si no se cumple | 6 |
+| `==`, `!=`, `<`, `>=` | Comparaciones | 6 |
+| `True`, `False` | Valores lógicos | 3 |
+| `and`, `not`, `not in` | Combinan condiciones | 12 |
+| `None` | El valor «nada» | 7 |
+
+## A.5 Funciones y errores
+
+Una función recibe datos por sus parámetros y devuelve un resultado con
+`return`. Las variables creadas dentro de ella son locales: no existen
+fuera de la función.
+
+**Tabla A.4:** Funciones y excepciones.
+
+| Código | Qué hace | Cap. |
+| :--- | :--- | :---: |
+| `def rigidez_local(E, A, L):` | Define una función | 5 |
+| `"""Documentación."""` | Explica qué hace la función | 5 |
+| `return k` | Devuelve el resultado | 5 |
+| `return {"U": U, "N": N}` | Devuelve varios resultados | 12 |
+| `decimales=1` | Valor por omisión | 7 |
+| `mostrar_vector(F, decimales=3)` | Argumento con nombre | 11 |
+| `raise ValueError("...")` | Produce un error | 9 |
+| `except ValueError:` | Atrapa un error | 9 |
+| `isinstance(x, str)` | ¿Es `x` un texto? | 10 |
+
+## A.6 NumPy
+
+NumPy trabaja con arreglos de números: vectores y matrices. Sus índices,
+como los de las listas, empiezan en 0; la función `indices` de la
+calculadora ([capítulo 6](/capitulos/cap06_grados_de_libertad)) traduce los grados de libertad,
+numerados desde 1, a esos índices.
+
+**Tabla A.5:** Vectores y matrices con NumPy.
+
+| Código | Qué hace | Cap. |
+| :--- | :--- | :---: |
+| `import numpy as np` | Carga NumPy | 5 |
+| `np.array([[1, -1], [-1, 1]])` | Crea una matriz | 5 |
+| `T.T @ k @ T` | Transpuesta y producto | 5 |
+| `K.shape` | Dimensiones | 5 |
+| `np.zeros((8, 8))` | Matriz nula de $8 \times 8$ | 7 |
+| `K[0, 1]` | Fila 0, columna 1 | 7 |
+| `K[np.ix_(filas, cols)]` | Submatriz | 7 |
+| `K[np.ix_(e, e)] += k` | Ensambla una barra | 7 |
+| `F[0::2]` | Elementos 0, 2, 4, … | 8 |
+| `np.allclose(k, k.T)` | ¿Casi iguales? | 5 |
+| `np.linalg.matrix_rank(K)` | Rango | 5 |
+| `np.linalg.solve(K, F)` | Resuelve el sistema | 9 |
+| `np.abs(U).max()` | Mayor desplazamiento | 9 |
+| `np.set_printoptions(precision=1)` | Decimales | 5 |
+
+<Cuidado>
+
+Para resolver un sistema de ecuaciones usamos `np.linalg.solve`, no la
+inversa `np.linalg.inv`: es más rápida y más precisa
+([capítulo 9](/capitulos/cap09_desplazamientos_reacciones)).
+
+</Cuidado>
+
+## A.7 Matplotlib
+
+Cada gráfico se dibuja en unos *ejes*, `ax`, que pertenecen a una
+*figura*, `fig`. Primero se crean ambos, después se dibuja sobre los
+ejes y al final se muestra la figura.
+
+**Tabla A.6:** Gráficos con Matplotlib.
+
+| Código | Qué hace | Cap. |
+| :--- | :--- | :---: |
+| `import matplotlib.pyplot as plt` | Carga Matplotlib | 3 |
+| `fig, ax = plt.subplots()` | Figura y ejes | 3 |
+| `fig, (ax1, ax2) = plt.subplots(1, 2)` | Dos paneles | 11 |
+| `ax.plot([x1, x2], [y1, y2])` | Dibuja una línea | 3 |
+| `color="black", linewidth=2` | Color y grosor | 11 |
+| `linestyle="--"` | Línea discontinua | 11 |
+| `ax.text(x, y, "3")` | Escribe un texto | 4 |
+| `ax.set_aspect("equal")` | Misma escala en $x$ e $y$ | 3 |
+| `ax.set_title("Deformada")` | Título de los ejes | 3 |
+| `ax.legend()` | Muestra la leyenda | 11 |
+| `ax.axis("off")` | Oculta los ejes | 11 |
+| `plt.show()` | Muestra la figura | 3 |

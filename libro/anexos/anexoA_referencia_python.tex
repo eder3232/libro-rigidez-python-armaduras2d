@@ -1,4 +1,226 @@
 % anexos/anexoA_referencia_python.tex
 \chapter{Referencia rápida de Python y NumPy}\label{cap:referencia_python}
 
-\pendiente{ver docs/01-indice.md}
+Este anexo reúne, para consultarlas rápidamente, todas las herramientas de
+Python que usamos en el libro. No está pensado para leerse de corrido: cada
+tabla indica el capítulo donde la herramienta se explica con detalle, y los
+ejemplos usan los mismos nombres que la calculadora.
+
+% ---------------------------------------------------------------------------
+\section{Notebooks en Google Colab}\label{sec:a_colab}
+
+\begin{itemize}
+  \item Un notebook se compone de \emph{celdas} de código y de texto. Una
+    celda de código se ejecuta con \textsf{Mayús + Enter}.
+  \item Las variables y funciones definidas en una celda existen para todas
+    las celdas que se ejecuten después, en el orden en que se ejecutan, no en
+    el que aparecen.
+  \item Si el notebook se comporta de forma extraña, el menú
+    \textsf{Entorno de ejecución > Reiniciar sesión y ejecutar todo} lo
+    ejecuta de nuevo desde el principio y en orden.
+  \item Un notebook propio se guarda en nuestro Google Drive; uno abierto
+    desde un enlace debe copiarse con \textsf{Archivo > Guardar una copia en
+    Drive} para conservar nuestros cambios.
+\end{itemize}
+
+% ---------------------------------------------------------------------------
+\section{Números, texto y resultados}\label{sec:a_numeros}
+
+Las operaciones aritméticas siguen las prioridades habituales: primero las
+potencias, después productos y divisiones, y por último sumas y restas. El
+operador \py{%}, que da el resto de una división, se usa en el
+\cref{cap:mi_calculadora}.
+
+\begin{table}[ht]
+  \centering
+  \caption{Variables, operaciones y resultados.}
+  \label{tab:a_numeros}
+  \small
+  \begin{tabular}{@{}llc@{}}
+    \toprule
+    Código & Qué hace & Cap. \\
+    \midrule
+    \py{area = 0.0020} & Crea o cambia una variable & 2 \\
+    \py{E = 2.0e8} & Notación científica: $2.0 \times 10^{8}$ & 2 \\
+    \py{dx**2} & Potencia & 2 \\
+    \py{7 // 2} & División entera: 3 & 12 \\
+    \py{import math} & Carga el módulo de matemática & 2 \\
+    \py{math.sqrt(x)} & Raíz cuadrada & 2 \\
+    \py{math.atan2(dy, dx)} & Ángulo en radianes, en su cuadrante & 2 \\
+    \py{math.degrees(a)} & Convierte radianes a grados & 2 \\
+    \py{abs(x)} & Valor absoluto & 3 \\
+    \py{round(x, 2)} & Redondea a 2 decimales & 7 \\
+    \py{print("L =", L)} & Muestra valores & 2 \\
+    \py{f"{L:.2f} m"} & Texto con un número de 2 decimales & 2 \\
+    \py{f"{g:>4}"} & Número alineado a la derecha en 4 espacios & 4 \\
+    \py{str(3)} & Convierte un número en texto & 10 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+% ---------------------------------------------------------------------------
+\section{Listas y diccionarios}\label{sec:a_colecciones}
+
+Una \emph{lista} guarda valores en orden y se consulta por posición, desde 0.
+Un \emph{diccionario} guarda valores con nombre y se consulta por clave. En
+la calculadora, los nodos, las barras, los apoyos y las cargas son
+diccionarios cuyas claves son los números de nodo o de barra, desde 1, y
+cuyos valores son a su vez diccionarios.
+
+\begin{table}[ht]
+  \centering
+  \caption{Listas y diccionarios.}
+  \label{tab:a_colecciones}
+  \small
+  \begin{tabular}{@{}llc@{}}
+    \toprule
+    Código & Qué hace & Cap. \\
+    \midrule
+    \py{libres = [3, 5, 6]} & Crea una lista & 3 \\
+    \py{libres[0]} & Primer elemento (posición 0) & 3 \\
+    \py{len(libres)} & Cantidad de elementos & 3 \\
+    \py{libres.append(7)} & Agrega un elemento al final & 3 \\
+    \py{list(range(1, 9))} & Lista de 1 a 8 & 7 \\
+    \py{nodos = {1: {"x": 0.0}}} & Crea un diccionario anidado & 3 \\
+    \py{nodos[1]["x"]} & Valor de una clave & 3 \\
+    \py{cargas[3] = {"x": 20.0}} & Agrega o cambia una clave & 3 \\
+    \py{3 in cargas} & ¿Existe la clave 3? & 3 \\
+    \py{nodos.items()} & Pares de clave y valor & 4 \\
+    \py{nodos.values()} & Solo los valores & 11 \\
+    \py{resultados.keys()} & Solo las claves & 12 \\
+    \py{dict(barra)} & Copia un diccionario & 10 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+% ---------------------------------------------------------------------------
+\section{Bucles y decisiones}\label{sec:a_control}
+
+Las instrucciones que se repiten o que dependen de una condición forman un
+\emph{bloque}: van sangradas cuatro espacios debajo de una línea que termina
+en dos puntos.
+
+\begin{table}[ht]
+  \centering
+  \caption{Bucles, decisiones y comparaciones.}
+  \label{tab:a_control}
+  \small
+  \begin{tabular}{@{}llc@{}}
+    \toprule
+    Código & Qué hace & Cap. \\
+    \midrule
+    \py{for n, b in barras.items():} & Recorre un diccionario & 4 \\
+    \py{for g in range(4):} & Repite para 0, 1, 2 y 3 & 7 \\
+    \py{for i, g in enumerate(gdl):} & Recorre con la posición & 7 \\
+    \py{total += L} & Igual que \py{total = total + L} & 4 \\
+    \py{if apoyo["x"]:} & Ejecuta si se cumple & 6 \\
+    \py{else:} & Si no se cumple & 6 \\
+    \py{==}, \py{!=}, \py{<}, \py{>=} & Comparaciones & 6 \\
+    \py{True}, \py{False} & Valores lógicos & 3 \\
+    \py{and}, \py{not}, \py{not in} & Combinan condiciones & 12 \\
+    \py{None} & El valor «nada» & 7 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+% ---------------------------------------------------------------------------
+\section{Funciones y errores}\label{sec:a_funciones}
+
+Una función recibe datos por sus parámetros y devuelve un resultado con
+\py{return}. Las variables creadas dentro de ella son locales: no existen
+fuera de la función.
+
+\begin{table}[ht]
+  \centering
+  \caption{Funciones y excepciones.}
+  \label{tab:a_funciones}
+  \small
+  \begin{tabular}{@{}llc@{}}
+    \toprule
+    Código & Qué hace & Cap. \\
+    \midrule
+    \py{def rigidez_local(E, A, L):} & Define una función & 5 \\
+    \py{"""Documentación."""} & Explica qué hace la función & 5 \\
+    \py{return k} & Devuelve el resultado & 5 \\
+    \py{return {"U": U, "N": N}} & Devuelve varios resultados & 12 \\
+    \py{decimales=1} & Valor por omisión & 7 \\
+    \py{mostrar_vector(F, decimales=3)} & Argumento con nombre & 11 \\
+    \py{raise ValueError("...")} & Produce un error & 9 \\
+    \py{except ValueError:} & Atrapa un error & 9 \\
+    \py{isinstance(x, str)} & ¿Es \py{x} un texto? & 10 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+% ---------------------------------------------------------------------------
+\section{NumPy}\label{sec:a_numpy}
+
+NumPy trabaja con arreglos de números: vectores y matrices. Sus índices,
+como los de las listas, empiezan en 0; la función \py{indices} de la
+calculadora (\cref{cap:grados_de_libertad}) traduce los grados de libertad,
+numerados desde 1, a esos índices.
+
+\begin{table}[ht]
+  \centering
+  \caption{Vectores y matrices con NumPy.}
+  \label{tab:a_numpy}
+  \small
+  \begin{tabular}{@{}llc@{}}
+    \toprule
+    Código & Qué hace & Cap. \\
+    \midrule
+    \py{import numpy as np} & Carga NumPy & 5 \\
+    \py{np.array([[1, -1], [-1, 1]])} & Crea una matriz & 5 \\
+    \py{T.T @ k @ T} & Transpuesta y producto & 5 \\
+    \py{K.shape} & Dimensiones & 5 \\
+    \py{np.zeros((8, 8))} & Matriz nula de $8 \times 8$ & 7 \\
+    \py{K[0, 1]} & Fila 0, columna 1 & 7 \\
+    \py{K[np.ix_(filas, cols)]} & Submatriz & 7 \\
+    \py{K[np.ix_(e, e)] += k} & Ensambla una barra & 7 \\
+    \py{F[0::2]} & Elementos 0, 2, 4, \dots & 8 \\
+    \py{np.allclose(k, k.T)} & ¿Casi iguales? & 5 \\
+    \py{np.linalg.matrix_rank(K)} & Rango & 5 \\
+    \py{np.linalg.solve(K, F)} & Resuelve el sistema & 9 \\
+    \py{np.abs(U).max()} & Mayor desplazamiento & 9 \\
+    \py{np.set_printoptions(precision=1)} & Decimales & 5 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{cuidado}
+Para resolver un sistema de ecuaciones usamos \py{np.linalg.solve}, no la
+inversa \py{np.linalg.inv}: es más rápida y más precisa
+(\cref{cap:desplazamientos_reacciones}).
+\end{cuidado}
+
+% ---------------------------------------------------------------------------
+\section{Matplotlib}\label{sec:a_matplotlib}
+
+Cada gráfico se dibuja en unos \emph{ejes}, \py{ax}, que pertenecen a una
+\emph{figura}, \py{fig}. Primero se crean ambos, después se dibuja sobre los
+ejes y al final se muestra la figura.
+
+\begin{table}[ht]
+  \centering
+  \caption{Gráficos con Matplotlib.}
+  \label{tab:a_matplotlib}
+  \small
+  \begin{tabular}{@{}llc@{}}
+    \toprule
+    Código & Qué hace & Cap. \\
+    \midrule
+    \py{import matplotlib.pyplot as plt} & Carga Matplotlib & 3 \\
+    \py{fig, ax = plt.subplots()} & Figura y ejes & 3 \\
+    \py{fig, (ax1, ax2) = plt.subplots(1, 2)} & Dos paneles & 11 \\
+    \py{ax.plot([x1, x2], [y1, y2])} & Dibuja una línea & 3 \\
+    \py{color="black", linewidth=2} & Color y grosor & 11 \\
+    \py{linestyle="--"} & Línea discontinua & 11 \\
+    \py{ax.text(x, y, "3")} & Escribe un texto & 4 \\
+    \py{ax.set_aspect("equal")} & Misma escala en $x$ e $y$ & 3 \\
+    \py{ax.set_title("Deformada")} & Título de los ejes & 3 \\
+    \py{ax.legend()} & Muestra la leyenda & 11 \\
+    \py{ax.axis("off")} & Oculta los ejes & 11 \\
+    \py{plt.show()} & Muestra la figura & 3 \\
+    \bottomrule
+  \end{tabular}
+\end{table}

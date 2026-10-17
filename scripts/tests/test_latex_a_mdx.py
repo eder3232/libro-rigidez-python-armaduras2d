@@ -21,6 +21,10 @@ def test_comandos_en_linea():
     assert convertir(r"\termino{bucle}{loop}") == "*bucle* (*loop*)"
 
 
+def test_menus_en_negrita():
+    assert convertir(r"el menú \textsf{Archivo > Guardar}") == "el menú **Archivo > Guardar**"
+
+
 def test_porcentaje_dentro_de_py_no_es_comentario():
     from latex_a_mdx import quitar_comentarios
 

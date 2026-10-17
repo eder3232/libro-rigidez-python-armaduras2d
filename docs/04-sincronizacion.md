@@ -123,7 +123,7 @@ Un único comando (por definir en `scripts/`) ejecuta todas las verificaciones y
 
 | Capítulo | LaTeX | Código y tests | Web | Animaciones |
 |---|---|---|---|---|
-| Prefacio | borrador | — (sin código) | generado | — |
+| Prefacio | estable | — (sin código) | generado | — |
 | 1. Por qué programar el método de rigidez | estable | — (sin código) | generado | — |
 | 2. Nuestro primer notebook | estable (falta: capturas de Colab) | listo | generado | — |
 | 3. Describir una armadura | estable | listo | generado | — |
@@ -136,6 +136,7 @@ Un único comando (por definir en `scripts/`) ejecuta todas las verificaciones y
 | 10. Fuerzas internas | estable (falta: comparación con software comercial) | listo | generado | — |
 | 11. Visualizar los resultados | estable | listo | generado | — |
 | 12. Mi calculadora de armaduras | estable | listo | generado | — |
+| Anexo A. Referencia rápida de Python y NumPy | borrador | — | generado | — |
 
 Estados posibles: `pendiente` → `borrador` → `revisado` → `estable`.
 

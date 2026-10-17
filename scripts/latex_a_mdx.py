@@ -29,7 +29,11 @@ from comun import RAIZ
 
 LIBRO = RAIZ / "libro"
 CAPITULOS = LIBRO / "capitulos"
-SOLUCIONES = LIBRO / "anexos" / "anexoF_soluciones.tex"
+ANEXOS = LIBRO / "anexos"
+SOLUCIONES = ANEXOS / "anexoF_soluciones.tex"
+# Las soluciones (anexo F) no tienen página propia en la web: se pliegan debajo
+# de cada ejercicio.
+ANEXOS_WEB = [a for a in ANEXOS.glob("anexo*.tex") if a != SOLUCIONES]
 COMPILACION = LIBRO / "build"
 DESTINO = RAIZ / "web" / "contenido"
 NOTEBOOKS = RAIZ / "notebooks"
@@ -508,7 +512,7 @@ class Convertidor:
             return f"`{argumento()}`", pos
         if nombre == "emph":
             return f"*{self.en_linea(argumento())}*", pos
-        if nombre == "textbf":
+        if nombre == "textbf" or nombre == "textsf":
             return f"**{self.en_linea(argumento())}**", pos
         if nombre == "termino":
             espanol = self.en_linea(argumento())
@@ -621,9 +625,14 @@ def leer_soluciones():
     return soluciones
 
 
+def archivo_de(id_capitulo):
+    carpeta = ANEXOS if id_capitulo.startswith("anexo") else CAPITULOS
+    return carpeta / f"{id_capitulo}.tex"
+
+
 def ids_de_capitulos():
     ids = {}
-    for archivo in CAPITULOS.glob("cap*.tex"):
+    for archivo in [*CAPITULOS.glob("cap*.tex"), *ANEXOS_WEB]:
         etiqueta = re.search(
             r"\\label\{(cap:[^}]+)\}", archivo.read_text(encoding="utf-8")
         )
@@ -639,7 +648,7 @@ def huella(archivo):
 
 
 def convertir(id_capitulo):
-    archivo = CAPITULOS / f"{id_capitulo}.tex"
+    archivo = archivo_de(id_capitulo)
     texto = quitar_comentarios(archivo.read_text(encoding="utf-8"))
     etiquetas = leer_etiquetas()
     cabecera = re.search(r"\\chapter\{(.*?)\}\\label\{(cap:[^}]+)\}", texto)
@@ -669,13 +678,19 @@ def convertir(id_capitulo):
             f'<NotebooksDelCapitulo id="{id_capitulo}"'
             f' capitulo="{int(numero_capitulo):02d}" />\n\n'
         )
+    # Los capítulos se numeran con enteros; los anexos, con letras.
+    if numero_capitulo.isdigit():
+        numero = int(numero_capitulo)
+    else:
+        numero = f'"{numero_capitulo}"'
+    origen = archivo.relative_to(RAIZ).as_posix()
     mdx = (
         "export const metadatos = {\n"
-        f"  numero: {int(numero_capitulo)},\n"
+        f"  numero: {numero},\n"
         f'  titulo: "{titulo}",\n'
         f'  sincronizado_con: "{huella(archivo)}",\n'
         "};\n\n"
-        f"{{/* Generado por scripts/latex_a_mdx.py desde libro/capitulos/{archivo.name}."
+        f"{{/* Generado por scripts/latex_a_mdx.py desde {origen}."
         " No editar a mano. */}\n\n"
         f"{notebooks}{cuerpo}\n"
     )
@@ -686,7 +701,8 @@ def convertir(id_capitulo):
 
 def todos_los_capitulos():
     capitulos = sorted(archivo.stem for archivo in CAPITULOS.glob("cap*.tex"))
-    return ["prefacio", *capitulos]
+    anexos = sorted(archivo.stem for archivo in ANEXOS_WEB)
+    return ["prefacio", *capitulos, *anexos]
 
 
 if __name__ == "__main__":
