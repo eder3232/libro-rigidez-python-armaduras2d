@@ -1,0 +1,5 @@
+Desplazamientos a la mitad: True
+      Barra     N (kN) N, 2A (kN)
+          1      28.75      28.75
+          2     -47.92     -47.92
+          3     -14.58     -14.58

@@ -1,0 +1,3 @@
+u'1 = -0.259 mm, u'2 = -0.858 mm
+Alargamiento: -0.599 mm
+f'1 = 47.92 kN, f'2 = -47.92 kN

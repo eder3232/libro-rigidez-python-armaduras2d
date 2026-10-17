@@ -1,0 +1,8 @@
+      Barra     N (kN)     Estado
+          1      23.89   tracción
+          2     -48.15 compresión
+          3      -6.11 compresión
+          4      -8.15 compresión
+          5      10.19   tracción
+          6     -39.81 compresión
+Desequilibrio nodal: 1.8e-14 kN

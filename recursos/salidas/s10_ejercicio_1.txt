@@ -1,0 +1,2 @@
+Mayor esfuerzo: 23.96 MPa
+Fracción de la fluencia: 9.6%

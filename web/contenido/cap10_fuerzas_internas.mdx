@@ -1,11 +1,266 @@
 export const metadatos = {
   numero: 10,
   titulo: "Fuerzas internas",
-  sincronizado_con: "f85f7cf248",
+  sincronizado_con: "8d8a90678c",
 };
 
 {/* Generado por scripts/latex_a_mdx.py desde libro/capitulos/cap10_fuerzas_internas.tex. No editar a mano. */}
 
 <NotebooksDelCapitulo id="cap10_fuerzas_internas" capitulo="10" />
 
+Los desplazamientos y las reacciones son resultados importantes, pero lo que
+el ingeniero necesita para diseñar es la fuerza en cada barra: cuánto se
+estira o se comprime, y con qué esfuerzo trabaja su sección. En este
+capítulo obtenemos la fuerza axial de cada barra a partir de los
+desplazamientos de sus nodos, la presentamos en una tabla clara y la
+verificamos de dos formas independientes. Con este paso, nuestra calculadora
+resuelve el análisis completo de una armadura.
 
+<Objetivos>
+
+- Calcular la fuerza axial de una barra a partir de los desplazamientos de sus nodos.
+- Clasificar cada barra en tracción o compresión y calcular su esfuerzo.
+- Presentar resultados en tablas con columnas alineadas.
+- Verificar las fuerzas con el equilibrio de cada nodo y con el método de los nudos.
+
+</Objetivos>
+
+## 10.1 De los desplazamientos a la fuerza axial
+
+Para cada barra, los desplazamientos de sus extremos en ejes globales,
+$\vu$, se leen del vector $\vU$ en los grados de libertad de su vector de
+correspondencia. Con la matriz de transformación los llevamos al eje de la
+barra, $\vul = \mT\,\vu$, y con la rigidez local obtenemos las fuerzas en sus
+extremos, $\vf' = \mkl\,\vul$: las mismas matrices del
+[capítulo 5](/capitulos/cap05_rigidez_barra), ahora recorridas en sentido inverso.
+
+La fuerza en el extremo final, $f'_2$, actúa en la dirección del eje $x'$:
+si es positiva, la barra tira de sus nodos y está en tracción
+(figura 10.1). Por eso tomamos $N = f'_2$. Desarrollando el
+producto obtenemos una expresión que muestra el sentido físico del cálculo:
+
+<EcuacionClave>
+
+$$
+\begin{aligned}
+N = \EAL\,(u'_2 - u'_1)
+    = \EAL\,\bigl(-c\,u_1 - s\,u_2 + c\,u_3 + s\,u_4\bigr)
+\end{aligned}
+$$
+
+</EcuacionClave>
+
+La fuerza axial es la rigidez axial por el alargamiento de la barra, la
+diferencia entre los desplazamientos de sus extremos en la dirección de la
+barra: la ley de Hooke.
+
+<Figura nombre="convencion_axial" numero="10.1">
+Convención de signos: la fuerza axial es positiva en tracción. En ambos casos se muestran las fuerzas que la barra recibe en sus extremos.
+</Figura>
+
+## 10.2 La fuerza axial en Python
+
+Calculemos paso a paso la fuerza de la barra 2 del ejemplo A. Los
+desplazamientos de sus extremos se seleccionan del vector `U` con la
+lista de índices de la barra, como en el ensamblaje:
+
+<Fragmento nombre="c10_una_barra" />
+
+<Salida nombre="c10_una_barra" />
+
+La barra se acorta 0.599 mm, y con
+$EA/L = 80\,\mathrm{kN/mm}$ resulta
+$N = 80 \cdot (-0.599) = -47.9\,\mathrm{kN}$: compresión. Las fuerzas
+en los extremos son iguales y opuestas, como corresponde a una barra en
+equilibrio.
+
+La función que lo hace para todas las barras repite estos pasos en un bucle
+y guarda cada fuerza en un diccionario, con el número de barra como clave:
+
+<Fragmento nombre="c10_fuerzas_axiales" />
+
+Los corchetes al final de `(k_local @ u_local)[1]` seleccionan el segundo
+elemento, $f'_2$, del resultado del producto.
+
+## 10.3 Tablas de resultados
+
+Para informar los resultados, a la fuerza de cada barra le agregamos su
+estado y su *esfuerzo* (*stress*) $\sigma = N/A$, que comparamos con la
+resistencia del material. Clasificamos las fuerzas con una tolerancia, para
+no llamar «tracción» a un $10^{-15}$ producido por el redondeo:
+
+<Fragmento nombre="c10_clasificar" />
+
+Una tabla bien presentada evita errores de lectura. Escribimos una función
+general, que recibe los encabezados y una lista de filas, y alinea todas las
+columnas a la derecha; los textos se muestran tal cual y los números, con los
+decimales indicados:
+
+<Fragmento nombre="c10_mostrar_tabla" />
+
+<Python>
+
+`isinstance(valor, str)` pregunta si `valor` es un texto (`str`, de
+*string*). Así la función decide cómo dar formato a cada celda. Las filas
+se construyen como listas con `append`, y el número de barra se convierte
+en texto con la función `str`, para que no se muestre con decimales.
+
+</Python>
+
+<Fragmento nombre="c10_tabla_n" />
+
+<Salida nombre="c10_tabla_n" />
+
+La barra 1, el tirante inferior, trabaja en tracción, y las dos barras
+inclinadas, en compresión: el comportamiento que esperamos de una armadura
+triangular cargada desde arriba. El mayor esfuerzo, 24 MPa,
+es menos del 10 % de la fluencia de un acero estructural
+($f_y = 250\,\mathrm{MPa}$).
+
+<Cuidado>
+
+Este libro calcula fuerzas, no diseña barras. Una barra en compresión debe
+verificarse, además, por *pandeo*: una barra esbelta puede fallar por
+inestabilidad con un esfuerzo muy inferior a la fluencia. Esa verificación
+depende de la longitud de la barra, del momento de inercia de su sección y de
+la norma de diseño, y queda fuera del alcance del libro.
+
+</Cuidado>
+
+## 10.4 Verificación: el equilibrio de cada nodo
+
+En el [capítulo 9](/capitulos/cap09_desplazamientos_reacciones) verificamos el equilibrio de la
+armadura en conjunto. Con las fuerzas de las barras podemos hacer algo más
+exigente: verificar el equilibrio de *cada nodo*. En cada uno, las
+fuerzas de las barras que llegan a él, las cargas y las reacciones deben
+sumar cero. Una barra en tracción tira de su nodo inicial en la dirección
+$(c, s)$ y de su nodo final en la dirección opuesta:
+
+<Fragmento nombre="c10_equilibrio_nodal" />
+
+<Fragmento nombre="c10_verificar_nodos" />
+
+<Salida nombre="c10_verificar_nodos" />
+
+Esta verificación no es circular: usa solo las fuerzas de las barras y la
+geometría, no la matriz global. Si hubiéramos cometido un error en el
+ensamblaje o en la solución, las fuerzas no equilibrarían los nodos.
+
+<ProblemaResuelto numero="10.1" titulo="El método de los nudos">
+
+Calcular las fuerzas de las barras del ejemplo A con el método de los nudos
+y compararlas con las del método de rigidez.
+
+<Solucion />
+
+En el nodo 3 concurren dos barras, y sus dos ecuaciones de equilibrio dan
+las dos fuerzas. Suponiendo tracción, cada barra tira del nodo 3 hacia su
+otro extremo: la barra 2, en la dirección $(0.6, -0.8)$, y la barra 3, en la
+dirección $(-0.6, -0.8)$. Con la carga $(20, -50)$:
+
+$$
+0.6\,N_2 - 0.6\,N_3 + 20 = 0, \qquad
+  -0.8\,N_2 - 0.8\,N_3 - 50 = 0.
+$$
+
+En el nodo 2, el equilibrio horizontal (el rodillo no tiene reacción
+horizontal) da $-N_1 - 0.6\,N_2 = 0$. Resolvemos el sistema de $2\times2$ con
+la misma `np.linalg.solve`:
+
+<Fragmento nombre="c10_problema_resuelto" />
+
+<Salida nombre="c10_problema_resuelto" />
+
+**Verificación.** Las tres fuerzas coinciden con las del método de
+rigidez. Era de esperar: en una armadura isostática, la estática basta, y
+ambos métodos deben dar el mismo resultado.
+
+</ProblemaResuelto>
+
+## 10.5 Las fuerzas del ejemplo B
+
+El ejemplo B es hiperestático, y aquí el método de rigidez muestra todo su
+valor: el método de los nudos no puede repartir la carga entre sus dos
+diagonales, porque el reparto depende de la rigidez de cada barra. Aplicamos
+la cadena completa de funciones:
+
+<Fragmento nombre="c10_ejemplo_b" />
+
+<Salida nombre="c10_ejemplo_b" />
+
+Los nodos están en equilibrio. Las dos diagonales trabajan de forma muy
+distinta: la diagonal 6, que va del apoyo con rodillo al nodo cargado 3,
+toma una compresión de 39.8 kN, y la diagonal 5, una
+tracción de 10.2 kN.
+
+## Repaso y resumen del capítulo
+
+- La fuerza axial es $N = f'_2$, con $\vf' = \mkl\mT\vu$: la rigidez axial por el alargamiento de la barra. Es positiva en tracción.
+- El esfuerzo es $\sigma = N/A$; las barras en compresión deben verificarse además por pandeo.
+- La función `mostrar_tabla` presenta resultados con columnas alineadas, e `isinstance` distingue textos de números.
+- El equilibrio de cada nodo, con las fuerzas de las barras, verifica de forma independiente el ensamblaje y la solución.
+- En una armadura isostática, el método de rigidez y el método de los nudos coinciden; en una hiperestática, solo el primero resuelve el problema.
+
+## Ejercicios
+
+<Ejercicio numero="10.1">
+
+Calcular el mayor esfuerzo, en valor absoluto, de las barras del ejemplo A
+y expresarlo como porcentaje de $f_y = 250\,\mathrm{MPa}$. La función
+`max(a, b)` devuelve el mayor de dos números.
+
+<SolucionDelEjercicio>
+
+<Fragmento nombre="s10_ejercicio_1" />
+
+<Salida nombre="s10_ejercicio_1" />
+
+Un formato terminado en el signo % muestra el número como porcentaje; con
+`.1` antes del signo, con un decimal.
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<Ejercicio numero="10.2">
+
+Calcular las fuerzas del ejemplo A con dos apoyos articulados y compararlas
+con las originales. Explicar por qué cambia la fuerza de la barra 1.
+
+<SolucionDelEjercicio>
+
+<Fragmento nombre="s10_ejercicio_2" />
+
+<Salida nombre="s10_ejercicio_2" />
+
+Con dos apoyos articulados, la carga horizontal se reparte entre los apoyos
+(ejercicio 9.2), y el apoyo del nodo 2 impide que la barra 1 se
+alargue: la barra queda sin fuerza. Las barras 2 y 3 no cambian, porque el
+equilibrio del nodo 3 sigue determinando sus fuerzas.
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<Ejercicio numero="10.3">
+
+Duplicar el área de todas las barras del ejemplo A y comparar los
+desplazamientos y las fuerzas con los originales. Para no modificar el
+diccionario `barras`, crear una copia de cada barra con `dict(barra)`.
+
+<SolucionDelEjercicio>
+
+<Fragmento nombre="s10_ejercicio_3" />
+
+<Salida nombre="s10_ejercicio_3" />
+
+Los desplazamientos se reducen a la mitad, pero las fuerzas no cambian. En
+una armadura isostática, las fuerzas dependen solo del equilibrio y no de la
+rigidez de las barras; en una hiperestática, en cambio, cambiar la rigidez de
+una barra cambia el reparto de las fuerzas.
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<PuntoDeControl capitulo="10" />

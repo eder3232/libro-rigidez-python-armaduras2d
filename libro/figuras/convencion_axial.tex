@@ -1,0 +1,27 @@
+% Convención de signos de la fuerza axial y fuerzas locales en los extremos (capítulo 10)
+\begin{tikzpicture}[scale=0.9,
+    fuerza/.style={-{Stealth[length=6pt]}, line width=1.1pt},
+    texto/.style={font=\small}]
+  % Tracción
+  \draw[barra traccion] (0,0) -- (4,0);
+  \node[nodo] at (0,0) {};
+  \node[nodo] at (4,0) {};
+  \draw[fuerza, color=traccion] (0,0) -- (-1.1,0) node[left, texto] {$f'_1 = -N$};
+  \draw[fuerza, color=traccion] (4,0) -- (5.1,0) node[right, texto] {$f'_2 = N$};
+  \node[etiqueta nodo, below=4pt] at (0,0) {$i$};
+  \node[etiqueta nodo, below=4pt] at (4,0) {$j$};
+  \node[texto, color=traccion, above=6pt] at (2,0) {tracción: $N > 0$};
+  % Compresión
+  \begin{scope}[shift={(0,-1.8)}]
+    \draw[barra compresion] (0,0) -- (4,0);
+    \node[nodo] at (0,0) {};
+    \node[nodo] at (4,0) {};
+    \draw[fuerza, color=compresion] (-1.1,0) -- (-0.12,0);
+    \draw[fuerza, color=compresion] (5.1,0) -- (4.12,0);
+    \node[etiqueta nodo, below=4pt] at (0,0) {$i$};
+    \node[etiqueta nodo, below=4pt] at (4,0) {$j$};
+    \node[texto, color=compresion, above=6pt] at (2,0) {compresión: $N < 0$};
+  \end{scope}
+  % Eje local
+  \draw[eje] (6.6,-0.9) -- ++(0.9,0) node[right, texto] {$x'$};
+\end{tikzpicture}
