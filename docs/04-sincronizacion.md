@@ -13,7 +13,7 @@ El libro se publica en LaTeX (PDF), en la web (Next.js) y en notebooks. Este doc
 | Código Python | `codigo/capNN_*.py` | LaTeX (fragmentos), web (bloques ejecutables), notebooks (generados) |
 | Notebooks | generados desde `codigo/` | Colab, descarga desde la web |
 | Salidas del código | `recursos/salidas/` (generadas por `scripts/generar_salidas.py`) | LaTeX (`\salida`) y web (`<Salida>`) |
-| Números citados en el texto | `recursos/` (generados por scripts que ejecutan el código) | LaTeX (`.tex`) y web (`.json`) |
+| Números citados en el texto y en las figuras | `recursos/valores.tex`, registrados por las celdas `libro` con `valor_libro(nombre, numero, decimales)` | LaTeX y figuras TikZ (`\valor{nombre}`) y web (el convertidor reemplaza `\valor`) |
 | Tablas de resultados | `recursos/` (generadas) | LaTeX y web |
 | Gráficos del código | generados al ejecutar el código: `recursos/graficos/` (PDF) y `web/public/graficos/` (SVG) | LaTeX (`\grafico`) y web (`<Grafico>`) |
 | Esquemas (TikZ) | `libro/figuras/*.tex`, convertidos a SVG por `scripts/generar_figuras.py` | LaTeX (`\figura`) y web (`<Figura>`) |
@@ -39,10 +39,11 @@ for numero, barra in barras.items():
     print(numero, barra["nodo_inicial"])
 ```
 
-Cada celda de código lleva una de dos etiquetas:
+Cada celda de código lleva una de tres etiquetas:
 
 - **`acumulable`:** forma parte de la calculadora. Va a los puntos de control de este capítulo y de todos los siguientes.
 - **`exploracion`:** ejemplo para aprender la herramienta de Python. Solo aparece en el notebook de su capítulo.
+- **`libro`:** registra con `valor_libro(...)` los números que citan el texto y las figuras del libro. No aparece en ningún notebook.
 
 ### Fragmentos citados
 
