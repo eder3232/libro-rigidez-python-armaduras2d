@@ -1,0 +1,24 @@
+% Grados de libertad de una barra: ejes globales y eje local x' (capítulo 5)
+\begin{tikzpicture}[scale=1.1,
+    gdl/.style={-{Stealth[length=5pt]}, line width=1pt, color=principal},
+    etiqueta gdl/.style={font=\small, color=principal}]
+  \coordinate (i) at (0,0);
+  \coordinate (j) at (3,2);
+  % Eje local
+  \draw[densely dashed, color=neutro] (i) -- ($(i)!1.35!(j)$)
+    node[right, font=\small, color=texto-suave] {$x'$};
+  \draw[barra] (i) -- (j);
+  % Grados de libertad globales
+  \draw[gdl] (i) -- ++(0.9,0) node[below, etiqueta gdl] {$u_1$};
+  \draw[gdl] (i) -- ++(0,0.9) node[above, etiqueta gdl] {$u_2$};
+  \draw[gdl] (j) -- ++(0.9,0) node[right, etiqueta gdl] {$u_3$};
+  \draw[gdl] (j) -- ++(0,0.9) node[above, etiqueta gdl] {$u_4$};
+  % Ángulo
+  \draw[color=acento, line width=0.8pt, -{Stealth[length=4pt]}]
+    (1.3,0) arc[start angle=0, end angle=33.7, radius=1.3];
+  \node[font=\small, color=acento] at (1.55,0.45) {$\theta$};
+  \node[nodo] at (i) {};
+  \node[nodo] at (j) {};
+  \node[etiqueta nodo, below left=2pt] at (i) {$i$};
+  \node[etiqueta nodo, below right=2pt] at (j) {$j$};
+\end{tikzpicture}

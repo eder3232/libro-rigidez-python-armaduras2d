@@ -89,3 +89,34 @@ el mismo punto medio. Una mejora sencilla es ubicar cada número en otro punto
 de su barra, por ejemplo al \SI{40}{\percent} de su longitud desde el nodo
 inicial: \py{xm = inicial["x"] + 0.4 * (final["x"] - inicial["x"])}, y lo
 mismo para \py{ym}.
+
+% ---------------------------------------------------------------------------
+\section*{Capítulo \ref{cap:rigidez_barra}}
+\addcontentsline{toc}{section}{Capítulo \ref{cap:rigidez_barra}}
+
+\soluciondel{5.1}
+\fragmento{s05_ejercicio_1}
+\salida{s05_ejercicio_1}
+El resultado coincide con el del ejercicio~\ref{ej:4.2}, ahora con una
+función reutilizable.
+
+\soluciondel{5.2}
+\fragmento{s05_ejercicio_2}
+\salida{s05_ejercicio_2}
+Un desplazamiento perpendicular a la barra no cambia su longitud, de modo que
+no la deforma axialmente y no produce fuerzas. Los valores \py{-0.} son ceros:
+el signo es un detalle de la aritmética de punto flotante. Este movimiento
+corresponde a una pequeña rotación de la barra alrededor de su nodo inicial,
+otro movimiento de cuerpo rígido.
+
+\soluciondel{5.3}
+\fragmento{s05_ejercicio_3}
+\salida{s05_ejercicio_3}
+Con $c = 0$ y $s = 1$, solo sobreviven los términos en $s^2$, asociados a
+los desplazamientos verticales: una barra vertical solo resiste
+desplazamientos en su propia dirección.
+$EA/L = 2.0\times10^{8} \cdot 0.0010 / 3 = \SI{66666.7}{\kilo\newton\per\metre}$.
+
+\soluciondel{5.4}
+\fragmento{s05_ejercicio_4}
+\salida{s05_ejercicio_4}

@@ -1,7 +1,11 @@
 """Utilidades compartidas por los generadores y verificadores del libro."""
 
 import re
+import sys
 from pathlib import Path
+
+# Acentos correctos también en la consola de Windows
+sys.stdout.reconfigure(encoding="utf-8")
 
 RAIZ = Path(__file__).resolve().parent.parent
 CODIGO = RAIZ / "codigo"

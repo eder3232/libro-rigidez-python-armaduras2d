@@ -51,3 +51,10 @@ def test_solo_web_y_solo_libro():
 def test_comando_desconocido_es_un_error():
     with pytest.raises(ErrorDeConversion, match="desconocido"):
         convertir(r"\inventado{x}")
+
+
+def test_cita_textual_usa_la_bibliografia():
+    assert convertir(r"\textcite[cap.~3]{kassimali2012}") == (
+        "Kassimali (2012, cap.\u00a03)"
+    )
+    assert convertir(r"\textcite{mcguire2000}") == "McGuire et al. (2000)"

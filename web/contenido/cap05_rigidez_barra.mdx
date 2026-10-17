@@ -1,7 +1,338 @@
 export const metadatos = {
   numero: 5,
   titulo: "La rigidez de una barra",
-  sincronizado_con: "pendiente",
+  sincronizado_con: "9bc57df5c1",
 };
 
-*Capítulo en preparación.*
+{/* Generado por scripts/latex_a_mdx.py desde libro/capitulos/cap05_rigidez_barra.tex. No editar a mano. */}
+
+<NotebooksDelCapitulo id="cap05_rigidez_barra" capitulo="05" />
+
+Con la geometría de todas las barras resuelta, entramos al corazón del
+método: la matriz de rigidez de cada barra, que relaciona las fuerzas en sus
+extremos con los desplazamientos de sus nodos. Para escribirla necesitamos
+dos herramientas nuevas. Las *funciones*, que nos permiten dar nombre a
+un cálculo y reutilizarlo sin copiarlo, y *NumPy*, la biblioteca que
+convierte a Python en una herramienta de cálculo matricial. Al final del
+capítulo, nuestra calculadora tendrá la matriz de rigidez de cada barra de
+cualquier armadura.
+
+<Objetivos>
+
+- Definir y usar funciones con parámetros y valor de retorno.
+- Crear arreglos de NumPy y operar con ellos: producto por un escalar, producto matricial y transpuesta.
+- Construir la matriz de rigidez de una barra en ejes globales, $\mk = \mT\transp\mkl\mT$.
+- Verificar que la matriz es simétrica, singular y que no produce fuerzas ante un movimiento de cuerpo rígido.
+
+</Objetivos>
+
+## 5.1 La matriz de rigidez de una barra
+
+Una barra de armadura solo trabaja a fuerza axial. En su propio eje $x'$,
+los desplazamientos de sus extremos $\vul = [u'_1,\ u'_2]\transp$ y las
+fuerzas axiales en ellos $\vf' = [f'_1,\ f'_2]\transp$ se relacionan por la
+ley de Hooke, con la *matriz de rigidez local* (*local stiffness matrix*):
+
+$$
+\vf' = \mkl\,\vul, \qquad
+  \mkl = \EAL \begin{bmatrix} 1 & -1 \\ -1 & 1 \end{bmatrix}. \tag{5.1}
+$$
+
+Los nodos, en cambio, se desplazan en las direcciones $x$ e $y$ globales:
+cada barra tiene cuatro *grados de libertad* (*degrees of freedom*),
+$\vu = [u_1,\ u_2,\ u_3,\ u_4]\transp$ (figura 5.1). El
+desplazamiento de cada extremo en la dirección de la barra es la proyección
+de su desplazamiento global sobre el eje $x'$, lo que se escribe con la
+*matriz de transformación* (*transformation matrix*):
+
+$$
+\vul = \mT\,\vu, \qquad
+  \mT = \begin{bmatrix} c & s & 0 & 0 \\ 0 & 0 & c & s \end{bmatrix}. \tag{5.2}
+$$
+
+<Figura nombre="barra_gdl" numero="5.1">
+Grados de libertad de una barra en ejes globales y su eje local $x'$.
+</Figura>
+
+Como las fuerzas se transforman con la transpuesta, $\vf = \mT\transp\vf'$,
+llegamos a la matriz de rigidez de la barra en ejes globales:
+
+<EcuacionClave>
+
+$$
+\begin{aligned}
+\mk = \mT\transp\,\mkl\,\mT = \EAL
+  \begin{bmatrix}
+     c^2 &  cs & -c^2 & -cs \\
+     cs  &  s^2 & -cs & -s^2 \\
+    -c^2 & -cs &  c^2 &  cs \\
+    -cs  & -s^2 &  cs &  s^2
+  \end{bmatrix}
+\end{aligned}
+$$
+
+</EcuacionClave>
+
+<ParaSaberMas>
+
+La deducción completa, a partir del equilibrio de la barra y de la
+compatibilidad de desplazamientos, está en Kassimali (2012, cap. 3).
+
+</ParaSaberMas>
+
+Podríamos programar directamente la forma desarrollada, término a término.
+Preferimos, sin embargo, programar el producto $\mT\transp\mkl\mT$: es más
+corto, se parece más a la teoría y, como veremos en los próximos capítulos,
+las mismas matrices $\mT$ y $\mkl$ nos servirán para calcular las fuerzas
+internas.
+
+## 5.2 Funciones
+
+Una *función* (*function*) es un cálculo con nombre. Se define con
+`def`, seguido del nombre, de los *parámetros* (*parameters*) entre
+paréntesis y de dos puntos. El cuerpo va sangrado, como en un bucle, y la
+instrucción `return` indica el resultado:
+
+<Fragmento nombre="c05_primera_funcion" />
+
+<Salida nombre="c05_primera_funcion" />
+
+Definir la función no calcula nada: solo le enseña a Python cómo hacerlo. El
+cálculo ocurre cuando la *llamamos*, escribiendo su nombre con los
+valores de los parámetros, los *argumentos* (*arguments*), entre
+paréntesis. El texto entre triples comillas, debajo de la primera línea, es
+la *documentación* (*docstring*) de la función: explica qué hace y en
+qué unidades.
+
+<Python>
+
+Las variables creadas dentro de una función, como el cálculo intermedio que
+haga, son *locales*: existen solo mientras la función se ejecuta y no
+interfieren con las variables del resto del notebook. Una función se comunica
+con el exterior únicamente a través de sus parámetros y de su `return`.
+
+</Python>
+
+Con una función resolvemos el problema que dejamos pendiente en el
+[capítulo 4](/capitulos/cap04_geometria): el bucle de la geometría estaba escrito para los
+diccionarios `nodos` y `barras`, y para el ejemplo B tuvimos que
+copiarlo. Convertido en función, recibe los diccionarios como parámetros:
+
+<Fragmento nombre="c05_calcular_geometria" />
+
+La misma función sirve ahora para cualquier armadura:
+
+<Fragmento nombre="c05_usar_geometria" />
+
+<Salida nombre="c05_usar_geometria" />
+
+## 5.3 NumPy
+
+Las listas de Python no saben multiplicar matrices. Para eso usamos
+*NumPy*, la biblioteca de cálculo numérico sobre la que se apoya
+casi todo el Python científico. Se importa con el nombre corto `np`, y
+con `np.set_printoptions` pedimos que muestre los resultados con un
+decimal y sin notación científica:
+
+<Fragmento nombre="c05_import_numpy" />
+
+El objeto central de NumPy es el *arreglo* (*array*), que creamos con
+`np.array` a partir de una lista de filas. Su atributo `shape` indica
+sus dimensiones:
+
+<Fragmento nombre="c05_arreglo" />
+
+<Salida nombre="c05_arreglo" />
+
+Las operaciones con un número se aplican a cada elemento. Así obtenemos
+$\mkl$ para una barra con $EA/L = 80\,000\,\mathrm{kN/m}$:
+
+<Fragmento nombre="c05_operaciones" />
+
+<Salida nombre="c05_operaciones" />
+
+El *producto matricial* se escribe con el operador `@`, y la
+transpuesta de un arreglo `T`, con `T.T`. Comprobemos la
+ecuación (5.2) con la barra 3 del ejemplo A, cuyo nodo final se
+desplaza 3 mm en $x$ y 4 mm en $y$:
+
+<Fragmento nombre="c05_producto" />
+
+<Salida nombre="c05_producto" />
+
+El nodo final se aleja 5 mm del inicial en la dirección de
+la barra: el desplazamiento $(3, 4)$ es paralelo a ella, y su módulo es 5.
+
+<Cuidado>
+
+En NumPy, `*` multiplica elemento por elemento y `@` hace el producto
+matricial. Confundirlos es uno de los errores más frecuentes: `A * B` no
+es el producto de matrices de álgebra lineal. Además, las dimensiones deben
+ser compatibles: `T @ u` funciona porque `T` es de $2\times4$ y
+`u` tiene 4 elementos.
+
+</Cuidado>
+
+## 5.4 La matriz de rigidez en Python
+
+Traducimos la teoría del apartado 5.1 a tres funciones, una por
+cada matriz. Cada una es corta y hace una sola cosa, lo que facilita leerlas
+y verificarlas por separado:
+
+<Fragmento nombre="c05_funciones_rigidez" />
+
+La última línea es casi idéntica a la ecuación clave: $\mT\transp\mkl\mT$.
+Probemos con la barra 1 del ejemplo A, que es horizontal:
+
+<Fragmento nombre="c05_barra_1" />
+
+<Salida nombre="c05_barra_1" />
+
+Con $c = 1$ y $s = 0$, solo sobreviven los términos en $c^2$, que valen
+$EA/L = 2.0\times10^8 \cdot 0.0020/6 = 66666.7\,\mathrm{kN/m}$:
+una barra horizontal no ofrece rigidez a los desplazamientos verticales de
+sus nodos.
+
+Para obtener las matrices de todas las barras, envolvemos el bucle en una
+función más, que guarda cada matriz en un diccionario con el número de barra
+como clave:
+
+<Fragmento nombre="c05_todas_las_barras" />
+
+Las funciones `calcular_geometria` y `calcular_rigideces` son las dos
+primeras etapas de nuestra calculadora. A partir de ahora, los datos fluyen
+de una a otra: los diccionarios del modelo entran a la primera, y su
+resultado, junto con las barras, entra a la segunda.
+
+## 5.5 Verificación
+
+Toda matriz de rigidez de una barra debe cumplir tres propiedades, que
+podemos comprobar con NumPy sin hacer ningún cálculo a mano:
+
+- **Simetría.** $\mk = \mk\transp$. La función `np.allclose` compara dos arreglos admitiendo las pequeñas diferencias del redondeo.
+- **Singularidad.** Una barra suelta puede moverse sin deformarse, así que $\mk$ no se puede invertir. Su *rango* (*rank*), la cantidad de filas independientes, es 1: todas las filas son múltiplos de la misma.
+- **Cuerpo rígido.** Si la barra se traslada sin deformarse, no aparecen fuerzas: $\mk\,\vu = \vect{0}$.
+
+<Fragmento nombre="c05_simetria" />
+
+<Salida nombre="c05_simetria" />
+
+<Fragmento nombre="c05_cuerpo_rigido" />
+
+<Salida nombre="c05_cuerpo_rigido" />
+
+La singularidad no es un defecto: es la expresión matemática de que una barra
+sola no es una estructura. En el [capítulo 8](/capitulos/cap08_particion) veremos cómo los apoyos
+la eliminan.
+
+<ProblemaResuelto numero="5.1" titulo="La barra 2 del ejemplo A">
+
+Calcular a mano los términos de la matriz de rigidez global de la barra 2 del
+ejemplo A y compararlos con el resultado de `rigidez_barra`.
+
+<Solucion />
+
+La barra 2 tiene $L = 5\,\mathrm{m}$, $c = -0.6$ y $s = 0.8$, de modo que
+$EA/L = 2.0\times10^{8} \cdot 0.0020 / 5 = 80\,000\,\mathrm{kN/m}$.
+Los tres términos distintos de la ecuación clave son:
+
+<Fragmento nombre="c05_problema_resuelto" />
+
+<Salida nombre="c05_problema_resuelto" />
+
+**Verificación.** Cada término de la matriz coincide, con su signo, con
+el patrón de la ecuación clave: $c^2$ y $s^2$ en la diagonal, y $cs$ negativo
+porque la barra sube hacia la izquierda.
+
+</ProblemaResuelto>
+
+## Repaso y resumen del capítulo
+
+- La matriz de rigidez de una barra en ejes globales es $\mk = \mT\transp\mkl\mT$, con $\mkl$ de $2\times2$ y $\mT$ de $2\times4$.
+- Una función se define con `def`, recibe parámetros y devuelve un resultado con `return`. Sus variables internas son locales.
+- Con funciones, el mismo cálculo sirve para cualquier armadura: basta con llamar a `calcular_geometria` con otros diccionarios.
+- NumPy aporta los arreglos: `np.array`, `shape`, el producto matricial `@` y la transpuesta `.T`. El operador `*` multiplica elemento por elemento.
+- La matriz de una barra es simétrica, de rango 1 y no produce fuerzas ante un movimiento de cuerpo rígido.
+
+## Ejercicios
+
+<Ejercicio numero="5.1">
+
+Escribir una función `peso_barra(A, L, gamma=78.5)` que devuelva el peso
+propio de una barra, en kN, y usarla para calcular el peso del ejemplo A. El
+valor después del signo igual es un *valor por omisión*: se usa si al
+llamar la función no se indica otro.
+
+<SolucionDelEjercicio>
+
+<Fragmento nombre="s05_ejercicio_1" />
+
+<Salida nombre="s05_ejercicio_1" />
+
+El resultado coincide con el del ejercicio 4.2, ahora con una
+función reutilizable.
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<Ejercicio numero="5.2">
+
+Mover el nodo final de la barra 3 del ejemplo A 1 mm en la
+dirección perpendicular a la barra, es decir, en la dirección $(-s, c)$, y
+calcular las fuerzas que aparecen con $\mk\,\vu$. Explicar el resultado.
+
+<SolucionDelEjercicio>
+
+<Fragmento nombre="s05_ejercicio_2" />
+
+<Salida nombre="s05_ejercicio_2" />
+
+Un desplazamiento perpendicular a la barra no cambia su longitud, de modo que
+no la deforma axialmente y no produce fuerzas. Los valores `-0.` son ceros:
+el signo es un detalle de la aritmética de punto flotante. Este movimiento
+corresponde a una pequeña rotación de la barra alrededor de su nodo inicial,
+otro movimiento de cuerpo rígido.
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<Ejercicio numero="5.3">
+
+Calcular la matriz de rigidez global de una barra vertical de
+3 m, de acero y con 10 cm² de área, que va
+del nodo $(0, 0)$ al nodo $(0, 3)$. ¿Qué términos son distintos de cero y por
+qué?
+
+<SolucionDelEjercicio>
+
+<Fragmento nombre="s05_ejercicio_3" />
+
+<Salida nombre="s05_ejercicio_3" />
+
+Con $c = 0$ y $s = 1$, solo sobreviven los términos en $s^2$, asociados a
+los desplazamientos verticales: una barra vertical solo resiste
+desplazamientos en su propia dirección.
+$EA/L = 2.0\times10^{8} \cdot 0.0010 / 3 = 66666.7\,\mathrm{kN/m}$.
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<Ejercicio numero="5.4">
+
+Calcular las matrices de rigidez de las seis barras del ejemplo B con las
+funciones del capítulo y verificar que todas son simétricas y de rango 1.
+
+<SolucionDelEjercicio>
+
+<Fragmento nombre="s05_ejercicio_4" />
+
+<Salida nombre="s05_ejercicio_4" />
+
+</SolucionDelEjercicio>
+
+</Ejercicio>
+
+<PuntoDeControl capitulo="05" />

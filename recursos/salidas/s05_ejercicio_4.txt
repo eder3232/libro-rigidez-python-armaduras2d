@@ -1,0 +1,6 @@
+Barra 1: simétrica = True, rango = 1
+Barra 2: simétrica = True, rango = 1
+Barra 3: simétrica = True, rango = 1
+Barra 4: simétrica = True, rango = 1
+Barra 5: simétrica = True, rango = 1
+Barra 6: simétrica = True, rango = 1

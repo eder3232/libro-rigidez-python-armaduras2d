@@ -19,8 +19,8 @@ pierda en silencio.
 Uso: uv run python scripts/latex_a_mdx.py [capNN_nombre ...]
 """
 
+import hashlib
 import re
-import subprocess
 import sys
 from pathlib import Path
 
@@ -493,6 +493,9 @@ class Convertidor:
             return self.numero_de(argumento()), pos
         if nombre == "cref":
             return self.referencia(argumento()), pos
+        if nombre == "textcite":
+            detalle, pos = leer_opcional(texto, pos)
+            return cita_textual(argumento(), detalle), pos
         raise ErrorDeConversion(f"comando desconocido: \\{nombre}")
 
     def numero_de(self, etiqueta):
@@ -529,6 +532,28 @@ def leer_etiquetas():
     return etiquetas
 
 
+def cita_textual(clave, detalle=None):
+    """Cita autor-año como \\textcite de biblatex: «Kassimali (2012, cap. 3)»."""
+    texto = (LIBRO / "bibliografia.bib").read_text(encoding="utf-8")
+    entrada = re.search(r"@\w+\{" + re.escape(clave) + r",(.*?)\n\}", texto, re.DOTALL)
+    if not entrada:
+        raise ErrorDeConversion(f"referencia desconocida: {clave}")
+    campos = dict(
+        re.findall(r"(\w+)\s*=\s*\{(.*?)\},?\s*$", entrada.group(1), re.MULTILINE)
+    )
+    apellidos = [
+        autor.split(",")[0].strip() for autor in campos["author"].split(" and ")
+    ]
+    if len(apellidos) == 1:
+        autores = apellidos[0]
+    elif len(apellidos) == 2:
+        autores = f"{apellidos[0]} y {apellidos[1]}"
+    else:
+        autores = f"{apellidos[0]} et al."
+    detalle = f", {detalle.replace('~', NBSP)}" if detalle else ""
+    return f"{autores} ({campos['year']}{detalle})"
+
+
 def leer_soluciones():
     """Devuelve {clave: texto LaTeX} de cada \\soluciondel del anexo."""
     texto = quitar_comentarios(SOLUCIONES.read_text(encoding="utf-8"))
@@ -550,15 +575,10 @@ def ids_de_capitulos():
     return ids
 
 
-def ultimo_commit(archivo):
-    resultado = subprocess.run(
-        ["git", "log", "-1", "--format=%h", "--", str(archivo)],
-        cwd=RAIZ,
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    return resultado.stdout.strip() or "sin-commit"
+def huella(archivo):
+    """Huella del contenido del .tex: cambia si y solo si el capítulo cambia."""
+    contenido = archivo.read_bytes().replace(b"\r\n", b"\n")
+    return hashlib.sha1(contenido).hexdigest()[:10]
 
 
 def convertir(id_capitulo):
@@ -578,7 +598,7 @@ def convertir(id_capitulo):
         "export const metadatos = {\n"
         f"  numero: {int(numero_capitulo)},\n"
         f'  titulo: "{titulo}",\n'
-        f'  sincronizado_con: "{ultimo_commit(archivo)}",\n'
+        f'  sincronizado_con: "{huella(archivo)}",\n'
         "};\n\n"
         f"{{/* Generado por scripts/latex_a_mdx.py desde libro/capitulos/{archivo.name}."
         " No editar a mano. */}\n\n"
@@ -590,6 +610,10 @@ def convertir(id_capitulo):
     return destino
 
 
+def todos_los_capitulos():
+    return sorted(archivo.stem for archivo in CAPITULOS.glob("cap*.tex"))
+
+
 if __name__ == "__main__":
-    for id_capitulo in sys.argv[1:]:
+    for id_capitulo in sys.argv[1:] or todos_los_capitulos():
         print(f"generado: {convertir(id_capitulo).relative_to(RAIZ)}")

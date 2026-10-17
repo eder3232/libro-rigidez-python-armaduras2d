@@ -63,9 +63,7 @@
 \makeindex[intoc, title={Índice alfabético}]
 \PassOptionsToPackage{hyphens}{url}  % las direcciones largas se cortan en los guiones
 \RequirePackage[hidelinks]{hyperref}
-\expandafter\def\expandafter\UrlBreaks\expandafter{\UrlBreaks\do\_\do\.}
-\Urlmuskip=0mu plus 2mu
-\RequirePackage[spanish, noabbrev, nameinlink]{cleveref}
+\expandafter\def\expandafter\UrlBreaks\expandafter{\UrlBreaks\do\_\do\.}\RequirePackage[spanish, noabbrev, nameinlink]{cleveref}
 \crefname{table}{tabla}{tablas}
 \Crefname{table}{Tabla}{Tablas}
 
@@ -147,12 +145,17 @@
 \newcommand{\concepto}[1]{\emph{#1}\index{#1}}
 
 % Punto de control al final de cada capítulo
-\newcommand{\urlnotebooks}{https://github.com/eder3232/libro-rigidez-python-armaduras2d/blob/main/notebooks}
+\newcommand{\textorepositorio}{github.com/eder3232/libro-rigidez-python-armaduras2d}
+\newcommand{\urlrepositorio}{https://\textorepositorio}
+\newcommand{\urlnotebooks}{\urlrepositorio/blob/main/notebooks}
 \newcommand{\puntodecontrol}[1]{%
   \begin{tcolorbox}[caja=acento, title={Punto de control}]
   Si algo no funcionó o se omitió una parte, el notebook con todo el código
   hasta este capítulo permite continuar desde aquí:\par\smallskip
-  \url{\urlnotebooks/control_cap#1.ipynb}
+  {\raggedright
+   Repositorio: \href{\urlrepositorio}{\nolinkurl{\textorepositorio}}\par
+   Notebook: \href{\urlnotebooks/control_cap#1.ipynb}%
+     {\nolinkurl{notebooks/control_cap#1.ipynb}}\par}
   \end{tcolorbox}}
 
 % Marca de contenido por escribir (desaparece de la versión final)

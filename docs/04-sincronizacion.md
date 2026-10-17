@@ -76,13 +76,13 @@ La prosa se escribe **solo en LaTeX**. `scripts/latex_a_mdx.py` traduce los coma
 
 1. El capítulo se escribe y revisa en LaTeX.
 2. Se compila el libro (`latexmk`): el convertidor toma la numeración de figuras, ecuaciones y capítulos de los `.aux`, para que las referencias de la web coincidan con las del PDF.
-3. Se genera el MDX. Cada uno registra el commit del `.tex` del que proviene:
+3. Se genera el MDX. Cada uno registra una huella del contenido del `.tex` del que proviene, para detectar si la web quedó atrás:
 
    ```js
    export const metadatos = {
      numero: 7,
      titulo: "Ensamblaje de la matriz global",
-     sincronizado_con: "a1b2c3d",
+     sincronizado_con: "3f2a9c1d7e",
    };
    ```
 
@@ -125,6 +125,7 @@ Un único comando (por definir en `scripts/`) ejecuta todas las verificaciones y
 | 2. Nuestro primer notebook | estable (falta: capturas de Colab) | listo | generado | — |
 | 3. Describir una armadura | estable | listo | generado | — |
 | 4. La geometría de todas las barras | estable | listo | generado | — |
+| 5. La rigidez de una barra | borrador | listo | generado | — |
 
 Estados posibles: `pendiente` → `borrador` → `revisado` → `estable`.
 
@@ -142,6 +143,7 @@ Estados posibles: `pendiente` → `borrador` → `revisado` → `estable`.
 
 | Tarea | Comando (desde la raíz) |
 |---|---|
+| **Reconstruir todo** (código, notebooks, figuras, PDF, web y tests) | `uv run python scripts/construir.py` |
 | Tests y verificación del código | `uv run pytest` |
 | Extraer los fragmentos | `uv run python scripts/extraer_fragmentos.py` |
 | Generar las salidas | `uv run python scripts/generar_salidas.py` |
