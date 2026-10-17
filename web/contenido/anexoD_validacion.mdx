@@ -1,7 +1,7 @@
 export const metadatos = {
   numero: "D",
   titulo: "Validación con software comercial",
-  sincronizado_con: "e041f0b6a3",
+  sincronizado_con: "65b5cb9425",
 };
 
 {/* Generado por scripts/latex_a_mdx.py desde libro/anexos/anexoD_validacion.tex. No editar a mano. */}
@@ -9,8 +9,9 @@ export const metadatos = {
 A lo largo del libro verificamos la calculadora con el cálculo a mano
 (ejemplo A), con propiedades que deben cumplirse (simetría, equilibrio) y con
 el método de las secciones (ejemplo C). Este anexo agrega una verificación
-independiente: comparar sus resultados con los de un programa comercial de
-análisis estructural, para los ejemplos B y C.
+independiente: comparar sus resultados con los de SAP2000, un programa
+comercial de análisis estructural de uso habitual en la práctica, para los
+ejemplos B y C.
 
 ## D.1 Cómo modelar una armadura en un programa comercial
 
@@ -18,28 +19,38 @@ Los programas comerciales analizan pórticos, cuyas barras resisten flexión.
 Para que reproduzcan el modelo de armadura del libro hay que cuidar cinco
 cosas:
 
-1. **Barras articuladas.** Liberar los momentos en ambos extremos de cada barra, o usar un elemento de tipo armadura si el programa lo tiene. Así cada barra trabaja solo con fuerza axial.
+1. **Barras articuladas.** Liberar los momentos en ambos extremos de cada barra, o analizar el modelo como armadura plana, sin giros en los nodos. Así cada barra trabaja solo con fuerza axial.
 2. **Sin peso propio.** Los programas suelen incluir el peso de las barras en las cargas; el libro no lo considera, de modo que hay que anularlo.
 3. **Las mismas propiedades.** Un material con $E = 200\,\mathrm{GPa}$ y secciones definidas por su área, sin importar su forma.
 4. **Los mismos apoyos y cargas.** Un apoyo articulado en el nodo 1, uno de rodillo con el desplazamiento vertical restringido en el nodo 2 (ejemplo B) o 7 (ejemplo C), y las cargas aplicadas en los nodos.
 5. **Unidades coherentes.** Trabajar en kilonewtons y metros, como la calculadora, o convertir los resultados antes de compararlos.
 
-Los desplazamientos de los programas comerciales y los de la calculadora
-deben coincidir en sus primeras cifras significativas. Diferencias pequeñas
-en la última cifra se deben al redondeo de los datos; una diferencia mayor
-indica un error en uno de los dos modelos, casi siempre en el apoyo, las
-unidades o el peso propio.
+SAP2000 dibuja los modelos en el plano $xz$: su eje $z$ es el vertical, que
+en el libro llamamos $y$. Sus convenciones de signos coinciden con las del
+libro: los desplazamientos y las reacciones son positivos en el sentido de
+los ejes, y la fuerza axial $P$ es positiva en tracción.
+
+Los resultados de los dos programas deben coincidir en sus primeras cifras
+significativas. Diferencias pequeñas en la última cifra se deben al redondeo;
+una diferencia mayor indica un error en uno de los dos modelos, casi siempre
+en un apoyo, en las unidades o en el peso propio.
 
 ## D.2 Ejemplo B
 
 El ejemplo B (figura 3.2) es hiperestático, de modo que sus fuerzas
 dependen de la rigidez de las barras: es la prueba más exigente para la
-calculadora. La tabla D.1 compara los desplazamientos, y
-la tabla D.2, las reacciones y las fuerzas axiales.
+calculadora. La figura D.1 muestra su modelo en SAP2000.
+
+<Captura archivo="sap_b_modelo" numero="D.1" descripcion="modelo del ejemplo B en SAP2000, con los números de los nodos y de las barras, los apoyos y las cargas.">
+El ejemplo B modelado en SAP2000.
+</Captura>
+
+La tabla D.1 compara los desplazamientos, y la
+tabla D.2, las reacciones y las fuerzas axiales.
 
 **Tabla D.1:** Ejemplo B: desplazamientos de los nodos, en milímetros.
 
-| Nodo | $u_x$ calculadora | $u_x$ comercial | $u_y$ calculadora | $u_y$ comercial |
+| Nodo | $u_x$ calculadora | $u_x$ SAP2000 | $u_y$ calculadora | $u_y$ SAP2000 |
 | :---: | :---: | :---: | :---: | :---: |
 | 1 | 0.000 | — | 0.000 | — |
 | 2 | 0.179 | — | 0.000 | — |
@@ -48,7 +59,7 @@ la tabla D.2, las reacciones y las fuerzas axiales.
 
 **Tabla D.2:** Ejemplo B: reacciones y fuerzas axiales, en kilonewtons.
 
-| Resultado | Calculadora | Comercial |
+| Resultado | Calculadora | SAP2000 |
 | :--- | :---: | :---: |
 | Reacción $x$ del nodo 1 | −30.00 | — |
 | Reacción $y$ del nodo 1 | 0.00 | — |
@@ -60,18 +71,34 @@ la tabla D.2, las reacciones y las fuerzas axiales.
 | Barra 5 | 10.19 | — |
 | Barra 6 | −39.81 | — |
 
+Los resultados coinciden en todas las cifras que muestran las tablas. La
+deformada de SAP2000 (figura D.2) y su diagrama de fuerzas
+axiales (figura D.3) son, además, los mismos que dibuja nuestra
+calculadora (figura 10.5).
+
+<Captura archivo="sap_b_deformada" numero="D.2" descripcion="deformada del ejemplo B en SAP2000.">
+Deformada del ejemplo B en SAP2000.
+</Captura>
+
+<Captura archivo="sap_b_axiales" numero="D.3" descripcion="diagrama de fuerzas axiales del ejemplo B en SAP2000, con el valor de cada barra.">
+Fuerzas axiales del ejemplo B en SAP2000.
+</Captura>
+
 ## D.3 Ejemplo C
 
 El ejemplo C (figura 12.2) es isostático: sus fuerzas dependen solo
 del equilibrio, y ya las verificamos con el método de las secciones en el
-[capítulo 12](/capitulos/cap12_mi_calculadora). Compararlas con un programa comercial confirma que
-ambos modelos tienen la misma geometría y las mismas cargas; la flecha, en
-cambio, depende de las áreas y del módulo de elasticidad, y verifica las
-rigideces.
+[capítulo 12](/capitulos/cap12_mi_calculadora). Compararlas con SAP2000 confirma que ambos modelos
+tienen la misma geometría y las mismas cargas; la flecha, en cambio, depende
+de las áreas y del módulo de elasticidad, y verifica las rigideces.
+
+<Captura archivo="sap_c_modelo" numero="D.4" descripcion="modelo del ejemplo C en SAP2000, con los números de los nodos y de las barras, los apoyos y las cargas.">
+El ejemplo C modelado en SAP2000.
+</Captura>
 
 **Tabla D.3:** Ejemplo C: flecha y reacciones.
 
-| Resultado | Calculadora | Comercial |
+| Resultado | Calculadora | SAP2000 |
 | :--- | :---: | :---: |
 | Desplazamiento $u_y$ del nodo 4 (mm) | −6.736 | — |
 | Reacción $y$ del nodo 1 (kN) | 62.50 | — |
@@ -79,7 +106,7 @@ rigideces.
 
 **Tabla D.4:** Ejemplo C: fuerzas axiales, en kilonewtons.
 
-| Barra | Calculadora | Comercial | Barra | Calculadora | Comercial |
+| Barra | Calculadora | SAP2000 | Barra | Calculadora | SAP2000 |
 | :---: | :---: | :---: | :---: | :---: | :---: |
 | 1 | 62.50 | — | 12 | −88.39 | — |
 | 2 | 62.50 | — | 13 | 25.00 | — |
@@ -92,3 +119,19 @@ rigideces.
 | 9 | −112.50 | — | 20 | 17.68 | — |
 | 10 | −100.00 | — | 21 | 53.03 | — |
 | 11 | −88.39 | — |  |  |  |
+
+También aquí los resultados coinciden, y el diagrama de fuerzas axiales de
+SAP2000 (figura D.5) muestra el mismo patrón de tracciones y
+compresiones que el de nuestra calculadora en el [capítulo 12](/capitulos/cap12_mi_calculadora).
+
+<Captura archivo="sap_c_axiales" numero="D.5" descripcion="diagrama de fuerzas axiales del ejemplo C en SAP2000, con el valor de cada barra.">
+Fuerzas axiales del ejemplo C en SAP2000.
+</Captura>
+
+## D.4 Conclusión
+
+Para una armadura hiperestática y para una isostática de 21 barras, la
+calculadora que construimos en este libro reproduce los desplazamientos, las
+reacciones y las fuerzas axiales de un programa comercial. No es casualidad:
+ambos resuelven el mismo sistema $\mK\,\vU = \vF$ con el mismo método. La
+diferencia es que ahora sabemos qué hace cada paso.

@@ -209,6 +209,16 @@ main {
   font-family: var(--fuente-sans), sans-serif;
   color: var(--principal);
 }
+/* Captura de pantalla que todavía falta (ver docs/05-validacion-sap2000.md) */
+.captura-pendiente {
+  border: 2px dashed var(--acento);
+  color: var(--acento);
+  font-family: var(--fuente-sans), sans-serif;
+  font-size: 0.95rem;
+  padding: 2.5rem 1.5rem;
+  margin: 0 auto;
+  max-width: 34rem;
+}
 
 /* Ejercicios */
 .ejercicio {

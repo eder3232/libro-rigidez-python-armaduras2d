@@ -142,7 +142,23 @@ def salidas_en(codigo, carpeta):
         carpeta / "pdf",
         carpeta / "svg",
         carpeta / "valores.tex",
+        carpeta / "sap2000.csv",
     )
+
+
+def test_registra_los_resultados_comerciales_anotados(codigo, tmp_path):
+    (codigo / "cap02_dos.py").write_text(CELDA_LIBRO, encoding="utf-8")
+    (codigo / "soluciones" / "cap02_dos.py").unlink()
+    csv = "clave,descripcion,unidad,calculadora,sap2000\narea_cm2,Área,cm2,20.0,{}\n"
+    (tmp_path / "sap2000.csv").write_text(csv.format(""), encoding="utf-8")
+    salidas_en(codigo, tmp_path)
+    texto = (tmp_path / "valores.tex").read_text(encoding="utf-8")
+    assert "sap_" not in texto
+    (tmp_path / "sap2000.csv").write_text(csv.format("20,04"), encoding="utf-8")
+    salidas_en(codigo, tmp_path)
+    texto = (tmp_path / "valores.tex").read_text(encoding="utf-8")
+    assert r"\csname valor@sap_area_cm2\endcsname{20.0}" in texto
+    assert r"\csname valor@sap_completo\endcsname{1}" in texto
 
 
 ANEXO_ERRORES = """\

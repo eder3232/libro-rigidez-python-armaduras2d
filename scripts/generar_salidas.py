@@ -21,6 +21,7 @@ Uso: uv run python scripts/generar_salidas.py
 
 import ast
 import contextlib
+import csv
 import io
 import itertools
 import linecache
@@ -49,6 +50,8 @@ from comun import (
 )
 
 FUENTES = RAIZ / "web" / "src" / "fuentes"
+# Resultados de SAP2000 que anota el autor (docs/05-validacion-sap2000.md)
+RESULTADOS_COMERCIALES = RAIZ / "validacion" / "resultados_sap2000.csv"
 
 
 def configurar_graficos():
@@ -183,6 +186,7 @@ def generar(
     destino_pdf=RECURSOS / "graficos",
     destino_svg=RAIZ / "web" / "public" / "graficos",
     destino_valores=RECURSOS / "valores.tex",
+    resultados_comerciales=RESULTADOS_COMERCIALES,
 ):
     """Genera todas las salidas, gráficos y valores, y devuelve sus nombres."""
     configurar_graficos()
@@ -205,6 +209,7 @@ def generar(
     for archivo in sorted(codigo.glob("anexo*.py")):
         ejecutar_archivo(archivo, acumulado, salidas, graficos, destinos, valores)
 
+    registrar_resultados_comerciales(resultados_comerciales, valores)
     escribir_valores(valores, destino_valores)
     _limpiar(destino, "txt", salidas)
     _limpiar(destino_pdf, "pdf", graficos)
@@ -213,6 +218,29 @@ def generar(
     for nombre, texto in salidas.items():
         (destino / f"{nombre}.txt").write_text(texto, encoding="utf-8", newline="\n")
     return sorted(salidas) + sorted(graficos)
+
+
+def registrar_resultados_comerciales(archivo, valores):
+    """Registra los resultados del programa comercial que ya se anotaron.
+
+    Cada fila de validacion/resultados_sap2000.csv con la columna sap2000
+    llena se registra como sap_<clave>, con los mismos decimales que el valor
+    de la calculadora (\\valorcomercial{clave} en el anexo D). Si están todas,
+    se registra además sap_completo, que quita el aviso de pendiente.
+    """
+    if not archivo.exists():
+        return
+    with open(archivo, encoding="utf-8", newline="") as entrada:
+        filas = list(csv.DictReader(entrada))
+    for fila in filas:
+        texto = fila["sap2000"].strip().replace(",", ".")
+        if not texto:
+            continue
+        calculadora = valores[fila["clave"]]
+        decimales = len(calculadora.split(".")[1]) if "." in calculadora else 0
+        valores[f"sap_{fila['clave']}"] = f"{round(float(texto), decimales) + 0.0:.{decimales}f}"
+    if filas and all(fila["sap2000"].strip() for fila in filas):
+        valores["sap_completo"] = "1"
 
 
 def escribir_valores(valores, archivo):

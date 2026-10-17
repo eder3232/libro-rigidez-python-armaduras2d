@@ -1,14 +1,16 @@
 % anexos/anexoD_validacion.tex
+% Los valores de SAP2000 vienen de validacion/resultados_sap2000.csv y las
+% capturas, de capturas/: ver docs/05-validacion-sap2000.md.
 \chapter{Validación con software comercial}\label{cap:validacion}
 
 A lo largo del libro verificamos la calculadora con el cálculo a mano
 (ejemplo A), con propiedades que deben cumplirse (simetría, equilibrio) y con
 el método de las secciones (ejemplo C). Este anexo agrega una verificación
-independiente: comparar sus resultados con los de un programa comercial de
-análisis estructural, para los ejemplos B y C.
+independiente: comparar sus resultados con los de SAP2000, un programa
+comercial de análisis estructural de uso habitual en la práctica, para los
+ejemplos B y C.
 
-\sololibro{\pendiente{columna del programa comercial: completar con SAP2000 o
-Ftool antes de publicar}}
+\avisovalidacion
 
 % ---------------------------------------------------------------------------
 \section{Cómo modelar una armadura en un programa comercial}\label{sec:d_modelar}
@@ -18,8 +20,8 @@ Para que reproduzcan el modelo de armadura del libro hay que cuidar cinco
 cosas:
 \begin{enumerate}
   \item \textbf{Barras articuladas.} Liberar los momentos en ambos extremos de
-    cada barra, o usar un elemento de tipo armadura si el programa lo tiene.
-    Así cada barra trabaja solo con fuerza axial.
+    cada barra, o analizar el modelo como armadura plana, sin giros en los
+    nodos. Así cada barra trabaja solo con fuerza axial.
   \item \textbf{Sin peso propio.} Los programas suelen incluir el peso de las
     barras en las cargas; el libro no lo considera, de modo que hay que
     anularlo.
@@ -33,19 +35,33 @@ cosas:
     la calculadora, o convertir los resultados antes de compararlos.
 \end{enumerate}
 
-Los desplazamientos de los programas comerciales y los de la calculadora
-deben coincidir en sus primeras cifras significativas. Diferencias pequeñas
-en la última cifra se deben al redondeo de los datos; una diferencia mayor
-indica un error en uno de los dos modelos, casi siempre en el apoyo, las
-unidades o el peso propio.
+SAP2000 dibuja los modelos en el plano $xz$: su eje $z$ es el vertical, que
+en el libro llamamos $y$. Sus convenciones de signos coinciden con las del
+libro: los desplazamientos y las reacciones son positivos en el sentido de
+los ejes, y la fuerza axial $P$ es positiva en tracción.
+
+Los resultados de los dos programas deben coincidir en sus primeras cifras
+significativas. Diferencias pequeñas en la última cifra se deben al redondeo;
+una diferencia mayor indica un error en uno de los dos modelos, casi siempre
+en un apoyo, en las unidades o en el peso propio.
 
 % ---------------------------------------------------------------------------
 \section{Ejemplo B}\label{sec:d_ejemplo_b}
 
 El ejemplo B (\cref{fig:ejemplo_b}) es hiperestático, de modo que sus fuerzas
 dependen de la rigidez de las barras: es la prueba más exigente para la
-calculadora. La \cref{tab:d_b_desplazamientos} compara los desplazamientos, y
-la \cref{tab:d_b_fuerzas}, las reacciones y las fuerzas axiales.
+calculadora. La \cref{fig:sap_b_modelo} muestra su modelo en SAP2000.
+
+\begin{figure}[ht]
+  \centering
+  \captura{sap_b_modelo}{modelo del ejemplo B en SAP2000, con los números de
+    los nodos y de las barras, los apoyos y las cargas.}
+  \caption{El ejemplo B modelado en SAP2000.}
+  \label{fig:sap_b_modelo}
+\end{figure}
+
+La \cref{tab:d_b_desplazamientos} compara los desplazamientos, y la
+\cref{tab:d_b_fuerzas}, las reacciones y las fuerzas axiales.
 
 \begin{table}[ht]
   \centering
@@ -54,12 +70,12 @@ la \cref{tab:d_b_fuerzas}, las reacciones y las fuerzas axiales.
   \small
   \begin{tabular}{@{}ccccc@{}}
     \toprule
-    Nodo & $u_x$ calculadora & $u_x$ comercial & $u_y$ calculadora & $u_y$ comercial \\
+    Nodo & $u_x$ calculadora & $u_x$ SAP2000 & $u_y$ calculadora & $u_y$ SAP2000 \\
     \midrule
-    1 & \valor{d_b_ux_1} & — & \valor{d_b_uy_1} & — \\
-    2 & \valor{d_b_ux_2} & — & \valor{d_b_uy_2} & — \\
-    3 & \valor{d_b_ux_3} & — & \valor{d_b_uy_3} & — \\
-    4 & \valor{d_b_ux_4} & — & \valor{d_b_uy_4} & — \\
+    1 & \valor{d_b_ux_1} & \valorcomercial{d_b_ux_1} & \valor{d_b_uy_1} & \valorcomercial{d_b_uy_1} \\
+    2 & \valor{d_b_ux_2} & \valorcomercial{d_b_ux_2} & \valor{d_b_uy_2} & \valorcomercial{d_b_uy_2} \\
+    3 & \valor{d_b_ux_3} & \valorcomercial{d_b_ux_3} & \valor{d_b_uy_3} & \valorcomercial{d_b_uy_3} \\
+    4 & \valor{d_b_ux_4} & \valorcomercial{d_b_ux_4} & \valor{d_b_uy_4} & \valorcomercial{d_b_uy_4} \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -71,31 +87,58 @@ la \cref{tab:d_b_fuerzas}, las reacciones y las fuerzas axiales.
   \small
   \begin{tabular}{@{}lcc@{}}
     \toprule
-    Resultado & Calculadora & Comercial \\
+    Resultado & Calculadora & SAP2000 \\
     \midrule
-    Reacción $x$ del nodo 1 & \valor{d_b_r_1} & — \\
-    Reacción $y$ del nodo 1 & \valor{d_b_r_2} & — \\
-    Reacción $y$ del nodo 2 & \valor{d_b_r_4} & — \\
+    Reacción $x$ del nodo 1 & \valor{d_b_r_1} & \valorcomercial{d_b_r_1} \\
+    Reacción $y$ del nodo 1 & \valor{d_b_r_2} & \valorcomercial{d_b_r_2} \\
+    Reacción $y$ del nodo 2 & \valor{d_b_r_4} & \valorcomercial{d_b_r_4} \\
     \midrule
-    Barra 1 & \valor{d_b_n_1} & — \\
-    Barra 2 & \valor{d_b_n_2} & — \\
-    Barra 3 & \valor{d_b_n_3} & — \\
-    Barra 4 & \valor{d_b_n_4} & — \\
-    Barra 5 & \valor{d_b_n_5} & — \\
-    Barra 6 & \valor{d_b_n_6} & — \\
+    Barra 1 & \valor{d_b_n_1} & \valorcomercial{d_b_n_1} \\
+    Barra 2 & \valor{d_b_n_2} & \valorcomercial{d_b_n_2} \\
+    Barra 3 & \valor{d_b_n_3} & \valorcomercial{d_b_n_3} \\
+    Barra 4 & \valor{d_b_n_4} & \valorcomercial{d_b_n_4} \\
+    Barra 5 & \valor{d_b_n_5} & \valorcomercial{d_b_n_5} \\
+    Barra 6 & \valor{d_b_n_6} & \valorcomercial{d_b_n_6} \\
     \bottomrule
   \end{tabular}
 \end{table}
+
+Los resultados coinciden en todas las cifras que muestran las tablas. La
+deformada de SAP2000 (\cref{fig:sap_b_deformada}) y su diagrama de fuerzas
+axiales (\cref{fig:sap_b_axiales}) son, además, los mismos que dibuja nuestra
+calculadora (\cref{fig:resultados_ejemplo_b}).
+
+\begin{figure}[ht]
+  \centering
+  \captura{sap_b_deformada}{deformada del ejemplo B en SAP2000.}
+  \caption{Deformada del ejemplo B en SAP2000.}
+  \label{fig:sap_b_deformada}
+\end{figure}
+
+\begin{figure}[ht]
+  \centering
+  \captura{sap_b_axiales}{diagrama de fuerzas axiales del ejemplo B en
+    SAP2000, con el valor de cada barra.}
+  \caption{Fuerzas axiales del ejemplo B en SAP2000.}
+  \label{fig:sap_b_axiales}
+\end{figure}
 
 % ---------------------------------------------------------------------------
 \section{Ejemplo C}\label{sec:d_ejemplo_c}
 
 El ejemplo C (\cref{fig:ejemplo_c}) es isostático: sus fuerzas dependen solo
 del equilibrio, y ya las verificamos con el método de las secciones en el
-\cref{cap:mi_calculadora}. Compararlas con un programa comercial confirma que
-ambos modelos tienen la misma geometría y las mismas cargas; la flecha, en
-cambio, depende de las áreas y del módulo de elasticidad, y verifica las
-rigideces.
+\cref{cap:mi_calculadora}. Compararlas con SAP2000 confirma que ambos modelos
+tienen la misma geometría y las mismas cargas; la flecha, en cambio, depende
+de las áreas y del módulo de elasticidad, y verifica las rigideces.
+
+\begin{figure}[ht]
+  \centering
+  \captura{sap_c_modelo}{modelo del ejemplo C en SAP2000, con los números de
+    los nodos y de las barras, los apoyos y las cargas.}
+  \caption{El ejemplo C modelado en SAP2000.}
+  \label{fig:sap_c_modelo}
+\end{figure}
 
 \begin{table}[ht]
   \centering
@@ -104,11 +147,11 @@ rigideces.
   \small
   \begin{tabular}{@{}lcc@{}}
     \toprule
-    Resultado & Calculadora & Comercial \\
+    Resultado & Calculadora & SAP2000 \\
     \midrule
-    Desplazamiento $u_y$ del nodo 4 (mm) & \valor{d_c_uy_4} & — \\
-    Reacción $y$ del nodo 1 (kN) & \valor{d_c_r_2} & — \\
-    Reacción $y$ del nodo 7 (kN) & \valor{d_c_r_14} & — \\
+    Desplazamiento $u_y$ del nodo 4 (mm) & \valor{d_c_uy_4} & \valorcomercial{d_c_uy_4} \\
+    Reacción $y$ del nodo 1 (kN) & \valor{d_c_r_2} & \valorcomercial{d_c_r_2} \\
+    Reacción $y$ del nodo 7 (kN) & \valor{d_c_r_14} & \valorcomercial{d_c_r_14} \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -120,19 +163,40 @@ rigideces.
   \small
   \begin{tabular}{@{}cccccc@{}}
     \toprule
-    Barra & Calculadora & Comercial & Barra & Calculadora & Comercial \\
+    Barra & Calculadora & SAP2000 & Barra & Calculadora & SAP2000 \\
     \midrule
-    1 & \valor{d_c_n_1} & — & 12 & \valor{d_c_n_12} & — \\
-    2 & \valor{d_c_n_2} & — & 13 & \valor{d_c_n_13} & — \\
-    3 & \valor{d_c_n_3} & — & 14 & \valor{d_c_n_14} & — \\
-    4 & \valor{d_c_n_4} & — & 15 & \valor{d_c_n_15} & — \\
-    5 & \valor{d_c_n_5} & — & 16 & \valor{d_c_n_16} & — \\
-    6 & \valor{d_c_n_6} & — & 17 & \valor{d_c_n_17} & — \\
-    7 & \valor{d_c_n_7} & — & 18 & \valor{d_c_n_18} & — \\
-    8 & \valor{d_c_n_8} & — & 19 & \valor{d_c_n_19} & — \\
-    9 & \valor{d_c_n_9} & — & 20 & \valor{d_c_n_20} & — \\
-    10 & \valor{d_c_n_10} & — & 21 & \valor{d_c_n_21} & — \\
-    11 & \valor{d_c_n_11} & — & & & \\
+    1 & \valor{d_c_n_1} & \valorcomercial{d_c_n_1} & 12 & \valor{d_c_n_12} & \valorcomercial{d_c_n_12} \\
+    2 & \valor{d_c_n_2} & \valorcomercial{d_c_n_2} & 13 & \valor{d_c_n_13} & \valorcomercial{d_c_n_13} \\
+    3 & \valor{d_c_n_3} & \valorcomercial{d_c_n_3} & 14 & \valor{d_c_n_14} & \valorcomercial{d_c_n_14} \\
+    4 & \valor{d_c_n_4} & \valorcomercial{d_c_n_4} & 15 & \valor{d_c_n_15} & \valorcomercial{d_c_n_15} \\
+    5 & \valor{d_c_n_5} & \valorcomercial{d_c_n_5} & 16 & \valor{d_c_n_16} & \valorcomercial{d_c_n_16} \\
+    6 & \valor{d_c_n_6} & \valorcomercial{d_c_n_6} & 17 & \valor{d_c_n_17} & \valorcomercial{d_c_n_17} \\
+    7 & \valor{d_c_n_7} & \valorcomercial{d_c_n_7} & 18 & \valor{d_c_n_18} & \valorcomercial{d_c_n_18} \\
+    8 & \valor{d_c_n_8} & \valorcomercial{d_c_n_8} & 19 & \valor{d_c_n_19} & \valorcomercial{d_c_n_19} \\
+    9 & \valor{d_c_n_9} & \valorcomercial{d_c_n_9} & 20 & \valor{d_c_n_20} & \valorcomercial{d_c_n_20} \\
+    10 & \valor{d_c_n_10} & \valorcomercial{d_c_n_10} & 21 & \valor{d_c_n_21} & \valorcomercial{d_c_n_21} \\
+    11 & \valor{d_c_n_11} & \valorcomercial{d_c_n_11} & & & \\
     \bottomrule
   \end{tabular}
 \end{table}
+
+También aquí los resultados coinciden, y el diagrama de fuerzas axiales de
+SAP2000 (\cref{fig:sap_c_axiales}) muestra el mismo patrón de tracciones y
+compresiones que el de nuestra calculadora en el \cref{cap:mi_calculadora}.
+
+\begin{figure}[ht]
+  \centering
+  \captura{sap_c_axiales}{diagrama de fuerzas axiales del ejemplo C en
+    SAP2000, con el valor de cada barra.}
+  \caption{Fuerzas axiales del ejemplo C en SAP2000.}
+  \label{fig:sap_c_axiales}
+\end{figure}
+
+% ---------------------------------------------------------------------------
+\section{Conclusión}\label{sec:d_conclusion}
+
+Para una armadura hiperestática y para una isostática de 21 barras, la
+calculadora que construimos en este libro reproduce los desplazamientos, las
+reacciones y las fuerzas axiales de un programa comercial. No es casualidad:
+ambos resuelven el mismo sistema $\mK\,\vU = \vF$ con el mismo método. La
+diferencia es que ahora sabemos qué hace cada paso.

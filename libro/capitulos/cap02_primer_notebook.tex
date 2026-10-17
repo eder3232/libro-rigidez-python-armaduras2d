@@ -77,7 +77,25 @@ dentro de nuestro propio Google Drive:
     \emph{Capitulo 02}.
 \end{enumerate}
 
-\pendiente{capturas de pantalla de cada paso en Google Drive y Colab}
+La \cref{fig:colab_nuevo} muestra el menú para crear el notebook, y la
+\cref{fig:colab_vacio}, el notebook recién creado.
+
+\begin{figure}[ht]
+  \centering
+  \captura{colab_nuevo}{Google Drive con la carpeta del curso abierta y el
+    menú Nuevo, Más, Google Colaboratory desplegado.}
+  \caption{Crear un notebook de Colab dentro de nuestra carpeta de Google
+    Drive.}
+  \label{fig:colab_nuevo}
+\end{figure}
+
+\begin{figure}[ht]
+  \centering
+  \captura{colab_vacio}{el notebook recién creado en Colab, con su nombre
+    cambiado a Capitulo 02 y una celda de código vacía.}
+  \caption{Un notebook nuevo, listo para escribir la primera celda.}
+  \label{fig:colab_vacio}
+\end{figure}
 
 \begin{estrategia}
 Recomendamos escribir el código \emph{a mano} en el propio notebook, en lugar
@@ -96,7 +114,16 @@ de la celda, o con las teclas \emph{Mayús + Enter}:
 \salida{c02_primera_celda}
 
 La primera ejecución tarda unos segundos, porque Colab prepara una máquina
-para nosotros. Debajo de la celda aparece lo que el programa imprime.
+para nosotros. Debajo de la celda aparece lo que el programa imprime
+(\cref{fig:colab_primera_celda}).
+
+\begin{figure}[ht]
+  \centering
+  \captura{colab_primera_celda}{la primera celda del capítulo ya ejecutada en
+    Colab, con el botón de ejecución a la izquierda y su salida debajo.}
+  \caption{La primera celda ejecutada y su resultado.}
+  \label{fig:colab_primera_celda}
+\end{figure}
 
 Una celda también puede contener una operación. Si la última línea de una
 celda es una expresión, el notebook muestra su valor:

@@ -4,7 +4,15 @@
 
 Texto universitario para estudiantes de 4.º año de Ingeniería Civil: aprenden a **construir su propia calculadora de armaduras 2D** con el método matricial de rigidez, escribiendo el código en Python paso a paso.
 
-> **Estado:** planificación. Todavía no hay contenido escrito; los documentos de `docs/` están en revisión.
+> **Estado:** borrador completo de los capítulos 1 a 12 y de los anexos A a D (el E está en preparación). Falta la validación con SAP2000 y algunas capturas de pantalla: ver [**Validación con SAP2000 y capturas pendientes**](docs/05-validacion-sap2000.md).
+
+## Construir el libro
+
+```
+uv run python scripts/construir.py
+```
+
+Genera el PDF (`libro/build/libro.pdf`), los notebooks (`notebooks/`) y la web (`web/out/`), y ejecuta todos los tests.
 
 > **Licencias:** el texto del libro se publica con [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es) y el código con licencia MIT. El libro es gratuito y autopublicado.
 
@@ -28,6 +36,8 @@ libro/       Fuente LaTeX del libro
 web/         Aplicación Next.js del libro web
 scripts/     Generadores y verificadores de sincronía
 docs/        Visión, índice, plantilla, estilo y reglas de sincronización
+capturas/    Capturas de pantalla del libro (las aporta el autor)
+validacion/  Resultados de SAP2000 para el anexo D (los anota el autor)
 ```
 
 ## Documentos de trabajo
@@ -37,5 +47,6 @@ docs/        Visión, índice, plantilla, estilo y reglas de sincronización
 3. [Plantilla de capítulo](docs/02-plantilla-capitulo.md): estructura que siguen todos los capítulos.
 4. [Guía de estilo](docs/03-guia-de-estilo.md): redacción, notación, unidades y convenciones del código.
 5. [Sincronización](docs/04-sincronizacion.md): cómo se mantienen alineados LaTeX, web y notebooks.
+6. [Validación con SAP2000 y capturas pendientes](docs/05-validacion-sap2000.md): lo que falta hacer fuera del código para terminar el libro, paso a paso.
 
 **Leer estos documentos antes de escribir cualquier capítulo.**

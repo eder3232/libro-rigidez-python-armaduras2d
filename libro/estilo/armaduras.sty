@@ -134,6 +134,28 @@
       {Ejecute scripts/generar_salidas.py o revise el nombre.}}%
 }
 
+% Captura de pantalla: capturas/<archivo>.png en la raíz del repositorio. Mientras
+% no exista, un recuadro indica qué imagen debe ir (docs/05-validacion-sap2000.md).
+\newcommand{\rutacapturas}{../capturas}
+\newcommand{\captura}[2]{%
+  \IfFileExists{\rutacapturas/#1.png}
+    {\includegraphics[max width=\linewidth, max height=0.42\textheight]
+      {\rutacapturas/#1.png}}
+    {\fcolorbox{acento}{acento!6}{\parbox[c][3.4cm][c]{0.86\linewidth}{%
+      \centering\sffamily\small\color{acento}%
+      Aquí debe ir la captura \texttt{\detokenize{#1}.png}:\par\smallskip
+      #2}}}%
+}
+
+% Resultado de un programa comercial (validacion/resultados_sap2000.csv), o una
+% raya mientras falte. \avisovalidacion recuerda en el PDF que faltan resultados.
+\newcommand{\valorcomercial}[1]{%
+  \ifcsname valor@sap_#1\endcsname\num{\csname valor@sap_#1\endcsname}\else ---\fi}
+\newcommand{\avisovalidacion}{%
+  \ifcsname valor@sap_completo\endcsname\else
+    \pendiente{faltan resultados del programa comercial: ver
+      docs/05-validacion-sap2000.md}\fi}
+
 % Código breve escrito en el texto (solo para ejemplos que no son de la calculadora)
 \newminted[codigo]{python}{}
 % Comandos para escribir en una terminal (anexo C), sin colores de sintaxis

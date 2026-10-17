@@ -21,6 +21,7 @@ Uso: uv run python scripts/latex_a_mdx.py [capNN_nombre ...]
 
 import hashlib
 import re
+import shutil
 import sys
 import textwrap
 from pathlib import Path
@@ -38,6 +39,7 @@ ANEXOS_WEB = [a for a in ANEXOS.glob("anexo*.tex") if a != SOLUCIONES]
 COMPILACION = LIBRO / "build"
 DESTINO = RAIZ / "web" / "contenido"
 NOTEBOOKS = RAIZ / "notebooks"
+CAPTURAS = RAIZ / "capturas"
 
 NBSP = "\u00a0"
 ESPACIO_FINO = "\u202f"
@@ -210,6 +212,7 @@ COMANDOS_IGNORADOS = {
     "noindent",
     "pendiente",
     "sololibro",
+    "avisovalidacion",
 }
 
 
@@ -338,11 +341,21 @@ class Convertidor:
         return "\n".join(items)
 
     def figura(self, contenido):
-        nombre = re.search(r"\\figura\{([^}]+)\}", contenido).group(1)
         etiqueta = re.search(r"\\label\{([^}]+)\}", contenido).group(1)
         inicio = contenido.index("\\caption")
         leyenda, _ = leer_argumento(contenido, inicio + len("\\caption"))
         texto = re.sub(r"\s*\n\s*", " ", self.en_linea(leyenda).strip())
+        if "\\captura" in contenido:
+            # Captura de pantalla: la imagen, o un recuadro mientras falte
+            archivo, pos = leer_argumento(contenido, contenido.index("\\captura") + 8)
+            descripcion, _ = leer_argumento(contenido, pos)
+            descripcion = re.sub(r"\s+", " ", self.en_linea(descripcion)).strip()
+            descripcion = descripcion.replace('"', "'")
+            return self.bloque(
+                f'<Captura archivo="{archivo}" numero="{self.numero_de(etiqueta)}"'
+                f' descripcion="{descripcion}">\n{texto}\n</Captura>'
+            )
+        nombre = re.search(r"\\figura\{([^}]+)\}", contenido).group(1)
         return self.bloque(
             f'<Figura nombre="{nombre}" numero="{self.numero_de(etiqueta)}">\n'
             f"{texto}\n</Figura>"
@@ -547,6 +560,10 @@ class Convertidor:
             return self.referencia(argumento()), pos
         if nombre == "valor":
             return numero(self.valor_de(argumento()), False), pos
+        if nombre == "valorcomercial":
+            # Raya mientras falte el resultado del programa comercial
+            valor = self.valores.get(f"sap_{argumento()}")
+            return (numero(valor, False) if valor else "—"), pos
         if nombre == "eqref":
             return f"({self.numero_de(argumento())})", pos
         if nombre in SIMBOLOS:
@@ -711,6 +728,20 @@ def todos_los_capitulos():
     return ["prefacio", *capitulos, *anexos]
 
 
+def copiar_capturas():
+    """Copia capturas/*.png a la web; la carpeta del libro es la fuente única."""
+    destino = RAIZ / "web" / "public" / "capturas"
+    destino.mkdir(parents=True, exist_ok=True)
+    vigentes = set()
+    for captura in sorted(CAPTURAS.glob("*.png")):
+        shutil.copy2(captura, destino / captura.name)
+        vigentes.add(captura.name)
+    for vieja in destino.glob("*.png"):
+        if vieja.name not in vigentes:
+            vieja.unlink()
+
+
 if __name__ == "__main__":
+    copiar_capturas()
     for id_capitulo in sys.argv[1:] or todos_los_capitulos():
         print(f"generado: {convertir(id_capitulo).relative_to(RAIZ)}")

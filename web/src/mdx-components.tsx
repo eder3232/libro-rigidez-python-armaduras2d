@@ -14,6 +14,7 @@ import {
   Recuerda,
   Solucion,
 } from "@/components/cajas";
+import { Captura } from "@/components/Captura";
 import { Ejercicio, SolucionDelEjercicio } from "@/components/ejercicios";
 import { Figura } from "@/components/Figura";
 import { Fragmento } from "@/components/Fragmento";
@@ -36,6 +37,7 @@ const componentes: MDXComponents = {
   Solucion,
   EcuacionClave,
   Figura,
+  Captura,
   Fragmento,
   Salida,
   Grafico,

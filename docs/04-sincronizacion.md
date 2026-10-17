@@ -17,6 +17,8 @@ El libro se publica en LaTeX (PDF), en la web (Next.js) y en notebooks. Este doc
 | Tablas de resultados | `recursos/` (generadas) | LaTeX y web |
 | Gráficos del código | generados al ejecutar el código: `recursos/graficos/` (PDF) y `web/public/graficos/` (SVG) | LaTeX (`\grafico`) y web (`<Grafico>`) |
 | Esquemas (TikZ) | `libro/figuras/*.tex`, convertidos a SVG por `scripts/generar_figuras.py` | LaTeX (`\figura`) y web (`<Figura>`) |
+| Capturas de pantalla | `capturas/*.png`, aportadas por el autor y copiadas a `web/public/capturas/` por `scripts/latex_a_mdx.py`. Mientras falten, se muestra un recuadro que indica cuál debe ir | LaTeX (`\captura{nombre}{descripción}` dentro de un `figure`) y web (`<Captura>`) |
+| Resultados de SAP2000 (anexo D) | `validacion/resultados_sap2000.csv`, anotados por el autor ([guía](05-validacion-sap2000.md)) y registrados como `sap_<clave>` por `scripts/generar_salidas.py`; `codigo/tests/test_validacion.py` comprueba que coincidan con la calculadora | LaTeX (`\valorcomercial{clave}`, una raya mientras falte; `\avisovalidacion`) y web |
 | Macros matemáticas | `libro/estilo/notacion.tex` | LaTeX y KaTeX en la web |
 | Prosa | `libro/capitulos/*.tex` | web: `web/contenido/*.mdx`, generado por `scripts/latex_a_mdx.py` |
 | Soluciones de los ejercicios | `libro/anexos/anexoF_soluciones.tex` | web: plegadas debajo de cada ejercicio (las coloca el convertidor) |
@@ -128,7 +130,7 @@ Un único comando (por definir en `scripts/`) ejecuta todas las verificaciones y
 |---|---|---|---|---|
 | Prefacio | estable | — (sin código) | generado | — |
 | 1. Por qué programar el método de rigidez | estable | — (sin código) | generado | — |
-| 2. Nuestro primer notebook | estable (falta: capturas de Colab) | listo | generado | — |
+| 2. Nuestro primer notebook | estable (falta: capturas de Colab; ver docs/05-validacion-sap2000.md) | listo | generado | — |
 | 3. Describir una armadura | estable | listo | generado | — |
 | 4. La geometría de todas las barras | estable | listo | generado | — |
 | 5. La rigidez de una barra | estable | listo | generado | — |
@@ -136,13 +138,13 @@ Un único comando (por definir en `scripts/`) ejecuta todas las verificaciones y
 | 7. Ensamblaje de la matriz global | estable | listo | generado | — |
 | 8. Cargas y partición del sistema | estable | listo | generado | — |
 | 9. Desplazamientos y reacciones | estable | listo | generado | — |
-| 10. Fuerzas internas | estable (falta: comparación con software comercial) | listo | generado | — |
+| 10. Fuerzas internas | estable (falta: confirmar la frase sobre SAP2000; ver docs/05-validacion-sap2000.md) | listo | generado | — |
 | 11. Visualizar los resultados | estable | listo | generado | — |
 | 12. Mi calculadora de armaduras | estable | listo | generado | — |
 | Anexo A. Referencia rápida de Python y NumPy | estable | — | generado | — |
 | Anexo B. Leer un error de Python | estable | listo (celdas "error") | generado | — |
 | Anexo C. Trabajar en local | estable | listo (calculadora.py) | generado | — |
-| Anexo D. Validación con software comercial | borrador (falta: columna del programa comercial) | listo | generado | — |
+| Anexo D. Validación con software comercial | borrador (falta: resultados de SAP2000 y capturas; ver docs/05-validacion-sap2000.md) | listo | generado | — |
 
 Estados posibles: `pendiente` → `borrador` → `revisado` → `estable`.
 
