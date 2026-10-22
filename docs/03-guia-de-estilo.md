@@ -107,9 +107,9 @@ Separar apoyos y cargas de los nodos hace que cada diccionario tenga una sola re
 
 - Todas las figuras con datos se generan por código (ver [sincronización](04-sincronizacion.md)); nada de capturas de pantalla de resultados.
 - **Esquemas estructurales** (barras, apoyos, cargas, ejes, grados de libertad): con TikZ, con una biblioteca propia de símbolos (apoyo articulado, rodillo, flecha de carga, numeración de nodos) para que todos los esquemas del libro sean idénticos en estilo.
-- **Gráficos de resultados**: Matplotlib con el *backend* PGF, para que usen exactamente la tipografía y los tamaños del libro.
+- **Gráficos de resultados**: Matplotlib, con la tipografía del libro (Libertinus Sans, registrada por `configurar_graficos()` en `scripts/generar_salidas.py`). Los del anexo D usan además `scripts/graficos_libro.py`, que dibuja apoyos, cargas y reacciones como los símbolos TikZ.
 - Paleta única para todo el libro: tracción y compresión con colores distinguibles también para personas con daltonismo, más un color neutro para la geometría sin deformar.
-- Las únicas capturas de pantalla son de interfaces (Colab, SAP2000), con `\captura` (ver [validación](05-validacion-sap2000.md)).
+- Las únicas capturas de pantalla son de interfaces (Colab), con `\captura` (ver [capturas pendientes](05-capturas-pendientes.md)).
 
 ## Índice alfabético
 

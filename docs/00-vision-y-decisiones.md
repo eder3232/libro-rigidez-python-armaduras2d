@@ -67,6 +67,7 @@ El camino recomendado es siempre el mismo: **crear su propio notebook en Google 
 
 | D19 | Registro: **primera persona del plural** como voz principal; **infinitivo** en los enunciados de los ejercicios. | Es lo habitual en los textos universitarios en español: acompaña al lector sin tutearlo. Ver la [guía de estilo](03-guia-de-estilo.md#redacción). |
 | D20 | La prosa de la web **se genera** desde el LaTeX con `scripts/latex_a_mdx.py`; lo exclusivo de la web va en `\soloweb{...}`. (Reemplaza la adaptación manual de D4.) | Adaptar a mano 12 capítulos era lento y la principal fuente de desincronías. Como el LaTeX usa solo comandos semánticos, la conversión es fiel; se validó contra la adaptación manual del capítulo 2. |
+| D21 | La validación del anexo D se hace con **OpenSees** (`openseespy`), no con SAP2000. Es la única excepción a D10: solo el anexo D y su notebook `validacion_opensees.ipynb` lo usan, y en Colab se instala con `%pip`. (Reemplaza la validación con software comercial.) | Es gratuito y de código abierto, así que el estudiante puede repetir la validación; se ejecuta en cada construcción, sin anotar resultados a mano; y su elemento `Truss` es exactamente la barra del libro, sin liberar momentos ni anular el peso propio. |
 
 No quedan decisiones pendientes de la revisión inicial.
 

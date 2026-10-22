@@ -9,7 +9,9 @@ Por cada capítulo capNN_nombre.py se generan:
 
 Además, mi_calculadora.ipynb: el notebook final del estudiante, con el motor
 (las definiciones de todo el código acumulable) y las celdas "calculadora";
-y calculadora.py: el mismo motor como módulo de Python.
+y calculadora.py: el mismo motor como módulo de Python. Y
+validacion_opensees.ipynb: el motor, los datos de los ejemplos B y C y las
+celdas "validacion" del anexo D, que los analizan también con OpenSees.
 
 Uso: uv run python scripts/generar_notebooks.py
 """
@@ -34,6 +36,8 @@ from comun import (
 # libro (con valor_libro); no forman parte de los notebooks.
 # "calculadora": celdas de la lección que forman además las secciones Datos y
 # Resultados del notebook final mi_calculadora.ipynb.
+# Los anexos no exigen etiquetas: sus celdas "validacion" (anexo D) forman el
+# notebook validacion_opensees.ipynb.
 ETIQUETAS = {"acumulable", "exploracion", "libro", "calculadora"}
 
 INTRODUCCION_CALCULADORA = """\
@@ -170,6 +174,49 @@ def notebook_calculadora(acumuladas, celdas_calculadora):
     return celdas
 
 
+def celda_que_define(celdas, nombre):
+    """La celda que asigna la variable nombre (los datos de un ejemplo)."""
+    for celda in celdas:
+        for nodo in ast.parse(celda.source).body:
+            if isinstance(nodo, ast.Assign) and any(
+                isinstance(t, ast.Name) and t.id == nombre for t in nodo.targets
+            ):
+                return celda
+    raise ValueError(f"ninguna celda acumulable define {nombre}")
+
+
+def notebook_validacion(acumuladas, anexo):
+    """Celdas del notebook de la validación con OpenSees (anexo D): la
+    instalación de OpenSees, el motor de la calculadora, los datos de los
+    ejemplos B y C y las celdas "validacion" del anexo."""
+    celdas_anexo = leer_celdas(anexo, exigir_etiquetas=False)
+    introduccion = next(c for c in celdas_anexo if c.cell_type == "markdown")
+    instalar = nbformat.v4.new_code_cell(
+        "# OpenSees no viene instalado en Colab\n%pip install -q openseespy",
+        metadata={"tags": ["instalar"]},
+    )
+    celda_motor = nbformat.v4.new_code_cell(
+        "# @title Motor de la calculadora (ejecutar primero)\n" + motor(acumuladas),
+        metadata={"cellView": "form"},
+    )
+    celdas = [
+        copiar(introduccion),
+        instalar,
+        nbformat.v4.new_markdown_cell("## 1. Motor de la calculadora"),
+        celda_motor,
+        nbformat.v4.new_markdown_cell("## 2. Los ejemplos B y C"),
+        copiar(celda_que_define(acumuladas, "nodos_b")),
+        copiar(celda_que_define(acumuladas, "nodos_c")),
+        nbformat.v4.new_markdown_cell("## 3. El análisis con OpenSees y la comparación"),
+    ]
+    celdas += [
+        copiar(c)
+        for c in celdas_anexo
+        if "validacion" in c.metadata.get("tags", [])
+    ]
+    return celdas
+
+
 def generar(codigo=CODIGO, destino=NOTEBOOKS):
     """Genera todos los notebooks y devuelve la lista de archivos escritos."""
     destino.mkdir(parents=True, exist_ok=True)
@@ -218,6 +265,11 @@ def generar(codigo=CODIGO, destino=NOTEBOOKS):
             ENCABEZADO_MODULO + motor(acumuladas) + "\n", encoding="utf-8", newline="\n"
         )
         escritos.append(modulo)
+
+    anexo = codigo / "anexoD_validacion.py"
+    if anexo.exists():
+        celdas = notebook_validacion(acumuladas, anexo)
+        escritos.append(escribir(celdas, destino / "validacion_opensees.ipynb"))
     return escritos
 
 

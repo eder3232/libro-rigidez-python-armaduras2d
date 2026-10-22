@@ -31,17 +31,17 @@ z
    <g id="line2d_1">
     <path d="M 18.613636 183.718909 
 L 246.886364 183.718909 
-" clip-path="url(#p5f503b9843)" style="fill: none; stroke: #0072b2; stroke-width: 3; stroke-linecap: square"/>
+" clip-path="url(#p5279575378)" style="fill: none; stroke: #0072b2; stroke-width: 3; stroke-linecap: square"/>
    </g>
    <g id="line2d_2">
     <path d="M 246.886364 183.718909 
 L 132.75 31.537091 
-" clip-path="url(#p5f503b9843)" style="fill: none; stroke: #d55e00; stroke-width: 3; stroke-linecap: square"/>
+" clip-path="url(#p5279575378)" style="fill: none; stroke: #d55e00; stroke-width: 3; stroke-linecap: square"/>
    </g>
    <g id="line2d_3">
     <path d="M 18.613636 183.718909 
 L 132.75 31.537091 
-" clip-path="url(#p5f503b9843)" style="fill: none; stroke: #d55e00; stroke-width: 3; stroke-linecap: square"/>
+" clip-path="url(#p5279575378)" style="fill: none; stroke: #d55e00; stroke-width: 3; stroke-linecap: square"/>
    </g>
    <g id="line2d_4"/>
    <g id="line2d_5"/>
@@ -933,7 +933,7 @@ z
   </g>
  </g>
  <defs>
-  <clipPath id="p5f503b9843">
+  <clipPath id="p5279575378">
    <rect x="7.2" y="23.928" width="251.1" height="167.4"/>
   </clipPath>
  </defs>

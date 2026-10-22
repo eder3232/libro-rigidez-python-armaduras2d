@@ -28,7 +28,7 @@ Todo resultado nuevo se comprueba con al menos uno de estos medios:
 
 - cálculo a mano (ejemplo A);
 - una propiedad que debe cumplirse (simetría, equilibrio, singularidad);
-- software comercial (ejemplo B).
+- OpenSees (ejemplos B y C, anexo D).
 
 La verificación se enseña como un hábito de ingeniero, no como un trámite.
 

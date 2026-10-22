@@ -1,40 +1,55 @@
-"""Los resultados del programa comercial deben coincidir con los de la
-calculadora (anexo D y docs/05-validacion-sap2000.md).
+"""La calculadora y OpenSees deben dar los mismos resultados (anexo D).
 
-Solo compara las filas de validacion/resultados_sap2000.csv que ya tienen el
-valor de SAP2000 anotado; mientras no haya ninguna, no compara nada.
+Ejecuta las celdas del notebook validacion_opensees.ipynb, que analizan los
+ejemplos B y C con ambos programas, y compara todos los desplazamientos,
+reacciones y fuerzas. Comprueba además que las tablas del anexo D muestran
+los mismos valores en las dos columnas.
 """
 
-import csv
+import contextlib
+import io
 import re
 from pathlib import Path
 
+import nbformat
+import numpy as np
+import pytest
+
 RAIZ = Path(__file__).resolve().parent.parent.parent
-RESULTADOS = RAIZ / "validacion" / "resultados_sap2000.csv"
+NOTEBOOK = RAIZ / "notebooks" / "validacion_opensees.ipynb"
 VALORES = RAIZ / "recursos" / "valores.tex"
+ANEXO = RAIZ / "libro" / "anexos" / "anexoD_validacion.tex"
 
 
-def valores_de_la_calculadora():
+@pytest.fixture(scope="module")
+def analisis():
+    """Las variables del notebook de validación, después de ejecutarlo."""
+    espacio = {}
+    for celda in nbformat.read(NOTEBOOK, as_version=4).cells:
+        # La instalación de OpenSees es para Colab: aquí ya está instalado
+        if celda.cell_type == "code" and "instalar" not in celda.metadata.get("tags", []):
+            with contextlib.redirect_stdout(io.StringIO()):
+                exec(celda.source, espacio)  # noqa: S102
+    return espacio
+
+
+@pytest.mark.parametrize("ejemplo", ["b", "c"])
+def test_opensees_coincide_con_la_calculadora(analisis, ejemplo):
+    calculadora = analisis[f"resultados_{ejemplo}"]
+    opensees = analisis[f"opensees_{ejemplo}"]
+    np.testing.assert_allclose(opensees["U"], calculadora["U"], rtol=1e-9, atol=1e-12)
+    assert opensees["restringidos"] == calculadora["restringidos"]
+    np.testing.assert_allclose(opensees["R"], calculadora["R"], rtol=1e-9, atol=1e-9)
+    assert opensees["N"].keys() == calculadora["N"].keys()
+    for barra, fuerza in calculadora["N"].items():
+        assert opensees["N"][barra] == pytest.approx(fuerza, rel=1e-9, abs=1e-9), barra
+
+
+def test_las_tablas_del_anexo_muestran_los_mismos_valores():
+    """Cada \\valoropensees{n} del anexo D se imprime igual que \\valor{n}."""
     patron = r"\\csname valor@([a-z0-9_]+)\\endcsname\{([^}]*)\}"
-    return dict(re.findall(patron, VALORES.read_text(encoding="utf-8")))
-
-
-def test_resultados_comerciales_coinciden_con_la_calculadora():
-    calculadora = valores_de_la_calculadora()
-    with open(RESULTADOS, encoding="utf-8", newline="") as archivo:
-        filas = list(csv.DictReader(archivo))
-    diferencias = []
-    for fila in filas:
-        texto = fila["sap2000"].strip().replace(",", ".")
-        if not texto:
-            continue
-        esperado = calculadora[fila["clave"]]
-        decimales = len(esperado.split(".")[1])
-        # 1 % del valor, o dos unidades de la última cifra que muestra el libro
-        tolerancia = max(0.01 * abs(float(esperado)), 2 * 10**-decimales)
-        if abs(float(texto) - float(esperado)) > tolerancia:
-            diferencias.append(
-                f"{fila['descripcion']}: SAP2000 {texto} {fila['unidad']},"
-                f" calculadora {esperado} {fila['unidad']}"
-            )
-    assert not diferencias, "Resultados que no coinciden:\n" + "\n".join(diferencias)
+    valores = dict(re.findall(patron, VALORES.read_text(encoding="utf-8")))
+    citados = re.findall(r"\\valoropensees\{([a-z0-9_]+)\}", ANEXO.read_text(encoding="utf-8"))
+    assert citados
+    distintos = [n for n in citados if valores.get(f"ops_{n}") != valores[n]]
+    assert not distintos, f"valores de OpenSees que faltan o difieren: {distintos}"

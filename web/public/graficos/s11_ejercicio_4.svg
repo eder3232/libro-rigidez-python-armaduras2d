@@ -31,17 +31,17 @@ z
    <g id="line2d_1">
     <path d="M 18.613636 183.718909 
 L 246.886364 183.718909 
-" clip-path="url(#p3035657607)" style="fill: none; stroke: #0072b2; stroke-width: 5.2; stroke-linecap: round"/>
+" clip-path="url(#p3bee02a5d2)" style="fill: none; stroke: #0072b2; stroke-width: 5.2; stroke-linecap: round"/>
    </g>
    <g id="line2d_2">
     <path d="M 246.886364 183.718909 
 L 132.75 31.537091 
-" clip-path="url(#p3035657607)" style="fill: none; stroke: #d55e00; stroke-width: 8; stroke-linecap: round"/>
+" clip-path="url(#p3bee02a5d2)" style="fill: none; stroke: #d55e00; stroke-width: 8; stroke-linecap: round"/>
    </g>
    <g id="line2d_3">
     <path d="M 18.613636 183.718909 
 L 132.75 31.537091 
-" clip-path="url(#p3035657607)" style="fill: none; stroke: #d55e00; stroke-width: 3.130435; stroke-linecap: round"/>
+" clip-path="url(#p3bee02a5d2)" style="fill: none; stroke: #d55e00; stroke-width: 3.130435; stroke-linecap: round"/>
    </g>
    <g id="text_1">
     <!-- Grosor proporcional a |N| -->
@@ -337,7 +337,7 @@ z
   </g>
  </g>
  <defs>
-  <clipPath id="p3035657607">
+  <clipPath id="p3bee02a5d2">
    <rect x="7.2" y="23.928" width="251.1" height="167.4"/>
   </clipPath>
  </defs>

@@ -125,3 +125,21 @@ export function MiCalculadora() {
     </Caja>
   );
 }
+
+// El notebook de la validación con OpenSees (anexo D). Equivale a \validacionopensees.
+export function ValidacionOpenSees() {
+  const notebook = `${URL_NOTEBOOKS}/validacion_opensees.ipynb`;
+  const colab = notebook.replace("https://github.com/", "https://colab.research.google.com/github/");
+  return (
+    <Caja titulo="Validación con OpenSees" tono="principal">
+      <p>
+        El notebook con la calculadora, los ejemplos B y C y su análisis con OpenSees, para repetir
+        la comparación en Colab.
+      </p>
+      <p className="caja-acciones">
+        <a href={colab}>Abrir en Colab</a>
+        <a href={notebook}>Ver el notebook</a>
+      </p>
+    </Caja>
+  );
+}

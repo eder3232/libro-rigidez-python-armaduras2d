@@ -212,7 +212,7 @@ COMANDOS_IGNORADOS = {
     "noindent",
     "pendiente",
     "sololibro",
-    "avisovalidacion",
+    "FloatBarrier",
     "index",
 }
 
@@ -355,6 +355,12 @@ class Convertidor:
             return self.bloque(
                 f'<Captura archivo="{archivo}" numero="{self.numero_de(etiqueta)}"'
                 f' descripcion="{descripcion}">\n{texto}\n</Captura>'
+            )
+        if grafico := re.search(r"\\grafico\{([^}]+)\}", contenido):
+            # Gráfico generado por el código, con su número y su leyenda
+            return self.bloque(
+                f'<Grafico nombre="{grafico.group(1)}" '
+                f'numero="{self.numero_de(etiqueta)}">\n{texto}\n</Grafico>'
             )
         nombre = re.search(r"\\figura\{([^}]+)\}", contenido).group(1)
         return self.bloque(
@@ -528,6 +534,8 @@ class Convertidor:
             return self.bloque(f'<PuntoDeControl capitulo="{argumento()}" />'), pos
         if nombre == "micalculadora":
             return self.bloque("<MiCalculadora />"), pos
+        if nombre == "validacionopensees":
+            return self.bloque("<ValidacionOpenSees />"), pos
         if nombre == "py" or nombre == "texttt":
             return f"`{argumento()}`", pos
         if nombre == "emph":
@@ -561,10 +569,8 @@ class Convertidor:
             return self.referencia(argumento()), pos
         if nombre == "valor":
             return numero(self.valor_de(argumento()), False), pos
-        if nombre == "valorcomercial":
-            # Raya mientras falte el resultado del programa comercial
-            valor = self.valores.get(f"sap_{argumento()}")
-            return (numero(valor, False) if valor else "—"), pos
+        if nombre == "valoropensees":
+            return numero(self.valor_de(f"ops_{argumento()}"), False), pos
         if nombre == "eqref":
             return f"({self.numero_de(argumento())})", pos
         if nombre in SIMBOLOS:

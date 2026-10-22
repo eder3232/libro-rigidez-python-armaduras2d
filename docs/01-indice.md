@@ -9,7 +9,7 @@ Se usan tres armaduras distintas a propósito: con un solo ejemplo, los errores 
 | Ejemplo | Descripción | Para qué |
 |---|---|---|
 | **A. Triángulo** | 3 nodos, 3 barras, isostático. Nodo 1 articulado, nodo 2 con rodillo, carga en el nodo 3. 3 grados libres y 3 restringidos. | Verificar cada paso **a mano** (método de los nudos). Es el ejemplo de los primeros capítulos. |
-| **B. Cuadro arriostrado** | 4 nodos, 6 barras, hiperestático. Nodo 1 articulado, nodo 2 con rodillo: 5 grados libres y 3 restringidos. | Mostrar que el método resuelve lo que el método de los nudos no puede. Se verifica con software comercial. |
+| **B. Cuadro arriostrado** | 4 nodos, 6 barras, hiperestático. Nodo 1 articulado, nodo 2 con rodillo: 5 grados libres y 3 restringidos. | Mostrar que el método resuelve lo que el método de los nudos no puede. Se verifica con OpenSees. |
 | **C. Armadura Pratt** | Armadura de cubierta o de puente peatonal de 6 paneles. | El caso "real" del capítulo final: el estudiante ve su calculadora resolver algo grande. |
 
 ### Datos propuestos (decisión D13)
@@ -111,7 +111,7 @@ Prueba preliminar con los datos de A: desplazamientos de 0.4 a 0.7 mm y esfuerzo
 
 - **Construimos:** la fuerza axial de cada barra, con su clasificación en tracción o compresión.
 - **Python nuevo:** combinar todo lo anterior; escribir la función `mostrar_tabla` (f-strings con ancho y decimales) para presentar resultados con encabezados y numeración desde 1 (decisión D14).
-- **Verificación:** ejemplo A contra el método de los nudos; ejemplo B contra software comercial (SAP2000 o Ftool); esfuerzos frente a la fluencia.
+- **Verificación:** ejemplo A contra el método de los nudos; ejemplos B y C contra OpenSees (anexo D); esfuerzos frente a la fluencia.
 - **Caja:** las barras en compresión deben verificarse además por pandeo (fuera del alcance del libro).
 
 ### Capítulo 11. Visualizar los resultados
@@ -141,6 +141,6 @@ Prueba preliminar con los datos de A: desplazamientos de 0.4 a 0.7 mm y esfuerzo
 - **A. Referencia rápida de Python y NumPy:** para consultar, no para estudiar de corrido.
 - **B. Leer un error de Python:** cómo interpretar un *traceback* y los errores más frecuentes del libro.
 - **C. Trabajar en local (opcional):** instalar Python; el problema de los entornos (Anaconda frente a pip) explicado; el código como módulo `.py`.
-- **D. Validación con software comercial:** cómo se modelaron los ejemplos en SAP2000 o Ftool.
+- **D. Validación con OpenSees:** los ejemplos B y C analizados con OpenSees desde Python y comparados resultado por resultado, con un notebook para repetirlo en Colab.
 - **E. Notación y convenciones de signos.**
 - **F. Soluciones de los ejercicios.** También están plegadas en cada capítulo de la web y en un notebook de soluciones por capítulo (decisión D15).

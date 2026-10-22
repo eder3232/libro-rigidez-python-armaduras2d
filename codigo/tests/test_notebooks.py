@@ -16,6 +16,10 @@ NOTEBOOKS = Path(__file__).resolve().parent.parent.parent / "notebooks"
 )
 def test_notebook_se_ejecuta(ruta):
     notebook = nbformat.read(ruta, as_version=4)
+    # La instalación de OpenSees es para Colab: aquí ya está instalado
+    notebook.cells = [
+        c for c in notebook.cells if "instalar" not in c.metadata.get("tags", [])
+    ]
     NotebookClient(notebook, timeout=120, kernel_name="python3").execute()
 
 

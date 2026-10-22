@@ -1,7 +1,7 @@
 export const metadatos = {
   numero: "D",
-  titulo: "Validación con software comercial",
-  sincronizado_con: "65b5cb9425",
+  titulo: "Validación con OpenSees",
+  sincronizado_con: "2d124e8344",
 };
 
 {/* Generado por scripts/latex_a_mdx.py desde libro/anexos/anexoD_validacion.tex. No editar a mano. */}
@@ -9,129 +9,196 @@ export const metadatos = {
 A lo largo del libro verificamos la calculadora con el cálculo a mano
 (ejemplo A), con propiedades que deben cumplirse (simetría, equilibrio) y con
 el método de las secciones (ejemplo C). Este anexo agrega una verificación
-independiente: comparar sus resultados con los de SAP2000, un programa
-comercial de análisis estructural de uso habitual en la práctica, para los
-ejemplos B y C.
+independiente: analizar los ejemplos B y C con otro programa, escrito por
+otras personas, y comparar los resultados.
 
-## D.1 Cómo modelar una armadura en un programa comercial
+## D.1 OpenSees
 
-Los programas comerciales analizan pórticos, cuyas barras resisten flexión.
-Para que reproduzcan el modelo de armadura del libro hay que cuidar cinco
-cosas:
+OpenSees es un programa de análisis estructural de código abierto,
+desarrollado en la Universidad de California en Berkeley y muy usado en la
+investigación en ingeniería sísmica; su diseño se describe en
+McKenna (2011). Es gratuito y se usa desde Python con la biblioteca
+`openseespy`, de modo que cualquiera puede repetir esta comparación en
+Colab.
 
-1. **Barras articuladas.** Liberar los momentos en ambos extremos de cada barra, o analizar el modelo como armadura plana, sin giros en los nodos. Así cada barra trabaja solo con fuerza axial.
-2. **Sin peso propio.** Los programas suelen incluir el peso de las barras en las cargas; el libro no lo considera, de modo que hay que anularlo.
-3. **Las mismas propiedades.** Un material con $E = 200\,\mathrm{GPa}$ y secciones definidas por su área, sin importar su forma.
-4. **Los mismos apoyos y cargas.** Un apoyo articulado en el nodo 1, uno de rodillo con el desplazamiento vertical restringido en el nodo 2 (ejemplo B) o 7 (ejemplo C), y las cargas aplicadas en los nodos.
-5. **Unidades coherentes.** Trabajar en kilonewtons y metros, como la calculadora, o convertir los resultados antes de compararlos.
+Para validar la calculadora, OpenSees tiene una ventaja sobre un programa
+comercial de pórticos: su elemento `Truss` es exactamente la barra de
+armadura del libro, articulada en sus extremos y con solo fuerza axial. No hay
+que liberar momentos ni anular el peso propio; basta con describir la misma
+armadura.
 
-SAP2000 dibuja los modelos en el plano $xz$: su eje $z$ es el vertical, que
-en el libro llamamos $y$. Sus convenciones de signos coinciden con las del
-libro: los desplazamientos y las reacciones son positivos en el sentido de
-los ejes, y la fuerza axial $P$ es positiva en tracción.
+## D.2 El modelo en OpenSees
 
-Los resultados de los dos programas deben coincidir en sus primeras cifras
-significativas. Diferencias pequeñas en la última cifra se deben al redondeo;
-una diferencia mayor indica un error en uno de los dos modelos, casi siempre
-en un apoyo, en las unidades o en el peso propio.
+La función `analizar_con_opensees` recibe los mismos diccionarios que
+`analizar_armadura` ([capítulo 12](/capitulos/cap12_mi_calculadora)) y devuelve los
+desplazamientos, las reacciones y las fuerzas en el mismo formato, para
+compararlos directamente:
 
-## D.2 Ejemplo B
+<Fragmento nombre="d_opensees" />
+
+Cada paso tiene su equivalente en la calculadora. `ops.node` y
+`ops.fix` definen los nodos y los apoyos (con `1` para un grado de
+libertad restringido); `ops.element("Truss", ...)` crea cada barra con su
+área y un material elástico con su módulo $E$; `ops.load` aplica las
+cargas. Las seis líneas siguientes eligen cómo resolver el sistema (un
+análisis estático y lineal en un solo paso, que equivale a resolver
+$\mK_{ll}\,\vU_l = \vF_l$ una vez), `ops.analyze(1)` lo resuelve y
+`ops.reactions()` calcula las reacciones. Al final, los resultados se ordenan como
+los de la calculadora: `clasificar_gdl` solo se usa para listar las
+reacciones en el mismo orden.
+
+La función `comparar_resultados` muestra los dos análisis lado a lado:
+
+<Fragmento nombre="d_comparar" />
+
+<Fragmento nombre="d_comparar_b" />
+
+<Salida nombre="d_comparar_b" />
+
+<ValidacionOpenSees />
+
+## D.3 Ejemplo B
 
 El ejemplo B (figura 3.2) es hiperestático, de modo que sus fuerzas
 dependen de la rigidez de las barras: es la prueba más exigente para la
-calculadora. La figura D.1 muestra su modelo en SAP2000.
-
-<Captura archivo="sap_b_modelo" numero="D.1" descripcion="modelo del ejemplo B en SAP2000, con los números de los nodos y de las barras, los apoyos y las cargas.">
-El ejemplo B modelado en SAP2000.
-</Captura>
-
-La tabla D.1 compara los desplazamientos, y la
-tabla D.2, las reacciones y las fuerzas axiales.
+calculadora. La tabla D.1 compara los desplazamientos,
+y la tabla D.2, las reacciones y las fuerzas axiales.
 
 **Tabla D.1:** Ejemplo B: desplazamientos de los nodos, en milímetros.
 
-| Nodo | $u_x$ calculadora | $u_x$ SAP2000 | $u_y$ calculadora | $u_y$ SAP2000 |
+| Nodo | $u_x$ calculadora | $u_x$ OpenSees | $u_y$ calculadora | $u_y$ OpenSees |
 | :---: | :---: | :---: | :---: | :---: |
-| 1 | 0.000 | — | 0.000 | — |
-| 2 | 0.179 | — | 0.000 | — |
-| 3 | 0.900 | — | −0.081 | — |
-| 4 | 0.854 | — | −0.481 | — |
+| 1 | 0.000 | 0.000 | 0.000 | 0.000 |
+| 2 | 0.179 | 0.179 | 0.000 | 0.000 |
+| 3 | 0.900 | 0.900 | −0.081 | −0.081 |
+| 4 | 0.854 | 0.854 | −0.481 | −0.481 |
 
 **Tabla D.2:** Ejemplo B: reacciones y fuerzas axiales, en kilonewtons.
 
-| Resultado | Calculadora | SAP2000 |
+| Resultado | Calculadora | OpenSees |
 | :--- | :---: | :---: |
-| Reacción $x$ del nodo 1 | −30.00 | — |
-| Reacción $y$ del nodo 1 | 0.00 | — |
-| Reacción $y$ del nodo 2 | 80.00 | — |
-| Barra 1 | 23.89 | — |
-| Barra 2 | −48.15 | — |
-| Barra 3 | −6.11 | — |
-| Barra 4 | −8.15 | — |
-| Barra 5 | 10.19 | — |
-| Barra 6 | −39.81 | — |
+| Reacción $x$ del nodo 1 | −30.00 | −30.00 |
+| Reacción $y$ del nodo 1 | 0.00 | 0.00 |
+| Reacción $y$ del nodo 2 | 80.00 | 80.00 |
+| Barra 1 | 23.89 | 23.89 |
+| Barra 2 | −48.15 | −48.15 |
+| Barra 3 | −6.11 | −6.11 |
+| Barra 4 | −8.15 | −8.15 |
+| Barra 5 | 10.19 | 10.19 |
+| Barra 6 | −39.81 | −39.81 |
 
 Los resultados coinciden en todas las cifras que muestran las tablas. La
-deformada de SAP2000 (figura D.2) y su diagrama de fuerzas
-axiales (figura D.3) son, además, los mismos que dibuja nuestra
+figura D.1 lo muestra también a la vista: la deformada de
+OpenSees se dibuja con un trazo ancho y translúcido, y la de la calculadora,
+con uno fino encima. Si fueran distintas, el trazo fino se saldría del ancho;
+en cambio, corre por su centro en todas las barras. La
+figura D.2 es el diagrama de fuerzas axiales de OpenSees, con el
+grosor de cada barra proporcional a su fuerza: es el mismo que dibuja nuestra
 calculadora (figura 10.5).
 
-<Captura archivo="sap_b_deformada" numero="D.2" descripcion="deformada del ejemplo B en SAP2000.">
-Deformada del ejemplo B en SAP2000.
-</Captura>
+<Grafico nombre="d_b_deformada" numero="D.1">
+Ejemplo B: la deformada de OpenSees (trazo ancho) y la de la calculadora (trazo fino) coinciden.
+</Grafico>
 
-<Captura archivo="sap_b_axiales" numero="D.3" descripcion="diagrama de fuerzas axiales del ejemplo B en SAP2000, con el valor de cada barra.">
-Fuerzas axiales del ejemplo B en SAP2000.
-</Captura>
+<Grafico nombre="d_b_axiales" numero="D.2">
+Ejemplo B: fuerzas axiales y reacciones calculadas con OpenSees.
+</Grafico>
 
-## D.3 Ejemplo C
+## D.4 Ejemplo C
 
 El ejemplo C (figura 12.2) es isostático: sus fuerzas dependen solo
 del equilibrio, y ya las verificamos con el método de las secciones en el
-[capítulo 12](/capitulos/cap12_mi_calculadora). Compararlas con SAP2000 confirma que ambos modelos
+[capítulo 12](/capitulos/cap12_mi_calculadora). Compararlas con OpenSees confirma que ambos modelos
 tienen la misma geometría y las mismas cargas; la flecha, en cambio, depende
 de las áreas y del módulo de elasticidad, y verifica las rigideces.
 
-<Captura archivo="sap_c_modelo" numero="D.4" descripcion="modelo del ejemplo C en SAP2000, con los números de los nodos y de las barras, los apoyos y las cargas.">
-El ejemplo C modelado en SAP2000.
-</Captura>
-
 **Tabla D.3:** Ejemplo C: flecha y reacciones.
 
-| Resultado | Calculadora | SAP2000 |
+| Resultado | Calculadora | OpenSees |
 | :--- | :---: | :---: |
-| Desplazamiento $u_y$ del nodo 4 (mm) | −6.736 | — |
-| Reacción $y$ del nodo 1 (kN) | 62.50 | — |
-| Reacción $y$ del nodo 7 (kN) | 62.50 | — |
+| Desplazamiento $u_y$ del nodo 4 (mm) | −6.736 | −6.736 |
+| Reacción $y$ del nodo 1 (kN) | 62.50 | 62.50 |
+| Reacción $y$ del nodo 7 (kN) | 62.50 | 62.50 |
 
 **Tabla D.4:** Ejemplo C: fuerzas axiales, en kilonewtons.
 
-| Barra | Calculadora | SAP2000 | Barra | Calculadora | SAP2000 |
+| Barra | Calculadora | OpenSees | Barra | Calculadora | OpenSees |
 | :---: | :---: | :---: | :---: | :---: | :---: |
-| 1 | 62.50 | — | 12 | −88.39 | — |
-| 2 | 62.50 | — | 13 | 25.00 | — |
-| 3 | 100.00 | — | 14 | −12.50 | — |
-| 4 | 100.00 | — | 15 | 0.00 | — |
-| 5 | 62.50 | — | 16 | −12.50 | — |
-| 6 | 62.50 | — | 17 | 25.00 | — |
-| 7 | −100.00 | — | 18 | 53.03 | — |
-| 8 | −112.50 | — | 19 | 17.68 | — |
-| 9 | −112.50 | — | 20 | 17.68 | — |
-| 10 | −100.00 | — | 21 | 53.03 | — |
-| 11 | −88.39 | — |  |  |  |
+| 1 | 62.50 | 62.50 | 12 | −88.39 | −88.39 |
+| 2 | 62.50 | 62.50 | 13 | 25.00 | 25.00 |
+| 3 | 100.00 | 100.00 | 14 | −12.50 | −12.50 |
+| 4 | 100.00 | 100.00 | 15 | 0.00 | 0.00 |
+| 5 | 62.50 | 62.50 | 16 | −12.50 | −12.50 |
+| 6 | 62.50 | 62.50 | 17 | 25.00 | 25.00 |
+| 7 | −100.00 | −100.00 | 18 | 53.03 | 53.03 |
+| 8 | −112.50 | −112.50 | 19 | 17.68 | 17.68 |
+| 9 | −112.50 | −112.50 | 20 | 17.68 | 17.68 |
+| 10 | −100.00 | −100.00 | 21 | 53.03 | 53.03 |
+| 11 | −88.39 | −88.39 |  |  |  |
 
-También aquí los resultados coinciden, y el diagrama de fuerzas axiales de
-SAP2000 (figura D.5) muestra el mismo patrón de tracciones y
-compresiones que el de nuestra calculadora en el [capítulo 12](/capitulos/cap12_mi_calculadora).
+También aquí los resultados coinciden. En la deformada
+(figura D.3), el trazo fino de la calculadora recorre el centro
+del de OpenSees en las 21 barras, y el diagrama de fuerzas axiales
+(figura D.4) muestra el patrón típico de una armadura Pratt: el
+cordón superior comprimido, el inferior traccionado, y el montante central
+sin fuerza.
 
-<Captura archivo="sap_c_axiales" numero="D.5" descripcion="diagrama de fuerzas axiales del ejemplo C en SAP2000, con el valor de cada barra.">
-Fuerzas axiales del ejemplo C en SAP2000.
-</Captura>
+<Grafico nombre="d_c_deformada" numero="D.3">
+Ejemplo C: las deformadas de OpenSees y de la calculadora coinciden.
+</Grafico>
 
-## D.4 Conclusión
+<Grafico nombre="d_c_axiales" numero="D.4">
+Ejemplo C: fuerzas axiales y reacciones calculadas con OpenSees.
+</Grafico>
+
+## D.5 Todas las comparaciones de un vistazo
+
+Las tablas muestran dos o tres decimales, pero la comparación puede ir mucho
+más lejos. La figura D.5 reúne todos los resultados de los dos
+ejemplos: los desplazamientos de todos los nodos, las reacciones y las fuerzas
+de todas las barras. Para cada uno dibuja la *diferencia relativa*
+entre los dos programas: la diferencia dividida por el mayor valor de su
+grupo, en escala logarítmica.
+
+<Grafico nombre="d_diferencias" numero="D.5">
+Diferencia relativa entre la calculadora y OpenSees en cada resultado de los ejemplos B y C (entre paréntesis, cuántos hay de cada tipo). Los círculos vacíos son resultados exactamente iguales.
+</Grafico>
+
+Una validación razonable aceptaría diferencias de hasta el 1 % (la franja
+sombreada); las de nuestra calculadora están unos catorce órdenes de magnitud
+por debajo, alrededor de $10^{-16}$. Ese número no es casual: es la
+*precisión de la máquina*, el error de redondeo de los números
+decimales de 64 bits con los que calculan Python y OpenSees. Dos programas que
+resuelven el mismo sistema por caminos distintos solo pueden diferir en ese
+redondeo, y eso es lo que encontramos.
+
+La figura D.6 muestra lo mismo de otra forma: cada resultado es un
+punto, con el valor de la calculadora en el eje horizontal y el de OpenSees en
+el vertical. Si coinciden, el punto cae sobre la recta $y = x$; los 65
+resultados están sobre ella.
+
+<Grafico nombre="d_paridad" numero="D.6">
+Cada resultado de los ejemplos B y C, calculado con la calculadora y con OpenSees: todos caen sobre la recta $y = x$.
+</Grafico>
+
+<ParaSaberMas>
+
+**Validar con un programa comercial.** La misma comparación puede
+  hacerse con SAP2000, ETABS u otro programa de pórticos, cuidando que el
+  modelo sea el de una armadura. Hay que liberar los momentos en los extremos
+  de cada barra (o analizar el modelo como armadura plana), anular el peso
+  propio, usar el mismo $E$ y las mismas áreas, y trabajar en kilonewtons y
+  metros. Algunos programas, como SAP2000, dibujan en el plano $xz$: su eje
+  $z$ es nuestro eje $y$. Si el modelo está bien, los resultados coinciden en
+  todas sus cifras significativas; una diferencia mayor casi siempre se debe
+  a un apoyo, a las unidades o al peso propio.
+
+</ParaSaberMas>
+
+## D.6 Conclusión
 
 Para una armadura hiperestática y para una isostática de 21 barras, la
 calculadora que construimos en este libro reproduce los desplazamientos, las
-reacciones y las fuerzas axiales de un programa comercial. No es casualidad:
-ambos resuelven el mismo sistema $\mK\,\vU = \vF$ con el mismo método. La
-diferencia es que ahora sabemos qué hace cada paso.
+reacciones y las fuerzas axiales de OpenSees hasta el redondeo de la máquina.
+No es casualidad: ambos resuelven el mismo sistema $\mK\,\vU = \vF$ con el
+mismo método. La diferencia es que ahora sabemos qué hace cada paso.

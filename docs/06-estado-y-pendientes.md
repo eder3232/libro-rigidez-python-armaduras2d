@@ -1,12 +1,13 @@
 # Estado, publicación y pendientes
 
-Estado al **17/10/2026**. Este documento es la fuente de verdad sobre qué está hecho, dónde está publicado y qué falta. Si cambia algo de lo que dice, se actualiza aquí y en el resumen del [README](../README.md).
+Estado al **22/10/2026**. Este documento es la fuente de verdad sobre qué está hecho, dónde está publicado y qué falta. Si cambia algo de lo que dice, se actualiza aquí y en el resumen del [README](../README.md).
 
 ## Qué está hecho
 
-- **Texto completo:** prefacio, capítulos 1 a 12 (partes I a III del [índice](01-indice.md)) y anexos A a F, con portada, página legal, bibliografía e índice alfabético. El PDF tiene 180 páginas.
-- **Código y verificación:** el código de los 12 capítulos en `codigo/`, con 69 tests (`uv run pytest`) que comprueban los resultados y el equilibrio de cada ejemplo. Todo número que cita el texto sale de ejecutar el código ([sincronización](04-sincronizacion.md)).
-- **Notebooks:** 36 generados en `notebooks/`, tres por capítulo: lección, soluciones y punto de control.
+- **Texto completo:** prefacio, capítulos 1 a 12 (partes I a III del [índice](01-indice.md)) y anexos A a F, con portada, página legal, bibliografía e índice alfabético. El PDF tiene 186 páginas.
+- **Código y verificación:** el código de los 12 capítulos en `codigo/`, con 71 tests (`uv run pytest`) que comprueban los resultados y el equilibrio de cada ejemplo, y que la calculadora coincide con OpenSees. Todo número que cita el texto sale de ejecutar el código ([sincronización](04-sincronizacion.md)).
+- **Notebooks:** 35 generados en `notebooks/`: tres por capítulo (lección, soluciones y punto de control), `mi_calculadora.ipynb` y `validacion_opensees.ipynb`.
+- **Validación (anexo D):** los ejemplos B y C se analizan con OpenSees en cada construcción (`codigo/anexoD_validacion.py`); las tablas y las seis figuras del anexo se generan solas, y los resultados coinciden hasta la precisión de la máquina.
 - **Libro web:** los capítulos y anexos en MDX (generados desde el LaTeX), con fórmulas en KaTeX que usan las mismas macros del PDF, figuras en SVG, soluciones plegables y enlaces «Abrir en Colab» a cada notebook.
 - **Publicado** en GitHub y Vercel (ver abajo).
 
@@ -30,10 +31,10 @@ Estado al **17/10/2026**. Este documento es la fuente de verdad sobre qué está
 
 ### Para terminar la versión 1.0
 
-1. **Validación con SAP2000 (anexo D).** Modelar los ejemplos B y C y anotar sus resultados en la columna `sap2000` de [`validacion/resultados_sap2000.csv`](../validacion/resultados_sap2000.csv): 41 valores, todos vacíos. Paso a paso en [05-validacion-sap2000.md](05-validacion-sap2000.md). Mientras falten, el anexo D muestra una raya en cada valor y un aviso de pendiente.
-2. **Capturas de pantalla.** Faltan las 8, en `capturas/` y con estos nombres: `colab_vacio`, `colab_nuevo` y `colab_primera_celda` (capítulo 2), y `sap_b_modelo`, `sap_b_deformada`, `sap_b_axiales`, `sap_c_modelo` y `sap_c_axiales` (anexo D). Mientras falten, el PDF y la web muestran un recuadro «Aquí debe ir la captura…». Cómo tomarlas: [05-validacion-sap2000.md § 5](05-validacion-sap2000.md#5-capturas-de-pantalla).
-3. **Construir, revisar y publicar.** `uv run python scripts/construir.py`, revisar el PDF y la web, hacer commit y push (Vercel despliega la web). Después, **copiar el PDF nuevo a la web personal**: `libro/build/libro.pdf` → `public/libros/analisis-matricial-de-armaduras-con-python.pdf` en el repo `eder3232-personal-webpage`, y publicarla. En ese repo también hay que actualizar el caso (`src/data/casos.ts`, entrada `libro-armaduras`): el periodo dice «2026, versión preliminar» y la sección «Después» dice que falta SAP2000.
-4. **Quitar «Versión preliminar»** de la página legal (`libro/portada.tex`) cuando estén SAP2000 y las capturas, y numerar la versión (ver más abajo).
+1. **Capturas de pantalla.** Faltan las 3 de Colab del capítulo 2, en `capturas/` y con estos nombres: `colab_vacio`, `colab_nuevo` y `colab_primera_celda`. Mientras falten, el PDF y la web muestran un recuadro «Aquí debe ir la captura…». Cómo tomarlas: [05-capturas-pendientes.md](05-capturas-pendientes.md).
+2. **Probar `validacion_opensees.ipynb` en Colab** después del push: que `%pip install openseespy` funcione y la comparación diga «Los dos análisis coinciden».
+3. **Construir, revisar y publicar.** `uv run python scripts/construir.py`, revisar el PDF y la web, hacer commit y push (Vercel despliega la web). Después, **copiar el PDF nuevo a la web personal**: `libro/build/libro.pdf` → `public/libros/analisis-matricial-de-armaduras-con-python.pdf` en el repo `eder3232-personal-webpage`, y publicarla. En ese repo también hay que actualizar el caso (`src/data/casos.ts`, entrada `libro-armaduras`): el periodo dice «2026, versión preliminar» y la sección «Después» dice que falta SAP2000 (ahora la validación es con OpenSees).
+4. **Quitar «Versión preliminar»** de la página legal (`libro/portada.tex`) cuando estén las capturas, y numerar la versión (ver más abajo).
 
 ### Errores conocidos de la web
 

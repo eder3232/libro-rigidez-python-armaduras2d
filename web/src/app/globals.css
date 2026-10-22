@@ -209,7 +209,7 @@ main {
   font-family: var(--fuente-sans), sans-serif;
   color: var(--principal);
 }
-/* Captura de pantalla que todavía falta (ver docs/05-validacion-sap2000.md) */
+/* Captura de pantalla que todavía falta (ver docs/05-capturas-pendientes.md) */
 .captura-pendiente {
   border: 2px dashed var(--acento);
   color: var(--acento);

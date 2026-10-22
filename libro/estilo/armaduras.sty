@@ -140,7 +140,7 @@
 }
 
 % Captura de pantalla: capturas/<archivo>.png en la raíz del repositorio. Mientras
-% no exista, un recuadro indica qué imagen debe ir (docs/05-validacion-sap2000.md).
+% no exista, un recuadro indica qué imagen debe ir (docs/05-capturas-pendientes.md).
 \newcommand{\rutacapturas}{../capturas}
 \newcommand{\captura}[2]{%
   \IfFileExists{\rutacapturas/#1.png}
@@ -152,14 +152,12 @@
       #2}}}%
 }
 
-% Resultado de un programa comercial (validacion/resultados_sap2000.csv), o una
-% raya mientras falte. \avisovalidacion recuerda en el PDF que faltan resultados.
-\newcommand{\valorcomercial}[1]{%
-  \ifcsname valor@sap_#1\endcsname\num{\csname valor@sap_#1\endcsname}\else ---\fi}
-\newcommand{\avisovalidacion}{%
-  \ifcsname valor@sap_completo\endcsname\else
-    \pendiente{faltan resultados del programa comercial: ver
-      docs/05-validacion-sap2000.md}\fi}
+% \FloatBarrier: las figuras pendientes se colocan antes de seguir (anexo D)
+\RequirePackage{placeins}
+
+% Resultado de OpenSees para la validación del anexo D (lo registra
+% codigo/anexoD_validacion.py como ops_<nombre>)
+\newcommand{\valoropensees}[1]{\num{\csname valor@ops_#1\endcsname}}
 
 % Código breve escrito en el texto (solo para ejemplos que no son de la calculadora)
 \newminted[codigo]{python}{}
@@ -198,6 +196,17 @@
    Repositorio: \href{\urlrepositorio}{\nolinkurl{\textorepositorio}}\par
    Notebook: \href{\urlnotebooks/mi_calculadora.ipynb}%
      {\nolinkurl{notebooks/mi_calculadora.ipynb}}\par}
+  \end{tcolorbox}}
+
+% El notebook de la validación con OpenSees (anexo D)
+\newcommand{\validacionopensees}{%
+  \begin{tcolorbox}[caja=principal, title={Validación con OpenSees}]
+  El notebook con la calculadora, los ejemplos B y C y su análisis con
+  OpenSees, para repetir la comparación en Colab:\par\smallskip
+  {\raggedright
+   Repositorio: \href{\urlrepositorio}{\nolinkurl{\textorepositorio}}\par
+   Notebook: \href{\urlnotebooks/validacion_opensees.ipynb}%
+     {\nolinkurl{notebooks/validacion_opensees.ipynb}}\par}
   \end{tcolorbox}}
 
 % Marca de contenido por escribir (desaparece de la versión final)

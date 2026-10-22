@@ -13,6 +13,7 @@ import {
   Python,
   Recuerda,
   Solucion,
+  ValidacionOpenSees,
 } from "@/components/cajas";
 import { Captura } from "@/components/Captura";
 import { Ejercicio, SolucionDelEjercicio } from "@/components/ejercicios";
@@ -30,6 +31,7 @@ const componentes: MDXComponents = {
   Objetivos,
   PuntoDeControl,
   MiCalculadora,
+  ValidacionOpenSees,
   NotebooksDelCapitulo,
   Nota,
   Estrategia,
